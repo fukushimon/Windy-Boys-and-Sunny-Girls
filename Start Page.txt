@@ -1,0 +1,76 @@
+#######
+Erste aufbau, nur mit menu bar
+#######
+
+
+import tkinter as tk
+
+
+class MenuBar(tk.Tk):
+
+    def __init__(self):
+        super().__init__()
+
+        self.inicializar_gui()
+
+# Menu_Bar
+    def inicializar_gui(self):
+        menu_bar = tk.Menu(self)
+        menu_Datei = tk.Menu(menu_bar, tearoff=0)
+        menu_Ansicht = tk.Menu(menu_bar, tearoff=0)
+
+# Menu_Options
+        menu_bar.add_cascade(label='Datei', menu=menu_Datei)
+        menu_bar.add_cascade(label='Ansicht', menu=menu_Ansicht)
+        menu_bar.add_command(label='Hilfe', command=self.openHilfe)
+        menu_bar.add_command(label='Info', command=self.openInfo)
+        menu_bar.add_command(label='Schließen', command=self.destroy)
+
+# Options_items
+# Datei
+        menu_Datei.add_command(label='Szenario erstellen')
+        menu_Datei.add_command(label='Szenario öffnen')
+        menu_Datei.add_separator()
+        menu_Datei.add_command(label='Schließen', command=self.destroy)
+# Ansicht
+        menu_Ansicht.add_command(label='Daten einblenden')
+        menu_Ansicht.add_command(label='Karte einblenden')
+
+        self.config(menu=menu_bar)
+
+#Window_Hilfe
+    def openHilfe(app):
+        newWindow = tk.Toplevel(app)
+
+        newWindow.title("Hilfe")
+
+        newWindow.geometry("400x500")
+
+        tk.Label(newWindow,
+                 text="This is Hilfe").pack()
+
+#Window_Info
+    def openInfo(app):
+        newWindow = tk.Toplevel(app)
+
+        newWindow.title("Information")
+
+        newWindow.geometry("400x500")
+
+        tk.Label(newWindow,
+                 text="This is Info").pack()
+#Main
+def main():
+    ancho = 600
+    app = MenuBar()
+    app.title('Windy boys and Sonny Girls')
+#    app.attributes('-fullscreen', True)
+    app.geometry('600x300')  # 1500x800
+    app.minsize(width=600, height=300)
+#   app.maxsize(width=1000,height=600)
+    app.resizable(width=True, height=True)
+    app.mainloop()
+
+
+if __name__ == '__main__':
+    main()
