@@ -1,0 +1,8 @@
+Column;Explanation
+Windgeschwindigkeit;in m/s
+Nordex;"Leistung in kW; Modellname: Nordex N131/3600 Delta"
+Vestas;"Leistung in kW; Modellname: Vestas V164-8.0"
+Senvion;"Leistung in kW; Modellname: Senvion 3.4M140"
+GE;"Leistung in kW; Modellname: GE General Electric 3.4-137"
+Gamesa;"Leistung in kW; Modellname: Gamesa G132-5.0MW"
+Enercon;"Leistung in kW; Modellname: Enercon E141 EP4"
