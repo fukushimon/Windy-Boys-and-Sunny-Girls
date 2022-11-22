@@ -28,6 +28,8 @@ df.to_sql('WEAs', con=conn, if_exists='replace')
 df = pd.read_csv('Data/Solarmodule.csv', sep=';')
 df.to_sql('Solarmodule', con=conn, if_exists='replace') 
 
+# Test
+
 c.close()
 conn.close()
 
