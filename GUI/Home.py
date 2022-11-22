@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 
-from Szenarioerstellen import Szenarioerstellen
+from Wind import Wind
 from Szenarioffnen import Szenarioffnen
 from konstante import style
 
@@ -15,20 +15,20 @@ class Home(tk.Frame):
 
         self.init_widgets()
         
-    def move_to_Szenarioerstellen(self):
-        self.controller.show_frame(Szenarioerstellen)
+    def move_to_Wind(self):
+        self.controller.show_frame(Wind)
 
     def move_to_Szenarioffnen(self):
         self.controller.show_frame(Szenarioffnen)
 
-    def ImagenHH(bildFrame):
-        path = 'Bilder/HHcopy.png'
-        img = Image.open(path)#.resize((900, 350))  # ((300, 150))
-        bildFrame.configure(image=img)
-        bildFrame.image = img
-
 #Windgets in Home Herstellen
     def init_widgets(self):
+
+        img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png').resize((950, 380)))
+        img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png').resize((950, 380)))
+        img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png').resize((950, 380)))
+
+        img_list = [img1, img2, img3]
 
 #Frame Oberehälfte
         bildFrame = tk.Frame(self)
@@ -36,10 +36,13 @@ class Home(tk.Frame):
         bildFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
 #Bilder
-        path = 'Bilder/HH-SHcopy.png'
-        img = Image.open(path).resize((950, 380))
+        #tk.Label(bildFrame, image=img_list[2]).place(x=0, y=0, relwidth=1, relheight=1)
+
+        path = 'Bilder/HH-SH.png'
+        img = Image.open(path).resize((950, 340))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+
 
 #Frame Unterehälfte
         datenFrame = tk.Frame(self)
@@ -50,13 +53,13 @@ class Home(tk.Frame):
         label1.grid(row=0, column=0, padx=5, pady=3)
 # Ort Auswahl
         button1 = tk.Button(datenFrame, text='Hamburg und Schleswig-Holstein', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT) #, command=lambda: ImagenHH_SH)
+                            activebackground=style.BACKGROUND, activeforeground=style.TEXT, command=lambda: Home.ImageHH_SH(bildFrame))
         button1.grid(row=0, column=1, padx=5, pady=3)
         button2 = tk.Button(datenFrame, text='Schleswig-Holstein', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT) #, command=lambda: ImagenSH)
+                            activebackground=style.BACKGROUND, activeforeground=style.TEXT, command=lambda: Home.ImageSH(bildFrame))
         button2.grid(row=0, column=2, padx=5, pady=3)
         button3 = tk.Button(datenFrame, text='Hamburg', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=lambda: Home.ImagenHH)
+                            activeforeground=style.TEXT, command=lambda: Home.ImageHH(bildFrame))
         button3.grid(row=0, column=3, padx=5, pady=3)
 
 # Radiobuttons--Jahr Auswählen
@@ -74,19 +77,42 @@ class Home(tk.Frame):
 # Platzhalter für Graph
         graph = Image.open('Bilder/graph.png').resize((1100, 300))
         datenFrame.image = ImageTk.PhotoImage(graph)
-        label2 = tk.Label(datenFrame, image=datenFrame.image).place(x=150, y=75, width=1100, height=300)
-        label3 = tk.Label(datenFrame,text='Bescheibung1',bg='yellow').place(x=1275, y=100, width=175, height=25)
-        label4 = tk.Label(datenFrame,text='Bescheibung2',bg='blue').place(x=1275, y=125, width=175, height=25)
-        label5 = tk.Label(datenFrame,text='Bescheibung3',bg='orange').place(x=1275, y=150, width=175, height=25)
-        label6 = tk.Label(datenFrame,text='Bescheibung4',bg='green').place(x=1275, y=175, width=175, height=25)
-        label6 = tk.Label(datenFrame,text='Bescheibung5',bg='red').place(x=1275, y=200, width=175, height=25)
-        label6 = tk.Label(datenFrame,text='Bescheibung6',bg='cyan').place(x=1275, y=225, width=175, height=25)
+        #label2 = tk.Label(datenFrame, image=datenFrame.image).grid(row=3, column=1,rowspan=200, columnspan=200)
+        label3 = tk.Label(datenFrame,text='Bescheibung1',bg='yellow').grid(row=1, column=1,rowspan=5, padx=5, pady=3)
+
+
+        #label2 = tk.Label(datenFrame, image=datenFrame.image).place(x=150, y=75, width=1100, height=300)
+        #label3 = tk.Label(datenFrame,text='Bescheibung1',bg='yellow').place(x=1275, y=100, width=175, height=25)
+        #label4 = tk.Label(datenFrame,text='Bescheibung2',bg='blue').place(x=1275, y=125, width=175, height=25)
+        #label5 = tk.Label(datenFrame,text='Bescheibung3',bg='orange').place(x=1275, y=150, width=175, height=25)
+        #label6 = tk.Label(datenFrame,text='Bescheibung4',bg='green').place(x=1275, y=175, width=175, height=25)
+        #label6 = tk.Label(datenFrame,text='Bescheibung5',bg='red').place(x=1275, y=200, width=175, height=25)
+        #label6 = tk.Label(datenFrame,text='Bescheibung6',bg='cyan').place(x=1275, y=225, width=175, height=25)
 
 #Button_Szenarioerstellen
-        B1 = tk.Button(datenFrame, text='Szenario erstellen', command=self.move_to_Szenarioerstellen,
+        B1 = tk.Button(datenFrame, text='Szenario erstellen', command=self.move_to_Wind,
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         B1.grid(row=7, column=0, padx=5, pady=3)
         B2 = tk.Button(datenFrame, text='Szenario öffnen   ', command=self.move_to_Szenarioffnen,
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         B2.grid(row=8, column=0, padx=5, pady=3)
 
+    @classmethod
+    def ImageSH(cls, bildFrame):
+        path = 'Bilder/SH.png'
+        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        bildFrame.image = ImageTk.PhotoImage(img)
+        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+
+    @classmethod
+    def ImageHH_SH(cls, bildFrame):
+        path = 'Bilder/HH-SH.png'
+        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        bildFrame.image = ImageTk.PhotoImage(img)
+        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+
+    def ImageHH(bildFrame):
+        path = 'Bilder/HH.png'
+        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        bildFrame.image = ImageTk.PhotoImage(img)
+        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
