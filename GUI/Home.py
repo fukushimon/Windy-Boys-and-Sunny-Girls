@@ -1,9 +1,8 @@
 import tkinter as tk
-from PIL import ImageTk, Image
-
 from Szenarioerstellen import Szenarioerstellen
 from Szenarioffnen import Szenarioffnen
 from konstante import style
+from PIL import ImageTk, Image
 
 class Home(tk.Frame):
 
