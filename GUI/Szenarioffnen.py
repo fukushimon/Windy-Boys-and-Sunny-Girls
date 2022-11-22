@@ -5,7 +5,7 @@ from konstante import style
 
 
 class Szenarioffnen(tk.Frame):
-    def __init__(self,parent, controller):
+    def __init__(self, parent, controller):
         super().__init__(parent)
         self.config(bg='red')#bg=style.BACKGROUND)
         self.controller = controller
