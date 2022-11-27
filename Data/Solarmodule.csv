@@ -1,2 +1,5 @@
-SunPower;LG;MeyerBurger;JA
-0.227;0.212;0.212;0.207
+Hersteller;Wirkungsgrad;Kosten;Modulfläche;Nennleistung
+SunPower;0.227;505.75;1.895;425
+LG;0.212;305.53;1.842;390
+MeyerBurger;0.212;332.61;1.839;390
+JA;0.207;185.99;1.861;385
