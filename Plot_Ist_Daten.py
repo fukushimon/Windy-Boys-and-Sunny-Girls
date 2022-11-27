@@ -13,7 +13,7 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 class DataPlot:
     conn = sqlite3.connect('Data.db')
     c = conn.cursor()
-    
+
     def __init__(self):
         plt.style.use('seaborn')
         
@@ -125,7 +125,7 @@ class DataPlot:
     
     # Berechnet die Globalstrahlung im Jahr x
     def calc_total_radiation(self, year):
-        data = calc_mean(get_data('Globalstrahlung'))
+        data = self.calc_mean(self.get_data('Globalstrahlung'))
         
         # Zukünftige Globalstrahlung mit Faktor 1.022/Jahr
         data_total = data.apply(lambda row: row*pow(1.022, year-2022))
@@ -183,7 +183,7 @@ class DataPlot:
     # Plottet den Strommix
     def plot_energy_mix(self, data):
         cols = sns.color_palette("Spectral", 11)
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
         
         ax.stackplot(data.index, data['Biomasse'], data['Wasserkraft'], data['Wind_Offshore'], data['Wind_Onshore'], data['Photovoltaik'], data['Sonstige_Erneuerbare'], data['Speicher'], colors=cols, labels=list(data.columns)[1:])
         ax.plot(data.index, data['Last'], label='Last', alpha=0.5)

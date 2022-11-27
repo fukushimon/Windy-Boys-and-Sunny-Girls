@@ -1,9 +1,14 @@
 import tkinter as tk
-from PIL import ImageTk, Image
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
 
+from PIL import ImageTk, Image
 from Wind import Wind
 from Szenarioffnen import Szenarioffnen
 from konstante import style
+from Plot_Ist_Daten import DataPlot
 
 
 class Home(tk.Frame):
@@ -43,7 +48,7 @@ class Home(tk.Frame):
         datenFrame = tk.Frame(self)
         datenFrame.config(bg='blue')  # style.COMPONENT)
         datenFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False, padx=10, pady=8)
-
+        #datenFrame.grid(row=0, column=0)
         datenFrame.grid_rowconfigure(0, weight=0)
         datenFrame.grid_rowconfigure(1, weight=0)
         datenFrame.grid_rowconfigure(2, weight=0)
@@ -105,9 +110,15 @@ class Home(tk.Frame):
         B2.grid(row=4, column=0, padx=5, pady=3)
 
         # Platzhalter für Graph
-        graph = Image.open('Bilder/graph.png').resize((1100, 300))
-        datenFrame.image = ImageTk.PhotoImage(graph)
-        tk.Label(center_frame, image=datenFrame.image).grid(row=0, column=0)#, rowspan=200, columnspan=200)
+        #graph = Image.open('Bilder/graph.png').resize((1100, 300))
+        #datenFrame.image = ImageTk.PhotoImage(graph)
+        #tk.Label(center_frame, image=datenFrame.image).grid(row=0, column=0)#, rowspan=200, columnspan=200)
+        plot1 = DataPlot()
+        hh = plot1.get_data_renewables('Strommix_HH').loc['2021']
+        canvas = FigureCanvasTkAgg(plot1.plot_energy_mix(hh), center_frame)
+        #canvas.show()
+        canvas.get_tk_widget().grid(row=0, column=0)
+
 
         # Platzhalter beschreibung graph
         tk.Label(right_frame, text='Bescheibung1',
