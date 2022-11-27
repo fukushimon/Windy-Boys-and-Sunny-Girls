@@ -16,7 +16,7 @@ class Manager(tk.Tk):
         self.title('Windy boys and Sonny Girls')
         self.config(width="1500", height="800", bg='black')
         self.iconbitmap('Bilder/logo.ico')
-        self.minsize(width=1500, height=900)
+        self.minsize(width=1500, height=800)
         self.resizable(width=True, height=True)
 
 # container hinzufügen
