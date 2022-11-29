@@ -1,7 +1,7 @@
 import tkinter as tk
-import matplotlib 
-matplotlib.use('Agg', force=True)
+import matplotlib
 
+matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
@@ -41,15 +41,15 @@ class Home(tk.Frame):
 
         # Bilder
         path = 'Bilder/HH-SH.png'
-        img = Image.open(path).resize((950, 380))
+        img = Image.open(path).resize((950, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
 
         # Frame Unterehälfte
         datenFrame = tk.Frame(self)
-        datenFrame.config(bg='blue')  # style.COMPONENT)
+        datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False, padx=10, pady=8)
-        #datenFrame.grid(row=0, column=0)
+
         datenFrame.grid_rowconfigure(0, weight=0)
         datenFrame.grid_rowconfigure(1, weight=0)
         datenFrame.grid_rowconfigure(2, weight=0)
@@ -58,17 +58,15 @@ class Home(tk.Frame):
         datenFrame.grid_columnconfigure(2, weight=1)
 
         # Alle GridFrame erzeugen
-        top_frame = tk.Frame(datenFrame, bg='yellow', height=60, pady=3)
-        left_frame = tk.Frame(datenFrame, bg='pink', pady=3)
-        center_frame = tk.Frame(datenFrame, bg='white', pady=3)
-        right_frame = tk.Frame(datenFrame, bg='orange', pady=3)
-        bottom_frame = tk.Frame(datenFrame, bg='red', width=50, height=50, pady=3)
+        top_frame = tk.Frame(datenFrame, background=style.BACKGROUND, height=60, pady=3)
+        left_frame = tk.Frame(datenFrame, background=style.BACKGROUND, pady=3)
+        center_frame = tk.Frame(datenFrame, background=style.BACKGROUND, pady=3)
+        bottom_frame = tk.Frame(datenFrame, background=style.BACKGROUND, width=50, height=50, pady=3)
 
         # Alle gridFrame auf layout sortieren
         top_frame.grid(row=0, column=0, columnspan=3, sticky="ew")
         left_frame.grid(row=1, column=0, rowspan=1, sticky="nsew")
         center_frame.grid(row=1, column=1, rowspan=1, sticky="nsew")
-        right_frame.grid(row=1, column=2, rowspan=1, sticky="nsew")
         bottom_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
 
         # Ort Auswahl
@@ -89,18 +87,14 @@ class Home(tk.Frame):
 
         # Radiobuttons--Jahr Auswählen
         var = tk.IntVar()
-        radioButton1 = tk.Radiobutton(left_frame, text='2020', value=1, variable=var, **style.STYLE,
+        radioButton1 = tk.Radiobutton(left_frame, text='Alle Energietreger', value=1, variable=var, **style.STYLE,
                                       activebackground=style.BACKGROUND,
                                       activeforeground=style.TEXT)  # , command=Graph)
         radioButton1.grid(row=0, column=0)
-        radioButton2 = tk.Radiobutton(left_frame, text='2021', value=2, variable=var, **style.STYLE,
+        radioButton2 = tk.Radiobutton(left_frame, text='Nur Erneuerbare', value=2, variable=var, **style.STYLE,
                                       activebackground=style.BACKGROUND,
                                       activeforeground=style.TEXT)  # , command=Graph)
         radioButton2.grid(row=1, column=0)
-        radioButton3 = tk.Radiobutton(left_frame, text='2022', value=3, variable=var, **style.STYLE,
-                                      activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT)  # , command=Graph)
-        radioButton3.grid(row=2, column=0)
 
         # Button_Szenarioerstellen
         B1 = tk.Button(left_frame, text='Szenario erstellen', command=self.move_to_Wind,
@@ -110,36 +104,15 @@ class Home(tk.Frame):
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         B2.grid(row=4, column=0, padx=5, pady=3)
 
-        # Platzhalter für Graph
-        #graph = Image.open('Bilder/graph.png').resize((1100, 300))
-        #datenFrame.image = ImageTk.PhotoImage(graph)
-        #tk.Label(center_frame, image=datenFrame.image).grid(row=0, column=0)#, rowspan=200, columnspan=200)
-        plot1 = DataPlot('HH')
-        canvas = FigureCanvasTkAgg(plot1.plot_strommix_all(), center_frame)
-        # canvas = FigureCanvasTkAgg(plot1.plot_strommix('SH', 'All'), center_frame)
-        #canvas.show()
+        # Graph
+        plot1 = DataPlot()
+        hh = plot1.get_data_renewables('Strommix_HH').loc['2021']
+        canvas = FigureCanvasTkAgg(plot1.plot_energy_mix(hh), center_frame)
+
         canvas.get_tk_widget().grid(row=0, column=0)
-
-
-        # Platzhalter beschreibung graph
-        tk.Label(right_frame, text='Bescheibung1',
-                 **style.STYLE, activeforeground=style.TEXT, activebackground=style.BACKGROUND).grid(row=1,
-                                                                                                     column=0)
-        tk.Label(right_frame, text='Bescheibung2',
-                 **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT).grid(row=2,
-                                                                                                     column=0)
-        tk.Label(right_frame, text='Bescheibung3',
-                 **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT).grid(row=3,
-                                                                                                     column=0)
-        tk.Label(right_frame, text='Bescheibung4',
-                 **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT).grid(row=4,
-                                                                                                     column=0)
-        tk.Label(right_frame, text='Bescheibung5',
-                 **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT).grid(row=5,
-                                                                                                     column=0)
-        tk.Label(right_frame, text='Bescheibung6',
-                 **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT).grid(row=6,
-                                                                                                     column=0)
+        toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+        toolbar.update()
+        canvas.tkcanvas.pack()#grid(row=1, column=0)
 
     @classmethod
     def ImageSH(cls, bildFrame):
