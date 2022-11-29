@@ -3,7 +3,6 @@ try:
 except:
     import tkinter as tk
 
-
 class SampleApp(tk.Tk):
 
     def __init__(self):

@@ -4,6 +4,7 @@ import tkinter
 ########################################## Main window settings ##########################################
 root = Tk()
 
+
 # Window class
 class Window:
     def __init__(self, root, title, geometry, message):

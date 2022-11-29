@@ -132,3 +132,4 @@ class Home(tk.Frame):
         img = Image.open(path).resize((1100, 440))  # ((300, 150))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+
