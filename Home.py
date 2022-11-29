@@ -1,6 +1,7 @@
 import tkinter as tk
-import matplotlib
-matplotlib.use("TkAgg")
+import matplotlib 
+matplotlib.use('Agg', force=True)
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
@@ -113,9 +114,9 @@ class Home(tk.Frame):
         #graph = Image.open('Bilder/graph.png').resize((1100, 300))
         #datenFrame.image = ImageTk.PhotoImage(graph)
         #tk.Label(center_frame, image=datenFrame.image).grid(row=0, column=0)#, rowspan=200, columnspan=200)
-        plot1 = DataPlot()
-        hh = plot1.get_data_renewables('Strommix_HH').loc['2021']
-        canvas = FigureCanvasTkAgg(plot1.plot_energy_mix(hh), center_frame)
+        plot1 = DataPlot('HH')
+        canvas = FigureCanvasTkAgg(plot1.plot_strommix_all(), center_frame)
+        # canvas = FigureCanvasTkAgg(plot1.plot_strommix('SH', 'All'), center_frame)
         #canvas.show()
         canvas.get_tk_widget().grid(row=0, column=0)
 

@@ -26,7 +26,7 @@ class Szenario:
     def add_to_sql(self):
         conn = sqlite3.connect('Data.db')
         c = conn.cursor()
-        self.config.to_sql('Szenarien', conn, if_exists='replace')
+        self.config.to_sql('Szenarien', conn, if_exists='append')
         
         c.close()
         conn.close()
