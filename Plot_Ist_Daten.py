@@ -224,6 +224,7 @@ class DataPlot:
             return None
 
 
+
 #df = calc_mean(get_data('Strombilanz_HH'))
 # hh_bilanz = plot_balance(df['Last'], df['Erzeugung'])
 

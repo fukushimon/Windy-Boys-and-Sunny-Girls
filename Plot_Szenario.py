@@ -27,4 +27,3 @@ scene1 = Szenario('Szenario 1', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], [
 scene1.add_to_sql()
 
 
-

@@ -357,7 +357,7 @@ gesamt = plot_balance(df3['Last_Prognose'], df3['Erzeugung'])
 #     plt.show()
     
 
-
+    
 
 
 
