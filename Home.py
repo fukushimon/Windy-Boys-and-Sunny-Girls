@@ -41,7 +41,7 @@ class Home(tk.Frame):
 
         # Bilder
         path = 'Bilder/HH-SH.png'
-        img = Image.open(path).resize((950, 440))
+        img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
 
@@ -116,19 +116,19 @@ class Home(tk.Frame):
     @classmethod
     def ImageSH(cls, bildFrame):
         path = 'Bilder/SH.png'
-        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        img = Image.open(path).resize((1100, 440))  # ((300, 150))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
 
     @classmethod
     def ImageHH_SH(cls, bildFrame):
         path = 'Bilder/HH-SH.png'
-        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        img = Image.open(path).resize((1100, 440))  # ((300, 150))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
 
     def ImageHH(bildFrame):
         path = 'Bilder/HH.png'
-        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        img = Image.open(path).resize((1100, 440))  # ((300, 150))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
