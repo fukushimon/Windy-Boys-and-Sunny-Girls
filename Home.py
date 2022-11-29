@@ -1,5 +1,6 @@
 import tkinter as tk
 import matplotlib
+
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
@@ -111,7 +112,6 @@ class Home(tk.Frame):
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
         canvas.tkcanvas.pack()#grid(row=1, column=0)
-
 
     @classmethod
     def ImageSH(cls, bildFrame):
