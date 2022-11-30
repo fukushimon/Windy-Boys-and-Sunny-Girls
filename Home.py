@@ -112,7 +112,6 @@ class Home(tk.Frame):
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
         canvas._tkcanvas.pack()#grid(row=1, column=0)
-        #hola
 
 
     @classmethod
