@@ -109,9 +109,10 @@ class Home(tk.Frame):
         hh = plot1.get_data_renewables('Strommix_HH').loc['2021']
         canvas = FigureCanvasTkAgg(plot1.plot_energy_mix(hh), center_frame)
         canvas.get_tk_widget().grid(row=0, column=0)
+
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
-        canvas.tkcanvas.pack()#grid(row=1, column=0)
+        canvas._tkcanvas.pack()#grid(row=1, column=0)
 
     @classmethod
     def ImageSH(cls, bildFrame):
