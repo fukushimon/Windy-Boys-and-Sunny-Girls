@@ -111,7 +111,7 @@ class Home(tk.Frame):
         canvas.get_tk_widget().grid(row=0, column=0)
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
-        canvas.tkcanvas.pack()#grid(row=1, column=0)
+        canvas._tkcanvas.pack()#grid(row=1, column=0)
 
     @classmethod
     def ImageSH(cls, bildFrame):
