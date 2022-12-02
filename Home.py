@@ -29,10 +29,10 @@ class Home(tk.Frame):
 
     # Windgets in Home Herstellen
     def init_widgets(self):
-        img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png').resize((950, 380)))
-        img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png').resize((950, 380)))
-        img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png').resize((950, 380)))
-        img_list = [img1, img2, img3]
+        img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png'))#.resize((950, 380)))
+        img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png'))#.resize((950, 380)))
+        img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png'))#.resize((950, 380)))
+        #img_list = [img1, img2, img3]
 
         # Frame Oberehälfte
         bildFrame = tk.Frame(self)
@@ -41,7 +41,7 @@ class Home(tk.Frame):
 
         # Bilder
         path = 'Bilder/HH-SH.png'
-        img = Image.open(path).resize((950, 440))
+        img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
 
@@ -112,24 +112,25 @@ class Home(tk.Frame):
 
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
-        canvas._tkcanvas.pack()#grid(row=1, column=0)
+        canvas._tkcanvas.pack()
+
 
     @classmethod
     def ImageSH(cls, bildFrame):
         path = 'Bilder/SH.png'
-        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
 
     @classmethod
     def ImageHH_SH(cls, bildFrame):
         path = 'Bilder/HH-SH.png'
-        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
 
     def ImageHH(bildFrame):
         path = 'Bilder/HH.png'
-        img = Image.open(path).resize((950, 340))  # ((300, 150))
+        img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
