@@ -2,22 +2,10 @@ import pandas as pd
 import sqlite3
 from datetime import date
 
-from Plots import Strommix
+from Plots import Strommix, Wind, Globalstrahlung
 
 class Szenario:
     def __init__(self, name, year, last_szenario, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
-        self.config = pd.DataFrame({
-            'Datum': date.today(),
-            'Jahr': year,
-            'Last_Szenario': last_szenario,
-            'WEA_Modelle': ','.join(map(str, wea_models)),
-            'WEA_Anzahl': ','.join(map(str, wea_count)),
-            'WEA_Standorte': ','.join(map(str, wea_locations)),
-            'PV_Modelle': ','.join(map(str, pv_models)),
-            'PV_Fläche': ','.join(map(str, pv_area)),
-            'PV_Standorte': ','.join(map(str, pv_locations))
-            }, index=[name])
-        
         self.name = name
         self.year = year
         self.last_szenario = last_szenario
@@ -34,7 +22,20 @@ class Szenario:
     def add_to_sql(self):
         conn = sqlite3.connect('Data.db')
         c = conn.cursor()
-        self.config.to_sql('Szenarien', conn, if_exists='replace')
+        
+        params = pd.DataFrame({
+            'Datum': date.today(),
+            'Jahr': self.year,
+            'Last_Szenario': self.last_szenario,
+            'WEA_Modelle': ','.join(map(str, self.wea_models)),
+            'WEA_Anzahl': ','.join(map(str, self.wea_count)),
+            'WEA_Standorte': ','.join(map(str, self.wea_locations)),
+            'PV_Modelle': ','.join(map(str, self.pv_models)),
+            'PV_Flaeche': ','.join(map(str, self.pv_area)),
+            'PV_Standorte': ','.join(map(str, self.pv_locations))
+        }, index=[self.name])
+        
+        params.to_sql('Szenarien', conn, if_exists='replace')
         
         c.close()
         conn.close()
@@ -43,8 +44,31 @@ class Szenario:
         print(self.config)
     
     def calc_strommix(self):
-        new_strommix = Strommix(self.year)
+        new_strommix = Strommix(3, self.year)
+        v_wind = Wind('mean')
+        rad_pv = Globalstrahlung(self.year, 'mean')
         
-scene1 = Szenario('Test1', 2030, ['Gamesa', 'Enercon'], [200, 300], ['SPO', 'Hamburg'], ['SunPower'], [100], ['SPO'])
-            
+        # Wind
+        wind = pd.DataFrame({
+            'Modell': self.wea_models,
+            'Anzahl': self.wea_count,
+            'Standort': self.wea_locations
+            })
+        
+        # PV
+        pv = pd.DataFrame({
+            'Modell': self.pv_models,
+            'Modulflaeche': self.pv_area,
+            'Standort': self.pv_locations
+            })
+        
+        # Wind Erzeugung
+        for index, row in wind.iterrows():
+            # Windgeschwindigkeiten für den jeweiligen Standort
+            list_wind = v_wind.data[('{}').format(row['Standort'])]
+            print(list_wind)
+        
+        
+scene1 = Szenario('Test1', 2030, 3, ['Gamesa', 'Enercon'], [200, 300], ['SPO', 'Hamburg'], ['SunPower'], [100], ['SPO'])
+wind = scene1.calc_strommix()
         

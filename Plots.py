@@ -418,11 +418,11 @@ class Wind(Plot):
         
         return fig
 
-plot1 = Strommix(3, 2030)
-plot2 = Strommix(1, 2030)
-# plot1.plot_strommix_ee('SH')
-plot1.plot_bilanz_ee('Both')
-plot2.plot_bilanz_ee('Both')
+# plot1 = Strommix(3, 2030)
+# plot2 = Strommix(1, 2030)
+# # plot1.plot_strommix_ee('SH')
+# plot1.plot_bilanz_ee('Both')
+# plot2.plot_bilanz_ee('Both')
 # plot1.plot_bilanz('HH')
 
 # hh_bilanz = plot1.calc_bilanz('HH')
