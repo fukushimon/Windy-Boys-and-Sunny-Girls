@@ -1,10 +1,9 @@
-import matplotlib
-#matplotlib.use('Qt5Agg')
+# import matplotlib
+# matplotlib.use('Qt5Agg')
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import sqlite3
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as tkr 
 import datetime
@@ -19,7 +18,6 @@ from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
 class Plot:
-    
     def __init__(self, tablename):
         pass
     
@@ -37,7 +35,6 @@ class Plot:
         return s
 
 class Strommix(Plot):
-    
     def __init__(self):
         self.connect_to_sql()
         
@@ -57,7 +54,6 @@ class Strommix(Plot):
         self.disconnect_from_sql()
     
     def plot_strommix(self, location):
-        
         if location == 'HH':
             data_to_plot = self.hh_data.loc['2021']
         elif location == 'SH':
@@ -91,7 +87,6 @@ class Strommix(Plot):
         return fig
     
     def plot_strommix_ee(self, location):
-        
         if location == 'HH':
             data_to_plot = self.hh_data.loc['2021']
         elif location == 'SH':
@@ -125,7 +120,6 @@ class Strommix(Plot):
         return fig    
     
     def calc_erzeugung_ee(self, location):
-        
         list_of_ee = ['Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare', 'Speicher']
         
         if location == 'HH':
@@ -138,7 +132,6 @@ class Strommix(Plot):
         return erzeugung
     
     def calc_bilanz(self, location):
-        
         if location == 'HH':
             bilanz = self.hh_data['Erzeugung'].loc['2021'] - self.hh_data['Last'].loc['2021'] 
         elif location == 'SH':
@@ -152,7 +145,6 @@ class Strommix(Plot):
         return bilanz
     
     def calc_bilanz_ee(self, location):
-        
         if location == 'HH':
             bilanz = self.calc_erzeugung_ee(location).loc['2021'] - self.hh_data['Last'].loc['2021'] 
         elif location == 'SH':
@@ -166,7 +158,6 @@ class Strommix(Plot):
         return bilanz
     
     def calc_pct_positive_bilanz(self, bilanz):
-        
         filt = filt = bilanz['Bilanz'] >= 0 
         positive_bilanz = bilanz[filt]
         percentage = (positive_bilanz.size / len(bilanz.index)) * 100
@@ -174,7 +165,6 @@ class Strommix(Plot):
         return percentage
     
     def calc_dunkelflaute(self, bilanz):
-        
         # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
         bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
         
@@ -199,14 +189,12 @@ class Strommix(Plot):
         return t_dunkelflaute
     
     def calc_max_dunkelflaute(self, bilanz):
-        
         dunkelflaute = self.calc_dunkelflaute(bilanz)
         max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
         
         return max_dunkelflaute
         
     def plot_bilanz(self, location):
-        
         data_to_plot = self.calc_bilanz(location)
         
         # Erstellen der x- und y-Arrays zum plotten
@@ -239,7 +227,6 @@ class Strommix(Plot):
         return fig    
     
     def plot_bilanz_ee(self, location):
-        
         data_to_plot = self.calc_bilanz_ee(location)
         
         # Erstellen der x- und y-Arrays zum plotten
@@ -272,8 +259,7 @@ class Strommix(Plot):
         return fig    
 
 class Globalstrahlung(Plot):
-    
-    def __init__(self):
+    def __init__(self, year, function):
         self.connect_to_sql()
         
         raw_data = pd.read_sql_query('SELECT * FROM Globalstrahlung', self.conn, index_col='Datum')
@@ -281,42 +267,135 @@ class Globalstrahlung(Plot):
         raw_data.drop('index', axis=1, inplace=True) # Löscht die 'index'-Spalte
     
         # 10min-Daten in 15min-Daten umwandeln
-        self.data = raw_data.resample('15min').mean()
+        raw_data = raw_data.resample('15min').mean()
+        
+        self.data = self.norm_data(raw_data, function)
+        
+        today = datetime.now()
+        self.data = self.data.apply(lambda row: row*pow(1.022, year - int(today.strftime('%Y'))))
         
         self.disconnect_from_sql()
         
+    # Funktioniert noch nicht!
     def plot_globalstrahlung(self):
+        #data_to_plot = self.data
+        
+        #plt.style.use('seaborn')
+        #cols = sns.color_palette("Spectral", 4)
+        
+        #fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        
+        #plt.plot_date(self.data.index, self.data['SPO'])
+        
+        #ax.legend(loc='upper left', frameon=1)
+        
+        # hfmt = mdates.DateFormatter('%b')
+        # ax.xaxis.set_major_formatter(hfmt)
+        # ax.xaxis.set_major_locator(mdates.MonthLocator())
+        
+        #ax.set_xlabel('')
+        
+        #ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
+        
+        #plt.show()
+        
+        #return fig
+        pass
+    
+    # Rechnet Durchschnitts-/ Max-/ Min-Wert aus den 3 Jahren aus
+    def norm_data(self, data, function):
+        data_cpy = data.copy()
+        
+        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020
+        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2020-%m-%d %H:%M")) 
+        
+        # DataFrame gruppieren nach 'Datum_Normiert'
+        year_grp = data_cpy.groupby(['Datum_Normiert'])
+        
+        # Durchschnitt berechnen
+        if function == 'mean':
+            new_data = year_grp.mean()
+        elif function == 'max':
+            new_data = year_grp.max()
+        elif function == 'min':
+            new_data == year_grp.min()
+        
+        # 'Datum_Normiert'-Spalte umbennen:
+        new_data.index.rename('Datum', inplace=True)
+        
+        return new_data
+        
+class Wind(Plot):
+    def __init__(self, function):
+        self.connect_to_sql()
+    
+        raw_data = pd.read_sql_query('SELECT * FROM Windgeschwindigkeiten', self.conn, index_col='Datum')
+        raw_data.index = pd.to_datetime(raw_data.index, format='%Y%m%d%H%M')
+        raw_data.drop('index', axis=1, inplace=True) # Löscht die 'index'-Spalte
+
+        # 10min-Daten in 15min-Daten umwandeln
+        raw_data = raw_data.resample('15min').mean()
+        
+        self.data = self.norm_data(raw_data, function)
+        
+        self.disconnect_from_sql()
+    
+    # Rechnet Durchschnitts-/ Max-/ Min-Wert aus den 3 Jahren aus
+    def norm_data(self, data, function):
+        data_cpy = data.copy()
+        
+        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020
+        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2020-%m-%d %H:%M")) 
+        
+        # DataFrame gruppieren nach 'Datum_Normiert'
+        year_grp = data_cpy.groupby(['Datum_Normiert'])
+        
+        # Durchschnitt berechnen
+        if function == 'mean':
+            new_data = year_grp.mean()
+        elif function == 'max':
+            new_data = year_grp.max()
+        elif function == 'min':
+            new_data = year_grp.min()
+        
+        # 'Datum_Normiert'-Spalte umbennen:
+        new_data.index.rename('Datum', inplace=True)
+        
+        return new_data
+    
+    # Funktioniert noch nicht!
+    def plot_wind(self):
         pass
         
 
-plot1 = Strommix()
-plot1.plot_strommix('SH')
-plot1.plot_bilanz_ee('Both')
-plot1.plot_bilanz('HH')
+# plot1 = Strommix()
+# plot1.plot_strommix('SH')
+# plot1.plot_bilanz_ee('Both')
+# plot1.plot_bilanz('HH')
 
-hh_bilanz = plot1.calc_bilanz('HH')
-hh_bilanz_ee = plot1.calc_bilanz_ee('HH')
+# hh_bilanz = plot1.calc_bilanz('HH')
+# hh_bilanz_ee = plot1.calc_bilanz_ee('HH')
 
-sh_bilanz = plot1.calc_bilanz('SH')
-sh_bilanz_ee = plot1.calc_bilanz_ee('SH')
+# sh_bilanz = plot1.calc_bilanz('SH')
+# sh_bilanz_ee = plot1.calc_bilanz_ee('SH')
 
-both_bilanz = plot1.calc_bilanz('Both')
-both_bilanz_ee = plot1.calc_bilanz_ee('Both')
+# both_bilanz = plot1.calc_bilanz('Both')
+# both_bilanz_ee = plot1.calc_bilanz_ee('Both')
 
-print('HH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(hh_bilanz).astype('str'))
-print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(hh_bilanz).loc['Dauer'].astype('str'))
-print('HH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(hh_bilanz_ee).astype('str'))
-print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(hh_bilanz_ee).loc['Dauer'].astype('str'))
+# print('HH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(hh_bilanz).astype('str'))
+# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(hh_bilanz).loc['Dauer'].astype('str'))
+# print('HH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(hh_bilanz_ee).astype('str'))
+# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(hh_bilanz_ee).loc['Dauer'].astype('str'))
 
-print('SH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(sh_bilanz).astype('str'))
-print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(sh_bilanz).loc['Dauer'].astype('str'))
-print('SH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(sh_bilanz_ee).astype('str'))
-print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(sh_bilanz_ee).loc['Dauer'].astype('str'))
+# print('SH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(sh_bilanz).astype('str'))
+# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(sh_bilanz).loc['Dauer'].astype('str'))
+# print('SH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(sh_bilanz_ee).astype('str'))
+# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(sh_bilanz_ee).loc['Dauer'].astype('str'))
 
-print('HH + SH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(both_bilanz).astype('str'))
-print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(both_bilanz).loc['Dauer'].astype('str'))
-print('HH + SH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(both_bilanz_ee).astype('str'))
-print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(both_bilanz_ee).loc['Dauer'].astype('str'))
+# print('HH + SH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(both_bilanz).astype('str'))
+# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(both_bilanz).loc['Dauer'].astype('str'))
+# print('HH + SH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(both_bilanz_ee).astype('str'))
+# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(both_bilanz_ee).loc['Dauer'].astype('str'))
 
 
 class DataPlot:
@@ -386,7 +465,7 @@ class DataPlot:
     def calc_mean(self, data): 
         data_cpy = data.copy()
         
-        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020
+        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020 (da 2020 = Schaltjahr)
         data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2020-%m-%d %H:%M")) 
         
         # DataFrame gruppieren nach 'Datum_Normiert'
