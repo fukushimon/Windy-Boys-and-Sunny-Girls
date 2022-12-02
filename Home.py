@@ -27,8 +27,12 @@ class Home(tk.Frame):
     def move_to_Szenarioffnen(self):
         self.controller.show_frame(Szenarioffnen)
 
+
     # Windgets in Home Herstellen
     def init_widgets(self):
+        def my_Graph():
+            labelcontroll.config(text=radioButton1.get())
+
         img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png'))#.resize((950, 380)))
         img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png'))#.resize((950, 380)))
         img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png'))#.resize((950, 380)))
@@ -60,7 +64,7 @@ class Home(tk.Frame):
         # Alle GridFrame erzeugen
         top_frame = tk.Frame(datenFrame, background=style.BACKGROUND, height=60, pady=3)
         left_frame = tk.Frame(datenFrame, background=style.BACKGROUND, pady=3)
-        center_frame = tk.Frame(datenFrame, background=style.BACKGROUND, pady=3)
+        center_frame = tk.Frame(datenFrame, background='yellow', pady=3)
         bottom_frame = tk.Frame(datenFrame, background=style.BACKGROUND, width=50, height=50, pady=3)
 
         # Alle gridFrame auf layout sortieren
@@ -87,13 +91,14 @@ class Home(tk.Frame):
 
         # Radiobuttons--Jahr Auswählen
         var = tk.IntVar()
-        radioButton1 = tk.Radiobutton(left_frame, text='Alle Energietreger', value=1, variable=var, **style.STYLE,
+        var.set(1)
+        radioButton1 = tk.Radiobutton(left_frame, text='Strommix', value=1, variable=var, **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT)  # , command=Graph)
+                                      activeforeground=style.TEXT)#, command=lambda: Home.init_widgets(center_frame).my_graph())
         radioButton1.grid(row=0, column=0)
-        radioButton2 = tk.Radiobutton(left_frame, text='Nur Erneuerbare', value=2, variable=var, **style.STYLE,
+        radioButton2 = tk.Radiobutton(left_frame, text='Strombilanz', value=2, variable=var, **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT)  # , command=Graph)
+                                      activeforeground=style.TEXT)#, command=lambda: Home.init_widgets(center_frame).my_graph())
         radioButton2.grid(row=1, column=0)
 
         # Button_Szenarioerstellen
@@ -103,15 +108,18 @@ class Home(tk.Frame):
         B2 = tk.Button(left_frame, text='Szenario öffnen   ', command=self.move_to_Szenarioffnen,
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         B2.grid(row=4, column=0, padx=5, pady=3)
+        labelcontroll = tk.Label(center_frame, text='AKTUELLE GRAPH', **style.STYLE,
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        labelcontroll.grid(row=0, column=0, padx=5, pady=3)
 
         # Graph
         plot1 = DataPlot()
         hh = plot1.get_data_renewables('Strommix_HH').loc['2021']
         canvas = FigureCanvasTkAgg(plot1.plot_energy_mix(hh), center_frame)
-        canvas.get_tk_widget().grid(row=0, column=0)
+        canvas.get_tk_widget().grid(row=1, column=0)
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
-        canvas._tkcanvas.pack()
+        canvas._tkcanvas.grid(row=1, column=0)#pack()
 
     @classmethod
     def ImageSH(cls, bildFrame):
@@ -132,3 +140,5 @@ class Home(tk.Frame):
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+
+
