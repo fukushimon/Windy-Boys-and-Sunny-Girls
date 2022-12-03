@@ -3,18 +3,26 @@ import sqlite3
 from datetime import date
 
 from Plots import Strommix, Wind, Globalstrahlung
+from Anlagen import WEA, PVA
 
 class Szenario:
+    wea_models = []
+    pv_models = []
+    
     def __init__(self, name, year, last_szenario, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
         self.name = name
         self.year = year
         self.last_szenario = last_szenario
-        self.wea_models = wea_models
         self.wea_count = wea_count
         self.wea_locations = wea_locations
-        self.pv_models = pv_models
         self.pv_area = pv_area
         self.pv_locations = pv_locations
+        
+        for model in wea_models:
+            self.wea_models.append(WEA(model))
+        
+        for model in pv_models:
+            self.pv_models.append(PVA(model))
         
         # Add to database
         self.add_to_sql()
@@ -63,12 +71,36 @@ class Szenario:
             })
         
         # Wind Erzeugung
+        energy_wind = v_wind.data
+        
         for index, row in wind.iterrows():
             # Windgeschwindigkeiten für den jeweiligen Standort
-            list_wind = v_wind.data[('{}').format(row['Standort'])]
-            print(list_wind)
+            list_wind = (v_wind.data[('{}').format(row['Standort'])]).to_frame()
+            
+            # Match Windgeschwindigkeiten from list_wind to Power from WEA
+            merged_df = pd.merge(list_wind, row['Modell'].pwr_output, how='left', left_on = row['Standort'], right_on = 'Windgeschwindigkeit').set_axis(list_wind.index)  
+            
+            # Multiply by nnumber of WEAs/4000 (in MWh)
+            merged_df[row['Modell'].manufacturer] = merged_df[row['Modell'].manufacturer].multiply(row['Anzahl']/4000)
+            
+            # Remove unneeded columns
+            merged_df.drop(merged_df.columns[[0, 1]], axis=1, inplace=True)
+            
+            # Concat to energy_wind dataframe
+            energy_wind = pd.concat([energy_wind, merged_df], axis=1)
+        
+        energy_wind.drop(energy_wind.columns[[0, 1, 2, 3, 4, 5, 6]], axis=1, inplace=True)
+        
+        # Solar Erzeugung
+        energy_pv = rad_pv
+        
+        for index, row in pv.iterrows():
+             # Globalstrahlung für den jeweiligen Standort
+            list_rad = (rad_pv.data[('{}').format(row['Standort'])]).to_frame()
+        
+        return list_rad
         
         
-scene1 = Szenario('Test1', 2030, 3, ['Gamesa', 'Enercon'], [200, 300], ['SPO', 'Hamburg'], ['SunPower'], [100], ['SPO'])
+scene1 = Szenario('Test1', 2030, 3, ['Nordex', 'Enercon'], [200, 300], ['SPO', 'Hamburg'], ['SunPower'], [100], ['SPO'])
 wind = scene1.calc_strommix()
         

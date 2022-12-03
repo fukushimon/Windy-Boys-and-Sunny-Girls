@@ -10,8 +10,8 @@ class WEA:
         # Kosten der WEA???
         self.cost = 0
         
-        self.c.execute(('SELECT Windgeschwindigkeit, {} FROM WEAs').format(manufacturer))
-        self.pwr_output = (self.c.fetchall())
+        # Kennlinie der WEA 
+        self.pwr_output = pd.read_sql_query(('SELECT Windgeschwindigkeit, {} FROM WEAs').format(manufacturer), self.conn)
         
         self.disconnect_from_sql()
         
