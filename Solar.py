@@ -11,12 +11,15 @@ class Solar(tk.Frame):
         super().__init__(parent)
         self.config(bg='white')#bg=style.BACKGROUND)
         self.controller = controller
-        self.button_menu()
-        self.go_home()
+        Wind.Wind.button_menu(self)
+        #self.button_menu()
+        Wind.Wind.go_home(self)
+        #self.go_home()
         label1 = tk.Label(self, text='Scenario Solar', **style.FONTTITEL,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         self.Solar_frame()
+        #Wind.Wind.leistung(self)
         self.leistung_Solar()
 
 # Frame Button
