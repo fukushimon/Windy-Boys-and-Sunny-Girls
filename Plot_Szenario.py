@@ -28,7 +28,7 @@ from Szenario import Szenario
 # firstPlot.plot_energy_mix(sh)
 # firstPlot.plot_energy_mix(total)
     
-scene1 = Szenario('Szenario 1', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], ['A', 'C', 'D'], ['SunPower', 'LG', 'JA'], [200, 500, 50], ['B', 'C', 'A'])
-scene1.add_to_sql()
+# scene1 = Szenario('Szenario 1', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], ['A', 'C', 'D'], ['SunPower', 'LG', 'JA'], [200, 500, 50], ['B', 'C', 'A'])
+# scene1.add_to_sql()
 
 

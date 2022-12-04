@@ -1,3 +1,5 @@
+import matplotlib
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import sqlite3
@@ -86,7 +88,7 @@ class Strommix(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
         
         return fig
     
@@ -119,7 +121,7 @@ class Strommix(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
         
         return fig    
     
@@ -209,7 +211,7 @@ class Strommix(Plot):
         points = np.array([x, y]).T.reshape(-1, 1, 2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
     
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1, 1, figsize=(10, 3))
         
         plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
@@ -253,7 +255,7 @@ class Strommix(Plot):
         points = np.array([x, y]).T.reshape(-1, 1, 2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
     
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
         
         plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
@@ -335,7 +337,7 @@ class Globalstrahlung(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
         
         return fig
     
@@ -428,16 +430,16 @@ class Wind(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
         
         return fig
 
-plot1 = Strommix(1, 2030)
+# plot1 = Strommix(1, 2030)
 # plot2 = Strommix(3, 2030)
 # plot1.plot_strommix_ee('HH')
-plot1.plot_bilanz_ee('Both')
-plot1_bilanz = plot1.calc_bilanz_ee('Both')
-print(plot1.calc_pct_positive_bilanz(plot1_bilanz))
+# plot1.plot_bilanz_ee('Both')
+# plot1_bilanz = plot1.calc_bilanz_ee('Both')
+# print(plot1.calc_pct_positive_bilanz(plot1_bilanz))
 # plot2.plot_bilanz_ee('Both')
 # plot1.plot_bilanz('HH')
 

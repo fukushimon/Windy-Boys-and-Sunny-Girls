@@ -1,7 +1,5 @@
 import tkinter as tk
-import matplotlib
 
-matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
@@ -9,7 +7,8 @@ from PIL import ImageTk, Image
 from Wind import Wind
 from Szenarioffnen import Szenarioffnen
 from konstante import style
-from Plot_Ist_Daten import DataPlot
+
+from Plots import Strommix
 
 class Home(tk.Frame):
 
@@ -115,13 +114,11 @@ class Home(tk.Frame):
         labelcontroll.config(text=var.get())
 
         # Graph
-        plot1 = DataPlot()
-        hh = plot1.get_data_renewables('Strommix_HH').loc['2021']
-        canvas = FigureCanvasTkAgg(plot1.plot_energy_mix(hh), center_frame)
+        plot1 = Strommix(1, 2022)
+        canvas = FigureCanvasTkAgg(plot1.plot_bilanz('SH'), center_frame)
         canvas.get_tk_widget().grid(row=1, column=0)
-        toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
-        toolbar.update()
-        canvas._tkcanvas.grid(row=1, column=0)
+        # toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+        # toolbar.update()
 
 
 
