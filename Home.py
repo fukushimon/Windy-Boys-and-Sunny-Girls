@@ -11,7 +11,6 @@ from Szenarioffnen import Szenarioffnen
 from konstante import style
 from Plot_Ist_Daten import DataPlot
 
-
 class Home(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -20,22 +19,17 @@ class Home(tk.Frame):
         self.controller = controller
 
         self.init_widgets()
-
     def move_to_Wind(self):
         self.controller.show_frame(Wind)
 
     def move_to_Szenarioffnen(self):
         self.controller.show_frame(Szenarioffnen)
 
-
     # Windgets in Home Herstellen
     def init_widgets(self):
-        def my_Graph():
-            labelcontroll.config(text=radioButton1.get())
-
-        img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png'))#.resize((950, 380)))
-        img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png'))#.resize((950, 380)))
-        img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png'))#.resize((950, 380)))
+        #img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png'))#.resize((950, 380)))
+        #img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png'))#.resize((950, 380)))
+        #img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png'))#.resize((950, 380)))
         #img_list = [img1, img2, img3]
 
         # Frame Oberehälfte
@@ -90,15 +84,15 @@ class Home(tk.Frame):
         button3.grid(row=0, column=3, padx=5, pady=3)
 
         # Radiobuttons--Jahr Auswählen
-        var = tk.IntVar()
-        var.set(1)
-        radioButton1 = tk.Radiobutton(left_frame, text='Strommix', value=1, variable=var, **style.STYLE,
+        var = tk.StringVar()
+        var.set('Strommix')
+        radioButton1 = tk.Radiobutton(left_frame, text='Strommix', variable=var, value='Strommix', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT)#, command=lambda: Home.init_widgets(center_frame).my_graph())
+                                      activeforeground=style.TEXT, command=lambda: Home.my_Graph(labelcontroll, var))
         radioButton1.grid(row=0, column=0)
-        radioButton2 = tk.Radiobutton(left_frame, text='Strombilanz', value=2, variable=var, **style.STYLE,
+        radioButton2 = tk.Radiobutton(left_frame, text='Strombilanz', variable=var, value='Strombilanz', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT)#, command=lambda: Home.init_widgets(center_frame).my_graph())
+                                      activeforeground=style.TEXT, command=lambda: Home.my_Graph(labelcontroll, var))
         radioButton2.grid(row=1, column=0)
 
         # Button_Szenarioerstellen
@@ -108,9 +102,11 @@ class Home(tk.Frame):
         B2 = tk.Button(left_frame, text='Szenario öffnen   ', command=self.move_to_Szenarioffnen,
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         B2.grid(row=4, column=0, padx=5, pady=3)
-        labelcontroll = tk.Label(center_frame, text='AKTUELLE GRAPH', **style.STYLE,
+
+        labelcontroll = tk.Label(center_frame, **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         labelcontroll.grid(row=0, column=0, padx=5, pady=3)
+        labelcontroll.config(text=var.get())
 
         # Graph
         plot1 = DataPlot()
@@ -119,14 +115,7 @@ class Home(tk.Frame):
         canvas.get_tk_widget().grid(row=1, column=0)
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
-        canvas._tkcanvas.grid(row=1, column=0)#pack()
-
-    @classmethod
-    def ImageSH(cls, bildFrame):
-        path = 'Bilder/SH.png'
-        img = Image.open(path).resize((1100, 440))
-        bildFrame.image = ImageTk.PhotoImage(img)
-        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+        canvas._tkcanvas.grid(row=1, column=0)
 
     @classmethod
     def ImageHH_SH(cls, bildFrame):
@@ -134,11 +123,23 @@ class Home(tk.Frame):
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-
-    def ImageHH(bildFrame):
+        imageVar = tk.IntVar()
+        imageVar.set(1)
+    @classmethod
+    def ImageSH(cls, bildFrame):
+        path = 'Bilder/SH.png'
+        img = Image.open(path).resize((1100, 440))
+        bildFrame.image = ImageTk.PhotoImage(img)
+        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+        imageVar = tk.IntVar()
+        imageVar.set(2)
+    @classmethod
+    def ImageHH(cls, bildFrame, imageVar):
         path = 'Bilder/HH.png'
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-
-
+        imageVar.set(3)
+    @classmethod
+    def my_Graph(cls, labelcontroll, var):
+        labelcontroll.config(text=var.get())
