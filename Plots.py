@@ -46,11 +46,11 @@ class Strommix(Plot):
         
         today = datetime.now()
         if scene == 2:
-            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.03, year - int(today.strftime('%Y')))
-            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.03, year - int(today.strftime('%Y')))
+            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.03, self.year - int(today.strftime('%Y')))
+            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.03, self.year - int(today.strftime('%Y')))
         elif scene == 3:
-            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.06, year - int(today.strftime('%Y')))
-            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.06, year - int(today.strftime('%Y')))
+            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.06, self.year - int(today.strftime('%Y')))
+            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.06, self.year - int(today.strftime('%Y')))
             
         # Sum of both
         self.both_data = self.hh_data + self.sh_data
@@ -229,12 +229,14 @@ class Strommix(Plot):
         
         today = datetime.now()
         
-        if self.scene == 1:
-            ax.set_ylim(-1500, 1500)
-        elif self.scene == 2:
-            ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
-        elif self.scene == 3:
-            ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
+        ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        
+        # if self.scene == 1:
+        #     ax.set_ylim(-1500, 1500)
+        # elif self.scene == 2:
+        #     ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
+        # elif self.scene == 3:
+        #     ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
             
         #plt.show()
         
@@ -271,12 +273,14 @@ class Strommix(Plot):
         
         today = datetime.now()
         
-        if self.scene == 1:
-            ax.set_ylim(-1500, 1500)
-        elif self.scene == 2:
-            ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
-        elif self.scene == 3:
-            ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
+        ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        
+        # if self.scene == 1:
+        #     ax.set_ylim(-1500, 1500)
+        # elif self.scene == 2:
+        #     ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
+        # elif self.scene == 3:
+        #     ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
         
         #plt.show()
         
@@ -339,7 +343,7 @@ class Globalstrahlung(Plot):
     def norm_data(self, data, function):
         data_cpy = data.copy()
         
-        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020
+        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2021
         data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M")) 
         
         # DataFrame gruppieren nach 'Datum_Normiert'
@@ -386,7 +390,7 @@ class Wind(Plot):
     def norm_data(self, data, function):
         data_cpy = data.copy()
         
-        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020
+        # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2021
         data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M")) 
         
         # DataFrame gruppieren nach 'Datum_Normiert'
@@ -428,10 +432,12 @@ class Wind(Plot):
         
         return fig
 
-plot1 = Strommix(3, 2030)
-plot2 = Strommix(1, 2030)
+plot1 = Strommix(1, 2030)
+# plot2 = Strommix(3, 2030)
 # plot1.plot_strommix_ee('HH')
-plot1.plot_bilanz_ee('SH')
+plot1.plot_bilanz_ee('Both')
+plot1_bilanz = plot1.calc_bilanz_ee('Both')
+print(plot1.calc_pct_positive_bilanz(plot1_bilanz))
 # plot2.plot_bilanz_ee('Both')
 # plot1.plot_bilanz('HH')
 

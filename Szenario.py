@@ -140,6 +140,8 @@ solar = {
     'Standorte': ['Schleswig', 'SPO', 'Leck']
     }
 
-scene1 = Szenario('Test1', 2030, 3, wind['Anlagen'], wind['Anzahl'], wind['Standorte'], solar['Anlagen'], solar['Flaeche'], solar['Standorte'])
+scene1 = Szenario('Test1', 2100, 1, wind['Anlagen'], wind['Anzahl'], wind['Standorte'], solar['Anlagen'], solar['Flaeche'], solar['Standorte'])
 scene1_strommix = scene1.calc_strommix()
-scene1_strommix.plot_bilanz_ee('SH')
+scene1_strommix.plot_bilanz_ee('Both')
+bilanz = scene1_strommix.calc_bilanz_ee('Both')
+print(scene1_strommix.calc_pct_positive_bilanz(bilanz))
