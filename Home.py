@@ -17,7 +17,6 @@ class Home(tk.Frame):
         super().__init__(parent)
         self.config(background=style.BACKGROUND)
         self.controller = controller
-
         self.init_widgets()
     def move_to_Wind(self):
         self.controller.show_frame(Wind)
@@ -42,6 +41,8 @@ class Home(tk.Frame):
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+        imageVar = tk.StringVar()
+        imageVar.set('HH-SH')
 
         # Frame Unterehälfte
         datenFrame = tk.Frame(self)
@@ -67,32 +68,36 @@ class Home(tk.Frame):
         center_frame.grid(row=1, column=1, rowspan=1, sticky="nsew")
         bottom_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
 
-        # Ort Auswahl
+        #TOP-FRAME Ort Auswahl
         label1 = tk.Label(top_frame, text='Aktuelle Daten', **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.grid(row=0, column=0, padx=5, pady=3)
+        imglabel = tk.Label(top_frame, text=imageVar.get(), **style.STYLE,
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        imglabel.grid(row=0, column=4, padx=5, pady=3)
+
         button1 = tk.Button(top_frame, text='Hamburg und Schleswig-Holstein', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                            command=lambda: Home.ImageHH_SH(bildFrame))
+                            command=lambda: Home.ImageHH_SH(bildFrame, imageVar, imglabel))
         button1.grid(row=0, column=1, padx=5, pady=3)
         button2 = tk.Button(top_frame, text='Schleswig-Holstein', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                            command=lambda: Home.ImageSH(bildFrame))
+                            command=lambda: Home.ImageSH(bildFrame, imageVar, imglabel))
         button2.grid(row=0, column=2, padx=5, pady=3)
         button3 = tk.Button(top_frame, text='Hamburg', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=lambda: Home.ImageHH(bildFrame))
+                            activeforeground=style.TEXT, command=lambda: Home.ImageHH(bildFrame, imageVar, imglabel))
         button3.grid(row=0, column=3, padx=5, pady=3)
 
-        # Radiobuttons--Jahr Auswählen
+        # LEFT-FRAME Radiobuttons
         var = tk.StringVar()
         var.set('Strommix')
         radioButton1 = tk.Radiobutton(left_frame, text='Strommix', variable=var, value='Strommix', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT, command=lambda: Home.my_Graph(labelcontroll, var))
+                                      activeforeground=style.TEXT, command=lambda: Home.graph_wahl(labelcontroll, var))
         radioButton1.grid(row=0, column=0)
         radioButton2 = tk.Radiobutton(left_frame, text='Strombilanz', variable=var, value='Strombilanz', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT, command=lambda: Home.my_Graph(labelcontroll, var))
+                                      activeforeground=style.TEXT, command=lambda: Home.graph_wahl(labelcontroll, var))
         radioButton2.grid(row=1, column=0)
 
         # Button_Szenarioerstellen
@@ -103,6 +108,7 @@ class Home(tk.Frame):
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         B2.grid(row=4, column=0, padx=5, pady=3)
 
+        # CENTER-FRAME label und Graph
         labelcontroll = tk.Label(center_frame, **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         labelcontroll.grid(row=0, column=0, padx=5, pady=3)
@@ -117,29 +123,32 @@ class Home(tk.Frame):
         toolbar.update()
         canvas._tkcanvas.grid(row=1, column=0)
 
+
+
     @classmethod
-    def ImageHH_SH(cls, bildFrame):
+    def ImageHH_SH(cls, bildFrame, imageVar, imglabel):
         path = 'Bilder/HH-SH.png'
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar = tk.IntVar()
-        imageVar.set(1)
+        imageVar.set('HH-SH')
+        imglabel.config(text=imageVar.get())
     @classmethod
-    def ImageSH(cls, bildFrame):
+    def ImageSH(cls, bildFrame, imageVar, imglabel):
         path = 'Bilder/SH.png'
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar = tk.IntVar()
-        imageVar.set(2)
+        imageVar.set('SH')
+        imglabel.config(text=imageVar.get())
     @classmethod
-    def ImageHH(cls, bildFrame, imageVar):
+    def ImageHH(cls, bildFrame, imageVar, imglabel):
         path = 'Bilder/HH.png'
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar.set(3)
+        imageVar.set('HH')
+        imglabel.config(text=imageVar.get())
     @classmethod
-    def my_Graph(cls, labelcontroll, var):
+    def graph_wahl(cls, labelcontroll, var):
         labelcontroll.config(text=var.get())
