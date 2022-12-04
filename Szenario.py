@@ -15,7 +15,7 @@ class Szenario:
         self.last_szenario = last_szenario
         self.wea_count = wea_count
         self.wea_locations = wea_locations
-        self.pv_area = pv_area
+        self.pv_area = pv_area # in km^2
         self.pv_locations = pv_locations
         
         for model in wea_models:
@@ -66,12 +66,12 @@ class Szenario:
         # PV
         pv = pd.DataFrame({
             'Modell': self.pv_models,
-            'Modulflaeche': self.pv_area,
+            'Flaeche': self.pv_area,
             'Standort': self.pv_locations
             })
         
         # Wind Erzeugung
-        energy_wind = v_wind.data
+        energy_wind = v_wind.data.drop(v_wind.data.columns[[0, 1, 2, 3, 4, 5, 6]], axis=1)
         
         for index, row in wind.iterrows():
             # Windgeschwindigkeiten für den jeweiligen Standort
@@ -89,18 +89,49 @@ class Szenario:
             # Concat to energy_wind dataframe
             energy_wind = pd.concat([energy_wind, merged_df], axis=1)
         
-        energy_wind.drop(energy_wind.columns[[0, 1, 2, 3, 4, 5, 6]], axis=1, inplace=True)
-        
         # Solar Erzeugung
-        energy_pv = rad_pv
+        energy_pv = rad_pv.data.drop(rad_pv.data.columns[[0, 1, 2, 3]], axis=1)
         
         for index, row in pv.iterrows():
-             # Globalstrahlung für den jeweiligen Standort
+            module = row['Modell']
+            pr_factor = 0.7
+            
+            # Globalstrahlung für den jeweiligen Standort
             list_rad = (rad_pv.data[('{}').format(row['Standort'])]).to_frame()
+            
+            # Total number of pv modules
+            number_pv = row['Flaeche'] * 40 / (module.max_pwr / 1000000)
+            
+            # Power output for one pv module and convert to MWh
+            list_rad = list_rad * module.efficiency * module.area * pr_factor / 4000000
+            
+            # Multiply with total number of pv modules
+            list_rad = list_rad * number_pv
+            
+            # Concat to energy_pv dataframe
+            energy_pv = pd.concat([energy_pv, list_rad], axis=1)
+            
+        # Total Energy 
+        total_energy_wind = energy_wind.sum(axis=1)
+        total_energy_pv = energy_pv.sum(axis=1)
         
-        return list_rad
+        # Add to Strommix
         
+        return new_strommix.both_data
         
-scene1 = Szenario('Test1', 2030, 3, ['Nordex', 'Enercon'], [200, 300], ['SPO', 'Hamburg'], ['SunPower'], [100], ['SPO'])
-wind = scene1.calc_strommix()
+
+wind = {
+    'Anlagen': ['Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Enercon', 'Enercon', 'Enercon', 'Enercon'],
+    'Anzahl': [24, 126, 21, 1, 72, 49, 4, 6, 42],
+    'Standorte': ['Leck', 'Schleswig', 'Kiel', 'Kiel', 'Quickborn', 'Quickborn', 'Quickborn', 'Quickborn', 'Quickborn']
+    }
+        
+solar = {
+    'Anlagen': ['SunPower', 'SunPower', 'SunPower'],
+    'Flaeche': [125, 243, 80],
+    'Standorte': ['Schleswig', 'SPO', 'Leck']
+    }
+
+scene1 = Szenario('Test1', 2030, 3, wind['Anlagen'], wind['Anzahl'], wind['Standorte'], solar['Anlagen'], solar['Flaeche'], solar['Standorte'])
+scene1_ergebnis = scene1.calc_strommix()
         

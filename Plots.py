@@ -280,15 +280,15 @@ class Strommix(Plot):
         
         return fig
     
-    def set_wind_onshore(self, hh_wind, sh_wind):
-        self.hh_data['Wind_Onshore'] = hh_wind
-        self.sh_data['Wind_Onshore'] = sh_wind
-        self.both_data['Wind_Onshore'] = hh_wind + sh_wind
+    def add_to_wind_onshore(self, hh_wind, sh_wind):
+        self.hh_data['Wind_Onshore'] = self.hh_data['Wind_Onshore'] + hh_wind
+        self.sh_data['Wind_Onshore'] = self.sh_data['Wind_Onshore'] + sh_wind
+        self.both_data['Wind_Onshore'] = self.hh_data['Wind_Onshore'] + self.sh_data['Wind_Onshore']
         
-    def set_pv(self, hh_pv, sh_pv):
-        self.hh_data['Photovoltaik'] = hh_pv
-        self.sh_data['Photovoltaik'] = sh_pv
-        self.both_data['Photovoltaik'] = hh_pv + sh_pv
+    def add_to_pv(self, hh_pv, sh_pv):
+        self.hh_data['Photovoltaik'] = self.hh_data['Photovoltaik'] + hh_pv
+        self.sh_data['Photovoltaik'] = self.sh_data['Photovoltaik'] + sh_pv
+        self.both_data['Photovoltaik'] = self.hh_data['Photovoltaik'] + self.sh_data['Photovoltaik']
 
 class Globalstrahlung(Plot):
     def __init__(self, year, function):
