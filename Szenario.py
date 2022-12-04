@@ -52,7 +52,7 @@ class Szenario:
         print(self.config)
     
     def calc_strommix(self):
-        new_strommix = Strommix(3, self.year)
+        new_strommix = Strommix(self.last_szenario, self.year)
         v_wind = Wind('mean')
         rad_pv = Globalstrahlung(self.year, 'mean')
         
@@ -111,13 +111,21 @@ class Szenario:
             # Concat to energy_pv dataframe
             energy_pv = pd.concat([energy_pv, list_rad], axis=1)
             
-        # Total Energy 
+        # Total energy 
         total_energy_wind = energy_wind.sum(axis=1)
         total_energy_pv = energy_pv.sum(axis=1)
         
-        # Add to Strommix
+        #total_energy_wind.rename(columns={0: 'Wind_Onshore_Neu'}, inplace=True)
+        #total_energy_pv.rename(columns={0: 'Photovoltaik_Neu'}, inplace=True)
         
-        return new_strommix.both_data
+        # Add to Strommix
+        # new_strommix.sh_data = pd.concat([new_strommix.sh_data, total_energy_wind, total_energy_pv], axis=1, join='inner')
+        # new_strommix.sh_data 
+        
+        new_strommix.add_to_wind_onshore(total_energy_wind)
+        new_strommix.add_to_pv(total_energy_pv)
+        
+        return new_strommix
         
 
 wind = {
@@ -133,5 +141,5 @@ solar = {
     }
 
 scene1 = Szenario('Test1', 2030, 3, wind['Anlagen'], wind['Anzahl'], wind['Standorte'], solar['Anlagen'], solar['Flaeche'], solar['Standorte'])
-scene1_ergebnis = scene1.calc_strommix()
-        
+scene1_strommix = scene1.calc_strommix()
+scene1_strommix.plot_bilanz_ee('SH')

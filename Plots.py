@@ -211,6 +211,7 @@ class Strommix(Plot):
     
         fig, ax = plt.subplots()
         
+        plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
         
         cmap = ListedColormap([cols[1], cols[0]])
@@ -231,11 +232,11 @@ class Strommix(Plot):
         if self.scene == 1:
             ax.set_ylim(-1500, 1500)
         elif self.scene == 2:
-            ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y')), 1500*pow(1.03, self.year - int(today.strftime('%Y')))))
+            ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
         elif self.scene == 3:
-            ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y')), 1500*pow(1.03, self.year - int(today.strftime('%Y')))))
+            ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
             
-        plt.show()
+        #plt.show()
         
         return fig    
     
@@ -252,6 +253,7 @@ class Strommix(Plot):
     
         fig, ax = plt.subplots()
         
+        plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
         
         cmap = ListedColormap([cols[1], cols[0]])
@@ -276,17 +278,17 @@ class Strommix(Plot):
         elif self.scene == 3:
             ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
         
-        plt.show()
+        #plt.show()
         
         return fig
     
-    def add_to_wind_onshore(self, hh_wind, sh_wind):
-        self.hh_data['Wind_Onshore'] = self.hh_data['Wind_Onshore'] + hh_wind
+    def add_to_wind_onshore(self, sh_wind):
+        #self.hh_data['Wind_Onshore'] = self.hh_data['Wind_Onshore'] + hh_wind
         self.sh_data['Wind_Onshore'] = self.sh_data['Wind_Onshore'] + sh_wind
         self.both_data['Wind_Onshore'] = self.hh_data['Wind_Onshore'] + self.sh_data['Wind_Onshore']
         
-    def add_to_pv(self, hh_pv, sh_pv):
-        self.hh_data['Photovoltaik'] = self.hh_data['Photovoltaik'] + hh_pv
+    def add_to_pv(self, sh_pv):
+        #self.hh_data['Photovoltaik'] = self.hh_data['Photovoltaik'] + hh_pv
         self.sh_data['Photovoltaik'] = self.sh_data['Photovoltaik'] + sh_pv
         self.both_data['Photovoltaik'] = self.hh_data['Photovoltaik'] + self.sh_data['Photovoltaik']
 
@@ -300,6 +302,10 @@ class Globalstrahlung(Plot):
     
         # 10min-Daten in 15min-Daten umwandeln
         raw_data = raw_data.resample('15min').mean()
+        
+        # Delete Feb 29
+        filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
+        raw_data.drop(raw_data.index[filt], inplace=True)
         
         self.data = self.norm_data(raw_data, function)
         
@@ -334,7 +340,7 @@ class Globalstrahlung(Plot):
         data_cpy = data.copy()
         
         # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020
-        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2020-%m-%d %H:%M")) 
+        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M")) 
         
         # DataFrame gruppieren nach 'Datum_Normiert'
         year_grp = data_cpy.groupby(['Datum_Normiert'])
@@ -365,6 +371,10 @@ class Wind(Plot):
         # 10min-Daten in 15min-Daten umwandeln
         raw_data = raw_data.resample('15min').mean()
         
+        # Delete Feb 29
+        filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
+        raw_data.drop(raw_data.index[filt], inplace=True)
+        
         self.data = self.norm_data(raw_data, function)
         
         # Umwandeln der Windgeschwindigkeiten in int (da Windgeschwindigkeiten in WEA-Tabelle auch in int sind)
@@ -377,7 +387,7 @@ class Wind(Plot):
         data_cpy = data.copy()
         
         # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2020
-        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2020-%m-%d %H:%M")) 
+        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M")) 
         
         # DataFrame gruppieren nach 'Datum_Normiert'
         year_grp = data_cpy.groupby(['Datum_Normiert'])
@@ -418,10 +428,10 @@ class Wind(Plot):
         
         return fig
 
-# plot1 = Strommix(3, 2030)
-# plot2 = Strommix(1, 2030)
-# # plot1.plot_strommix_ee('SH')
-# plot1.plot_bilanz_ee('Both')
+plot1 = Strommix(3, 2030)
+plot2 = Strommix(1, 2030)
+# plot1.plot_strommix_ee('HH')
+plot1.plot_bilanz_ee('SH')
 # plot2.plot_bilanz_ee('Both')
 # plot1.plot_bilanz('HH')
 
