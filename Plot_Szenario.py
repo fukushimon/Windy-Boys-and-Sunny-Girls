@@ -14,6 +14,11 @@ from Plot_Ist_Daten import DataPlot
 from Szenario import Szenario
 
 # firstPlot = DataPlot()
+<<<<<<< Updated upstream
+=======
+# firstPlot.plot_strommix('HH', 'All')
+
+>>>>>>> Stashed changes
 
 # hh = firstPlot.get_data_renewables('Strommix_HH').loc['2021']
 # sh = firstPlot.get_data_renewables('Strommix_SH')
