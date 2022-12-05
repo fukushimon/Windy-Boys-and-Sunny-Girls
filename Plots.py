@@ -108,7 +108,7 @@ class Strommix(Plot):
         fig, ax = plt.subplots(1, 1, figsize=(17, 5))
         
         ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
-        #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
+        ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
         
         ax.legend(loc='upper left', frameon=1, bbox_to_anchor=(1.01, 1.015))
         
@@ -163,14 +163,25 @@ class Strommix(Plot):
         
         return bilanz
     
-    def calc_pct_positive_bilanz(self, bilanz):
+    def calc_pct_positive_bilanz(self, location):
+        bilanz = self.calc_bilanz(location)
         filt = filt = bilanz['Bilanz'] >= 0 
         positive_bilanz = bilanz[filt]
         percentage = (positive_bilanz.size / len(bilanz.index)) * 100
         
         return percentage
     
-    def calc_dunkelflaute(self, bilanz):
+    def calc_pct_positive_bilanz_ee(self, location):
+        bilanz = self.calc_bilanz_ee(location)
+        filt = filt = bilanz['Bilanz'] >= 0 
+        positive_bilanz = bilanz[filt]
+        percentage = (positive_bilanz.size / len(bilanz.index)) * 100
+        
+        return percentage
+    
+    def calc_dunkelflaute(self, location):
+        bilanz = self.calc_bilanz(location)
+        
         # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
         bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
         
@@ -194,8 +205,40 @@ class Strommix(Plot):
         
         return t_dunkelflaute
     
-    def calc_max_dunkelflaute(self, bilanz):
-        dunkelflaute = self.calc_dunkelflaute(bilanz)
+    def calc_dunkelflaute_ee(self, location):
+        bilanz = self.calc_bilanz_ee(location)
+        
+        # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
+        bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
+        
+        # Remove Datum from index
+        bilanz = bilanz.reset_index()
+        
+        # Check if 'Greater_Zero'-values are consecutive        
+        bilanz['Shifted'] = bilanz['Greater_Zero'].shift()
+        bilanz['Cumsum'] = (bilanz['Greater_Zero'] != bilanz['Shifted']).cumsum()
+        
+        # Set and apply filter
+        filt = bilanz['Greater_Zero'] == False        
+        bilanz = bilanz[filt]
+        
+        # Group by cumsum column (each cumsum number represents series of consecutive 'Greater_Zero'-values)
+        bilanz_grp = bilanz.groupby(['Cumsum'])
+        t_dunkelflaute = bilanz_grp.agg({'Datum': ['min', 'max']})
+        
+        # Add duration of each Dunkelflaute
+        t_dunkelflaute['Dauer'] = t_dunkelflaute.iloc[:, 1] - t_dunkelflaute.iloc[:, 0] + timedelta(minutes=15)
+        
+        return t_dunkelflaute
+    
+    def calc_max_dunkelflaute(self, location):
+        dunkelflaute = self.calc_dunkelflaute(location)
+        max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
+        
+        return max_dunkelflaute
+    
+    def calc_max_dunkelflaute_ee(self, location):
+        dunkelflaute = self.calc_dunkelflaute_ee(location)
         max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
         
         return max_dunkelflaute
@@ -229,9 +272,9 @@ class Strommix(Plot):
     
         ax.set_xlim(x.min(), x.max())
         
-        today = datetime.now()
-        
         ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         # if self.scene == 1:
         #     ax.set_ylim(-1500, 1500)
@@ -273,9 +316,10 @@ class Strommix(Plot):
     
         ax.set_xlim(x.min(), x.max())
         
-        today = datetime.now()
-        
         ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        
+        
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         # if self.scene == 1:
         #     ax.set_ylim(-1500, 1500)
@@ -357,7 +401,7 @@ class Globalstrahlung(Plot):
         elif function == 'max':
             new_data = year_grp.max()
         elif function == 'min':
-            new_data == year_grp.min()
+            new_data = year_grp.min()
         
         # 'Datum_Normiert'-Spalte umbennen:
         new_data.index.rename('Datum', inplace=True)
