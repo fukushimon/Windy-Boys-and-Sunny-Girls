@@ -13,12 +13,18 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 from Plot_Ist_Daten import DataPlot
 from Szenario import Szenario
 
+<<<<<<< HEAD
 # firstPlot = DataPlot()
 <<<<<<< Updated upstream
 =======
 # firstPlot.plot_strommix('HH', 'All')
 
 >>>>>>> Stashed changes
+=======
+firstPlot = DataPlot()
+firstPlot.plot_strommix('HH', 'All')
+
+>>>>>>> 32992bae9ffc64c9ad1dcab704582d529b4b8544
 
 # hh = firstPlot.get_data_renewables('Strommix_HH').loc['2021']
 # sh = firstPlot.get_data_renewables('Strommix_SH')
@@ -30,5 +36,9 @@ from Szenario import Szenario
     
 scene1 = Szenario('Szenario 1', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], ['A', 'C', 'D'], ['SunPower', 'LG', 'JA'], [200, 500, 50], ['B', 'C', 'A'])
 scene1.add_to_sql()
+
+scene2 = Szenario('Szenario 2', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], ['A', 'C', 'D'], ['SunPower', 'LG', 'JA'], [200, 500, 50], ['B', 'C', 'A'])
+scene2.add_to_sql()
+
 
 

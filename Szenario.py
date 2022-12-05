@@ -30,6 +30,7 @@ class Szenario:
     def add_to_sql(self):
         conn = sqlite3.connect('Data.db')
         c = conn.cursor()
+<<<<<<< HEAD
         
         params = pd.DataFrame({
             'Datum': date.today(),
@@ -44,6 +45,9 @@ class Szenario:
         }, index=[self.name])
         
         params.to_sql('Szenarien', conn, if_exists='replace')
+=======
+        self.config.to_sql('Szenarien', conn, if_exists='append')
+>>>>>>> 32992bae9ffc64c9ad1dcab704582d529b4b8544
         
         c.close()
         conn.close()
