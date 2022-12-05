@@ -74,7 +74,7 @@ class Manager(tk.Tk):
 # Options_items
 # Datei
         menu_Datei.add_command(label='Home', command=lambda: self.show_frame(Home))
-        menu_Datei.add_command(label='Szenario erstellen', command=lambda: self.show_frame(Solar))
+        menu_Datei.add_command(label='Szenario erstellen', command=lambda: self.show_frame(Wind))
         menu_Datei.add_command(label='Szenario öffnen', command=lambda: self.show_frame(Szenarioffnen))
         menu_Datei.add_separator()
         menu_Datei.add_command(label='Schließen', command=self.destroy)

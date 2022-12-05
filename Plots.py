@@ -70,7 +70,7 @@ class Strommix(Plot):
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 11)
         
-        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(13, 4))
         
         ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
         #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
@@ -86,7 +86,8 @@ class Strommix(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
+        plt.tight_layout()
         
         return fig
     
@@ -106,7 +107,7 @@ class Strommix(Plot):
         fig, ax = plt.subplots(1, 1, figsize=(17, 5))
         
         ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
-        #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
+        ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
         
         ax.legend(loc='upper left', frameon=1, bbox_to_anchor=(1.01, 1.015))
         
@@ -119,7 +120,7 @@ class Strommix(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
         
         return fig    
     
@@ -161,14 +162,25 @@ class Strommix(Plot):
         
         return bilanz
     
-    def calc_pct_positive_bilanz(self, bilanz):
+    def calc_pct_positive_bilanz(self, location):
+        bilanz = self.calc_bilanz(location)
         filt = filt = bilanz['Bilanz'] >= 0 
         positive_bilanz = bilanz[filt]
         percentage = (positive_bilanz.size / len(bilanz.index)) * 100
         
         return percentage
     
-    def calc_dunkelflaute(self, bilanz):
+    def calc_pct_positive_bilanz_ee(self, location):
+        bilanz = self.calc_bilanz_ee(location)
+        filt = filt = bilanz['Bilanz'] >= 0 
+        positive_bilanz = bilanz[filt]
+        percentage = (positive_bilanz.size / len(bilanz.index)) * 100
+        
+        return percentage
+    
+    def calc_dunkelflaute(self, location):
+        bilanz = self.calc_bilanz(location)
+        
         # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
         bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
         
@@ -192,8 +204,40 @@ class Strommix(Plot):
         
         return t_dunkelflaute
     
-    def calc_max_dunkelflaute(self, bilanz):
-        dunkelflaute = self.calc_dunkelflaute(bilanz)
+    def calc_dunkelflaute_ee(self, location):
+        bilanz = self.calc_bilanz_ee(location)
+        
+        # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
+        bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
+        
+        # Remove Datum from index
+        bilanz = bilanz.reset_index()
+        
+        # Check if 'Greater_Zero'-values are consecutive        
+        bilanz['Shifted'] = bilanz['Greater_Zero'].shift()
+        bilanz['Cumsum'] = (bilanz['Greater_Zero'] != bilanz['Shifted']).cumsum()
+        
+        # Set and apply filter
+        filt = bilanz['Greater_Zero'] == False        
+        bilanz = bilanz[filt]
+        
+        # Group by cumsum column (each cumsum number represents series of consecutive 'Greater_Zero'-values)
+        bilanz_grp = bilanz.groupby(['Cumsum'])
+        t_dunkelflaute = bilanz_grp.agg({'Datum': ['min', 'max']})
+        
+        # Add duration of each Dunkelflaute
+        t_dunkelflaute['Dauer'] = t_dunkelflaute.iloc[:, 1] - t_dunkelflaute.iloc[:, 0] + timedelta(minutes=15)
+        
+        return t_dunkelflaute
+    
+    def calc_max_dunkelflaute(self, location):
+        dunkelflaute = self.calc_dunkelflaute(location)
+        max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
+        
+        return max_dunkelflaute
+    
+    def calc_max_dunkelflaute_ee(self, location):
+        dunkelflaute = self.calc_dunkelflaute_ee(location)
         max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
         
         return max_dunkelflaute
@@ -209,7 +253,7 @@ class Strommix(Plot):
         points = np.array([x, y]).T.reshape(-1, 1, 2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
     
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1, 1, figsize=(10, 3))
         
         plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
@@ -227,9 +271,9 @@ class Strommix(Plot):
     
         ax.set_xlim(x.min(), x.max())
         
-        today = datetime.now()
-        
         ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         # if self.scene == 1:
         #     ax.set_ylim(-1500, 1500)
@@ -253,7 +297,7 @@ class Strommix(Plot):
         points = np.array([x, y]).T.reshape(-1, 1, 2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
     
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
         
         plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
@@ -271,9 +315,10 @@ class Strommix(Plot):
     
         ax.set_xlim(x.min(), x.max())
         
-        today = datetime.now()
-        
         ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        
+        
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         # if self.scene == 1:
         #     ax.set_ylim(-1500, 1500)
@@ -311,7 +356,10 @@ class Globalstrahlung(Plot):
         filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
         raw_data.drop(raw_data.index[filt], inplace=True)
         
-        self.data = self.norm_data(raw_data, function)
+        if function == None:
+            self.data = raw_data.loc['2021']
+        else:
+            self.data = self.norm_data(raw_data, function)
         
         today = datetime.now()
         self.data = self.data.apply(lambda row: row*pow(1.022, year - int(today.strftime('%Y'))))
@@ -335,7 +383,7 @@ class Globalstrahlung(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
         
         return fig
     
@@ -355,7 +403,7 @@ class Globalstrahlung(Plot):
         elif function == 'max':
             new_data = year_grp.max()
         elif function == 'min':
-            new_data == year_grp.min()
+            new_data = year_grp.min()
         
         # 'Datum_Normiert'-Spalte umbennen:
         new_data.index.rename('Datum', inplace=True)
@@ -379,7 +427,10 @@ class Wind(Plot):
         filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
         raw_data.drop(raw_data.index[filt], inplace=True)
         
-        self.data = self.norm_data(raw_data, function)
+        if function == None:
+            self.data = raw_data.loc['2021']
+        else:
+            self.data = self.norm_data(raw_data, function)
         
         # Umwandeln der Windgeschwindigkeiten in int (da Windgeschwindigkeiten in WEA-Tabelle auch in int sind)
         self.data[['Hamburg', 'Schleswig', 'Leck', 'Kiel', 'Fehmarn', 'SPO', 'Quickborn']] = self.data[['Hamburg', 'Schleswig', 'Leck', 'Kiel', 'Fehmarn', 'SPO', 'Quickborn']].astype(int)
@@ -428,16 +479,16 @@ class Wind(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        plt.show()
+        #plt.show()
         
         return fig
 
-plot1 = Strommix(1, 2030)
+# plot1 = Strommix(1, 2030)
 # plot2 = Strommix(3, 2030)
 # plot1.plot_strommix_ee('HH')
-plot1.plot_bilanz_ee('Both')
-plot1_bilanz = plot1.calc_bilanz_ee('Both')
-print(plot1.calc_pct_positive_bilanz(plot1_bilanz))
+# plot1.plot_bilanz_ee('Both')
+# plot1_bilanz = plot1.calc_bilanz_ee('Both')
+# print(plot1.calc_pct_positive_bilanz(plot1_bilanz))
 # plot2.plot_bilanz_ee('Both')
 # plot1.plot_bilanz('HH')
 

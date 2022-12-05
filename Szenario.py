@@ -56,8 +56,8 @@ class Szenario:
     
     def calc_strommix(self):
         new_strommix = Strommix(self.last_szenario, self.year)
-        v_wind = Wind('mean')
-        rad_pv = Globalstrahlung(self.year, 'mean')
+        v_wind = Wind(None)
+        rad_pv = Globalstrahlung(self.year, None)
         
         # Wind
         wind = pd.DataFrame({
@@ -129,22 +129,3 @@ class Szenario:
         new_strommix.add_to_pv(total_energy_pv)
         
         return new_strommix
-        
-
-wind = {
-    'Anlagen': ['Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Enercon', 'Enercon', 'Enercon', 'Enercon'],
-    'Anzahl': [24, 126, 21, 1, 72, 49, 4, 6, 42],
-    'Standorte': ['Leck', 'Schleswig', 'Kiel', 'Kiel', 'Quickborn', 'Quickborn', 'Quickborn', 'Quickborn', 'Quickborn']
-    }
-        
-solar = {
-    'Anlagen': ['SunPower', 'SunPower', 'SunPower'],
-    'Flaeche': [125, 243, 80],
-    'Standorte': ['Schleswig', 'SPO', 'Leck']
-    }
-
-scene1 = Szenario('Test1', 2100, 1, wind['Anlagen'], wind['Anzahl'], wind['Standorte'], solar['Anlagen'], solar['Flaeche'], solar['Standorte'])
-scene1_strommix = scene1.calc_strommix()
-scene1_strommix.plot_bilanz_ee('Both')
-bilanz = scene1_strommix.calc_bilanz_ee('Both')
-print(scene1_strommix.calc_pct_positive_bilanz(bilanz))
