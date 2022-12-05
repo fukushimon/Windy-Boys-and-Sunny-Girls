@@ -1,5 +1,3 @@
-import matplotlib
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import sqlite3
@@ -72,7 +70,7 @@ class Strommix(Plot):
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 11)
         
-        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(13, 4))
         
         ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
         #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
@@ -89,6 +87,7 @@ class Strommix(Plot):
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
         #plt.show()
+        plt.tight_layout()
         
         return fig
     
