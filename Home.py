@@ -1,21 +1,12 @@
 import tkinter as tk
 
-<<<<<<< Updated upstream
-=======
-#matplotlib.use("TkAgg")
->>>>>>> Stashed changes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-
 
 from PIL import ImageTk, Image
 from Wind import Wind
 from Szenarioffnen import Szenarioffnen
 from konstante import style
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 from Plots import Strommix
 
 class Home(tk.Frame):
@@ -125,18 +116,14 @@ class Home(tk.Frame):
         labelcontroll.config(text=var.get())
 
         # Graph
-<<<<<<< Updated upstream
-        self.plot = Strommix(1, 2022)
-        canvas = FigureCanvasTkAgg(self.plot.plot_strommix('Both'), center_frame)
-=======
+
         plot1 = Strommix(1,2022)
         canvas = FigureCanvasTkAgg(plot1.plot_strommix('HH'), center_frame)
->>>>>>> Stashed changes
         canvas.get_tk_widget().grid(row=1, column=0)
 
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
         toolbar.update()
-<<<<<<< Updated upstream
+
 
     def show_graph(self, canvas, toolbar, bundesland, plot_typ):
         graph = Strommix(1, 2022)
@@ -150,10 +137,6 @@ class Home(tk.Frame):
         #canvas.get_tk_widget().grid(row=1, column=0)
         #toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
         #toolbar.update()
-=======
-        #canvas.get_tk_widget().grid(row=0, column=0)
-        canvas._tkcanvas.grid(row=0, column=0)
->>>>>>> Stashed changes
 
     def change_bundesland(self, canvas, toolbar, bundesland):
         self.bundesland = bundesland
