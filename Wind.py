@@ -28,7 +28,7 @@ class Wind(tk.Frame):
         buttonFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
 
         button1 = tk.Button(buttonFrame, text='Wind', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+                            activebackground=style.BACKGROUND, activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Wind))
         button1.grid(row=0, column=0, padx=5, pady=3)
         button2 = tk.Button(buttonFrame, text='Solar', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Solar.Solar))
