@@ -357,7 +357,10 @@ class Globalstrahlung(Plot):
         filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
         raw_data.drop(raw_data.index[filt], inplace=True)
         
-        self.data = self.norm_data(raw_data, function)
+        if function == None:
+            self.data = raw_data.loc['2021']
+        else:
+            self.data = self.norm_data(raw_data, function)
         
         today = datetime.now()
         self.data = self.data.apply(lambda row: row*pow(1.022, year - int(today.strftime('%Y'))))
@@ -425,7 +428,10 @@ class Wind(Plot):
         filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
         raw_data.drop(raw_data.index[filt], inplace=True)
         
-        self.data = self.norm_data(raw_data, function)
+        if function == None:
+            self.data = raw_data.loc['2021']
+        else:
+            self.data = self.norm_data(raw_data, function)
         
         # Umwandeln der Windgeschwindigkeiten in int (da Windgeschwindigkeiten in WEA-Tabelle auch in int sind)
         self.data[['Hamburg', 'Schleswig', 'Leck', 'Kiel', 'Fehmarn', 'SPO', 'Quickborn']] = self.data[['Hamburg', 'Schleswig', 'Leck', 'Kiel', 'Fehmarn', 'SPO', 'Quickborn']].astype(int)
