@@ -53,8 +53,8 @@ class Szenario:
     
     def calc_strommix(self):
         new_strommix = Strommix(self.last_szenario, self.year)
-        v_wind = Wind('mean')
-        rad_pv = Globalstrahlung(self.year, 'mean')
+        v_wind = Wind('max')
+        rad_pv = Globalstrahlung(self.year, 'max')
         
         # Wind
         wind = pd.DataFrame({
