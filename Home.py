@@ -1,7 +1,6 @@
 import tkinter as tk
 import matplotlib
 
-matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
@@ -9,7 +8,6 @@ from PIL import ImageTk, Image
 from Wind import Wind
 from Szenarioffnen import Szenarioffnen
 from konstante import style
-from Plot_Ist_Daten import DataPlot
 
 class Home(tk.Frame):
 
@@ -26,10 +24,10 @@ class Home(tk.Frame):
 
     # Windgets in Home Herstellen
     def init_widgets(self):
-        #img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png'))#.resize((950, 380)))
-        #img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png'))#.resize((950, 380)))
-        #img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png'))#.resize((950, 380)))
-        #img_list = [img1, img2, img3]
+        # img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png'))#.resize((950, 380)))
+        # img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png'))#.resize((950, 380)))
+        # img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png'))#.resize((950, 380)))
+        # img_list = [img1, img2, img3]
 
         # Frame Oberehälfte
         bildFrame = tk.Frame(self)
@@ -41,8 +39,8 @@ class Home(tk.Frame):
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar = tk.StringVar()
-        imageVar.set('HH-SH')
+        bundesland = tk.StringVar()
+        bundesland.set('HH-SH')
 
         # Frame Unterehälfte
         datenFrame = tk.Frame(self)
@@ -68,87 +66,231 @@ class Home(tk.Frame):
         center_frame.grid(row=1, column=1, rowspan=1, sticky="nsew")
         bottom_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
 
-        #TOP-FRAME Ort Auswahl
+        # TOP-FRAME Ort Auswahl
         label1 = tk.Label(top_frame, text='Aktuelle Daten', **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.grid(row=0, column=0, padx=5, pady=3)
-        imglabel = tk.Label(top_frame, text=imageVar.get(), **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        imglabel.grid(row=0, column=4, padx=5, pady=3)
+        bundeslandlabel = tk.Label(top_frame, text=bundesland.get(), **style.STYLE,
+                                   activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        bundeslandlabel.grid(row=0, column=4, padx=5, pady=3)
 
         button1 = tk.Button(top_frame, text='Hamburg und Schleswig-Holstein', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                            command=lambda: Home.ImageHH_SH(bildFrame, imageVar, imglabel))
+
+                            command=lambda: Home.ImageHH_SH(bildFrame, bundeslandlabel, bundesland))
         button1.grid(row=0, column=1, padx=5, pady=3)
         button2 = tk.Button(top_frame, text='Schleswig-Holstein', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                            command=lambda: Home.ImageSH(bildFrame, imageVar, imglabel))
+                            command=lambda: Home.ImageSH(bildFrame, bundeslandlabel, bundesland))
         button2.grid(row=0, column=2, padx=5, pady=3)
         button3 = tk.Button(top_frame, text='Hamburg', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=lambda: Home.ImageHH(bildFrame, imageVar, imglabel))
+                            activeforeground=style.TEXT,
+                            command=lambda: Home.ImageHH(bildFrame, bundeslandlabel, bundesland))
         button3.grid(row=0, column=3, padx=5, pady=3)
 
         # LEFT-FRAME Radiobuttons
-        var = tk.StringVar()
-        var.set('Strommix')
-        radioButton1 = tk.Radiobutton(left_frame, text='Strommix', variable=var, value='Strommix', **style.STYLE,
+        plot_typ = tk.StringVar()
+        plot_typ.set('Strommix')
+        radioButton1 = tk.Radiobutton(left_frame, text='Strommix', variable=plot_typ, value='Strommix', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT, command=lambda: Home.graph_wahl(labelcontroll, var))
+                                      activeforeground=style.TEXT,
+                                      command=lambda: Home.graph_strommix(labelcontroll, plot_typ, bundesland,
+                                                                          center_frame, bottom_frame))
         radioButton1.grid(row=0, column=0)
-        radioButton2 = tk.Radiobutton(left_frame, text='Strombilanz', variable=var, value='Strombilanz', **style.STYLE,
+        radioButton2 = tk.Radiobutton(left_frame, text='StrommixE', variable=plot_typ, value='StrommixE', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT, command=lambda: Home.graph_wahl(labelcontroll, var))
+                                      activeforeground=style.TEXT,
+                                      command=lambda: Home.graph_StrommixE(labelcontroll, plot_typ, bundesland,
+                                                                           center_frame, bottom_frame))
         radioButton2.grid(row=1, column=0)
+        radioButton3 = tk.Radiobutton(left_frame, text='Strombilanz', variable=plot_typ, value='Strombilanz',
+                                      **style.STYLE,
+                                      activebackground=style.BACKGROUND,
+                                      activeforeground=style.TEXT,
+                                      command=lambda: Home.graph_Strombilanz(labelcontroll, plot_typ, bundesland,
+                                                                             center_frame, bottom_frame))
+        radioButton3.grid(row=2, column=0)
+        radioButton4 = tk.Radiobutton(left_frame, text='StrombilanzE', variable=plot_typ, value='StrombilanzE',
+                                      **style.STYLE,
+                                      activebackground=style.BACKGROUND,
+                                      activeforeground=style.TEXT,
+                                      command=lambda: Home.graph_StrombilanzE(labelcontroll, plot_typ, bundesland,
+                                                                              center_frame, bottom_frame))
+        radioButton4.grid(row=3, column=0)
 
         # Button_Szenarioerstellen
         B1 = tk.Button(left_frame, text='Szenario erstellen', command=self.move_to_Wind,
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        B1.grid(row=3, column=0, padx=5, pady=3)
+        B1.grid(row=4, column=0, padx=5, pady=3)
         B2 = tk.Button(left_frame, text='Szenario öffnen   ', command=self.move_to_Szenarioffnen,
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        B2.grid(row=4, column=0, padx=5, pady=3)
+        B2.grid(row=5, column=0, padx=5, pady=3)
 
         # CENTER-FRAME label und Graph
         labelcontroll = tk.Label(center_frame, **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+                                 activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         labelcontroll.grid(row=0, column=0, padx=5, pady=3)
-        labelcontroll.config(text=var.get())
+        labelcontroll.config(text=plot_typ.get())
 
-        # Graph
-        plot1 = DataPlot()
-        hh = plot1.get_data_renewables('Strommix_HH').loc['2021']
-        canvas = FigureCanvasTkAgg(plot1.plot_energy_mix(hh), center_frame)
+        plot = Strommix(1, 2022)
+        canvas = FigureCanvasTkAgg(plot.plot_strommix('HH'), center_frame)
+
         canvas.get_tk_widget().grid(row=1, column=0)
         toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+        toolbar.grid(row=0, column=0)
         toolbar.update()
         canvas._tkcanvas.grid(row=1, column=0)
 
-
-
     @classmethod
-    def ImageHH_SH(cls, bildFrame, imageVar, imglabel):
+    def ImageHH_SH(cls, bildFrame, bundeslandlabel, bundesland):
+        bundesland.set('HH-SH')
+        bundeslandlabel.config(text=bundesland.get())
         path = 'Bilder/HH-SH.png'
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar.set('HH-SH')
-        imglabel.config(text=imageVar.get())
+
+
+
     @classmethod
-    def ImageSH(cls, bildFrame, imageVar, imglabel):
+    def ImageSH(cls, bildFrame, bundeslandlabel, bundesland):
+        bundesland.set('SH')
+        bundeslandlabel.config(text=bundesland.get())
         path = 'Bilder/SH.png'
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar.set('SH')
-        imglabel.config(text=imageVar.get())
+
+
     @classmethod
-    def ImageHH(cls, bildFrame, imageVar, imglabel):
+    def ImageHH(cls, bildFrame, bundeslandlabel, bundesland):
+        bundesland.set('HH')
+        bundeslandlabel.config(text=bundesland.get())
         path = 'Bilder/HH.png'
         img = Image.open(path).resize((1100, 440))
         bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar.set('HH')
-        imglabel.config(text=imageVar.get())
+
     @classmethod
     def graph_wahl(cls, labelcontroll, var):
         labelcontroll.config(text=var.get())
+
+    @classmethod
+    def graph_wahl(cls, labelcontroll, plot_typ, bundesland, center_frame, bottom_frame):
+        labelcontroll.config(text=plot_typ.get())
+
+        if plot_typ.get() == 'Strommix' and bundesland.get() == 'HH-SH':
+            print('Strommix HH-SH')
+        elif plot_typ.get() == 'Strommix' and bundesland.get() == 'HH':
+            print('Strommix HH')
+        else:
+            print('Strommix SH')
+
+    def graph_strommix(labelcontroll, plot_typ, bundesland, center_frame, bottom_frame):
+
+        if plot_typ.get() == 'Strommix' and bundesland.get() == 'HH-SH':
+            print('Strommix HH-SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('Both'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        elif plot_typ.get() == 'Strommix' and bundesland.get() == 'HH':
+            print('Strommix HH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('HH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        else:
+            print('Strommix SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('SH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+
+    @classmethod
+    def graph_StrommixE(cls, labelcontroll, plot_typ, bundesland, center_frame, bottom_frame):
+        if plot_typ.get() == 'StrommixE' and bundesland.get() == 'HH-SH':
+            print('StrommixE HH-SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('Both'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        elif plot_typ.get() == 'StrommixE' and bundesland.get() == 'HH':
+            print('StrommixE HH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('HH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        else:
+            print('StrommixE SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('SH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+
+    @classmethod
+    def graph_Strombilanz(cls, labelcontroll, plot_typ, bundesland, center_frame, bottom_frame):
+        if plot_typ.get() == 'Strombilanz' and bundesland.get() == 'HH-SH':
+            print('Strombilanz HH-SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('Both'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        elif plot_typ.get() == 'Strombilanz' and bundesland.get() == 'HH':
+            print('Strombilanz HH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('HH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        else:
+            print('Strombilanz SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('SH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+
+    @classmethod
+    def graph_StrombilanzE(cls, labelcontroll, plot_typ, bundesland, center_frame, bottom_frame):
+
+        if plot_typ.get() == 'StrombilanzE' and bundesland.get() == 'HH-SH':
+            print('StrombilanzE HH-SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('Both'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        elif plot_typ.get() == 'StrombilanzE' and bundesland.get() == 'HH':
+            print('StrombilanzE HH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('HH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
+        else:
+            print('StrombilanzE SH')
+            plot = Strommix(1, 2022)
+            canvas = FigureCanvasTkAgg(plot.plot_strommix_ee('SH'), center_frame)
+            canvas.get_tk_widget().grid(row=1, column=0)
+            toolbar = NavigationToolbar2Tk(canvas, bottom_frame)
+            toolbar.grid(row=0, column=0)
+            toolbar.update()
