@@ -1,5 +1,7 @@
 import pandas as pd
 import sqlite3
+import matplotlib
+matplotlib.use('Agg', force=True)
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as tkr 
@@ -10,7 +12,7 @@ import numpy as np
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
-plt.style.use('seaborn')
+#plt.style.use('seaborn')
 
 conn = sqlite3.connect('Data.db')
 c = conn.cursor()
@@ -194,14 +196,14 @@ def plot_energy_mix(data):
     pass
 
 
-df = calc_mean(get_data('Strombilanz_HH'))
-hh = plot_balance(df['Last'], df['Erzeugung'])
+# df = calc_mean(get_data('Strombilanz_HH'))
+# hh = plot_balance(df['Last'], df['Erzeugung'])
 
-df2 = get_data('Strombilanz_SH')
-sh = plot_balance(df2['Last'], df2['Erzeugung'])
+# df2 = get_data('Strombilanz_SH')
+# sh = plot_balance(df2['Last'], df2['Erzeugung'])
 
-df3 = calc_total_consumption(2022)
-gesamt = plot_balance(df3['Last_Prognose'], df3['Erzeugung'])
+# df3 = calc_total_consumption(2022)
+# gesamt = plot_balance(df3['Last_Prognose'], df3['Erzeugung'])
 
 # hh = get_data('Strommix_HH').loc['2021']
 # sh = get_data('Strommix_SH')

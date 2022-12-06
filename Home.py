@@ -11,7 +11,6 @@ from Szenarioffnen import Szenarioffnen
 from konstante import style
 from Plots import Strommix
 
-
 class Home(tk.Frame):
     current_plot = 'Both'
 
@@ -68,8 +67,8 @@ class Home(tk.Frame):
 
         var = tk.StringVar()
         var.set('Strommix')
-
-        # TOP-FRAME Ort Auswahl
+        
+        #TOP-FRAME Ort Auswahl
         label1 = tk.Label(self.top_frame, text='Aktuelle Daten', **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.grid(row=0, column=0, padx=5, pady=3)
@@ -83,21 +82,16 @@ class Home(tk.Frame):
                             command=lambda: self.show_graph('SH', var.get()))
         button2.grid(row=0, column=2, padx=5, pady=3)
         button3 = tk.Button(self.top_frame, text='Hamburg', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=lambda: self.show_graph('HH',
-                                                                                         var.get()))  # Home.ImageHH(bildFrame, imageVar, imglabel, center_frame, bottom_frame, var))
+                            activeforeground=style.TEXT, command=lambda: self.show_graph('HH', var.get())) # Home.ImageHH(bildFrame, imageVar, imglabel, center_frame, bottom_frame, var))
         button3.grid(row=0, column=3, padx=5, pady=3)
 
         # LEFT-FRAME Radiobuttons
-        radioButton1 = tk.Radiobutton(self.left_frame, text='Strommix', variable=var, value='Strommix', **style.STYLE,
-                                      activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT,
-                                      command=lambda: self.show_graph(self.current_plot, var.get()))
+        radioButton1 = tk.Radiobutton(self.left_frame, text='Strommix', variable=var, value='Strommix', **style.STYLE, activebackground=style.BACKGROUND,
+                                      activeforeground=style.TEXT, command=lambda: self.show_graph(self.current_plot, var.get()))
         radioButton1.grid(row=0, column=0, sticky='W')
-        radioButton2 = tk.Radiobutton(self.left_frame, text='Strombilanz', variable=var, value='Strombilanz',
-                                      **style.STYLE,
+        radioButton2 = tk.Radiobutton(self.left_frame, text='Strombilanz', variable=var, value='Strombilanz', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT,
-                                      command=lambda: self.show_graph(self.current_plot, var.get()))
+                                      activeforeground=style.TEXT, command=lambda: self.show_graph(self.current_plot, var.get()))
         radioButton2.grid(row=1, column=0, sticky='W')
 
         # Button_Szenarioerstellen
@@ -113,11 +107,11 @@ class Home(tk.Frame):
         #                   activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         # labelcontroll.grid(row=0, column=0, padx=5, pady=3)
         # labelcontroll.config(text=var.get())
-
+        
         # Anzeigen des Plots
         self.toolbar_exists = False
         self.show_graph('Both', var.get())
-
+        
     def show_graph(self, bundesland, plot_type):
         strommix = Strommix(1, 2022)
 
@@ -132,26 +126,18 @@ class Home(tk.Frame):
             self.center_frame = tk.Frame(self.datenFrame, background='yellow', pady=3)
             self.bottom_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
             self.center_frame.grid(row=1, column=1, rowspan=1, sticky="nsew")
-
+            
         canvas = FigureCanvasTkAgg(plot, self.center_frame)
         canvas.get_tk_widget().grid(row=1, column=0)
-
+        
         toolbar = NavigationToolbar2Tk(canvas, self.bottom_frame)
         toolbar.update()
-
+        
         self.toolbar_exists = True
         self.current_plot = bundesland
 
         # Change map image
         self.change_map(bundesland)
-
-    def change_map(self, bundesland):
-        path = ("Bilder/{}.png").format(bundesland)
-        img = Image.open(path).resize((1100, 440))
-        self.bildFrame.image = ImageTk.PhotoImage(img)
-        tk.Label(self.bildFrame, image=self.bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-
-
 
 '''
     def graph_strommix(labelcontroll, plot_typ, bundesland, center_frame, bottom_frame):
@@ -263,3 +249,9 @@ class Home(tk.Frame):
             toolbar.grid(row=0, column=0)
             toolbar.update()
 '''
+    def change_map(self, bundesland):
+        path = ("Bilder/{}.png").format(bundesland)
+        img = Image.open(path).resize((1100, 440))
+        self.bildFrame.image = ImageTk.PhotoImage(img)
+        tk.Label(self.bildFrame, image=self.bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
+

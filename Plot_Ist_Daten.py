@@ -1,9 +1,11 @@
 import pandas as pd
 import sqlite3
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as tkr 
-import datetime
+#import datetime
 from datetime import datetime
 import seaborn as sns
 import numpy as np
@@ -14,8 +16,55 @@ class DataPlot:
     conn = sqlite3.connect('Data.db')
     c = conn.cursor()
 
-    def __init__(self):
+    def __init__(self, tablename):
+        self.tablename = tablename
+        self.data = pd.read_sql_query(('SELECT * FROM {}').format(self.tablename), self.conn, index_col='Datum')
+        self.data.drop('index', axis=1, inplace=True)
+        self.data.index = pd.to_datetime(self.data.index, format="%d.%m.%y %H:%M")
+    
+    def plot_strommix_all(self):
         plt.style.use('seaborn')
+        cols = sns.color_palette("Spectral", 11)
+        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        
+        data_to_plot = self.data.loc['2021']
+        data_to_plot.drop('Erzeugung', axis=1, inplace=True)
+        
+        ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
+        #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
+        
+        ax.legend(loc='upper left', frameon=1)
+        
+        hfmt = mdates.DateFormatter('%b')
+        ax.xaxis.set_major_formatter(hfmt)
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
+        
+        ax.set_xlabel('')
+        
+        return fig
+    
+    def plot_strommix_ee(self):
+        plt.style.use('seaborn')
+        cols = sns.color_palette("Spectral", 11)
+        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        
+        data_to_plot = self.data.loc['2021']
+        data_to_plot.drop(['Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1, inplace=True)
+        
+        ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
+        #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
+        
+        ax.legend(loc='upper left', frameon=1)
+        
+        hfmt = mdates.DateFormatter('%b')
+        ax.xaxis.set_major_formatter(hfmt)
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
+        
+        ax.set_xlabel('')
+        
+        return fig
         
     # Daten einlesen aus Datenbank; Gibt ein DataFrame zurück
     def get_data(self, type):
@@ -40,13 +89,13 @@ class DataPlot:
             return new_df
         
         elif type == 'Strommix_HH':
-            df = pd.read_sql_query('SELECT Datum, Last, Biomasse, Wasserkraft, Wind_Offshore, Wind_Onshore, Photovoltaik, Sonstige_Erneuerbare, Kernenergie, Kohle, Erdgas, Speicher, Sonstige_Konventionelle FROM HH', self.conn, index_col='Datum').loc['2021']
+            df = pd.read_sql_query('SELECT Datum, Last, Biomasse, Wasserkraft, Wind_Offshore, Wind_Onshore, Photovoltaik, Sonstige_Erneuerbare, Speicher, Kernenergie, Kohle, Erdgas, Sonstige_Konventionelle FROM HH', self.conn, index_col='Datum')
             df.index = pd.to_datetime(df.index, format="%d.%m.%y %H:%M")
             #df.drop('index', axis=1, inplace=True) # Löscht die 'index'-Spalte
             return df
         
         elif type == 'Strommix_SH':
-            df = pd.read_sql_query('SELECT Datum, Last, Biomasse, Wasserkraft, Wind_Offshore, Wind_Onshore, Photovoltaik, Sonstige_Erneuerbare, Kernenergie, Kohle, Erdgas, Speicher, Sonstige_Konventionelle FROM SH', self.conn, index_col='Datum')
+            df = pd.read_sql_query('SELECT Datum, Last, Biomasse, Wasserkraft, Wind_Offshore, Wind_Onshore, Photovoltaik, Sonstige_Erneuerbare, Speicher, Kernenergie, Kohle, Erdgas, Sonstige_Konventionelle FROM SH', self.conn, index_col='Datum')
             df.index = pd.to_datetime(df.index, format="%d.%m.%Y %H:%M")
             #df.drop('index', axis=1, inplace=True) # Löscht die 'index'-Spalte
             return df
@@ -222,6 +271,39 @@ class DataPlot:
         
         else:
             return None
+    
+    def plot_strommix(self, location, type):
+        if location == 'HH':
+            if type == 'All':
+                data = self.get_data('Strommix_HH')
+            else:
+                data = self.get_data_renewables('Strommix_HH')
+        else:
+            if type == 'All':
+                data = self.get_data('Strommix_SH')
+            else: 
+                data = self.get_data_renewables('Strommix_SH')
+        
+        # Plot figure
+        cols = sns.color_palette("Spectral", 11)
+        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        
+        #ax.stackplot(data.index, data['Biomasse'], data['Wasserkraft'], data['Wind_Offshore'], data['Wind_Onshore'], data['Photovoltaik'], data['Sonstige_Erneuerbare'], data['Speicher'], colors=cols, labels=list(data.columns)[1:])
+        ax.stackplot(data.index, (data.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data.columns)[1:])
+        ax.plot(data.index, data['Last'], label='Last', alpha=0.2, color='b', linewidth=1)
+        
+        ax.legend(loc='upper left', frameon=1)
+        
+        hfmt = mdates.DateFormatter('%b')
+        ax.xaxis.set_major_formatter(hfmt)
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
+        
+        ax.set_xlabel('')
+        
+        print(data.columns)
+        
+        return fig
 
 
 

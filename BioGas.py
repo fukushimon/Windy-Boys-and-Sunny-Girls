@@ -61,7 +61,7 @@ class BioGas(tk.Frame):
 # Leistung angabe
     def leistung_wind(self):
         leistungFrame = tk.Frame(self)
-        leistungFrame.config(background= style.BACKGROUND)
+        leistungFrame.config(background=style.BACKGROUND)
         leistungFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)  # (row=0, column=0)
 
         label_Szenarioname = tk.Label(leistungFrame, text='Gesamteleistung: ', **style.STYLE,
