@@ -11,8 +11,7 @@ from konstante import style
 from Plots import Strommix
 
 class Home(tk.Frame):
-    bundesland = 'Both'
-    plot_typ = 'Strommix'
+    current_plot = 'Both'
 
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -28,18 +27,13 @@ class Home(tk.Frame):
 
     # Windgets in Home Herstellen
     def init_widgets(self):
-        #img1 = ImageTk.PhotoImage(Image.open('Bilder/HH.png'))#.resize((950, 380)))
-        #img2 = ImageTk.PhotoImage(Image.open('Bilder/SH.png'))#.resize((950, 380)))
-        #img3 = ImageTk.PhotoImage(Image.open('Bilder/HH-SH.png'))#.resize((950, 380)))
-        #img_list = [img1, img2, img3]
-
         # Frame Oberehälfte
         self.bildFrame = tk.Frame(self)
         self.bildFrame.config(background=style.BACKGROUND)
         self.bildFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
         # Bilder
-        path = 'Bilder/HH-SH.png'
+        path = 'Bilder/Both.png'
         img = Image.open(path).resize((1100, 440))
         self.bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(self.bildFrame, image=self.bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
@@ -70,37 +64,34 @@ class Home(tk.Frame):
         self.center_frame.grid(row=1, column=1, rowspan=1, sticky="nsew")
         self.bottom_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
 
+        var = tk.StringVar()
+        var.set('Strommix')
+        
         #TOP-FRAME Ort Auswahl
         label1 = tk.Label(self.top_frame, text='Aktuelle Daten', **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.grid(row=0, column=0, padx=5, pady=3)
-        imglabel = tk.Label(self.top_frame, text=imageVar.get(), **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        imglabel.grid(row=0, column=4, padx=5, pady=3)
 
         button1 = tk.Button(self.top_frame, text='Hamburg und Schleswig-Holstein', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                            command=lambda: self.show_graph('Both'))
+                            command=lambda: self.show_graph('Both', var.get()))
         button1.grid(row=0, column=1, padx=5, pady=3)
         button2 = tk.Button(self.top_frame, text='Schleswig-Holstein', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                            command=lambda: self.show_graph('SH'))
+                            command=lambda: self.show_graph('SH', var.get()))
         button2.grid(row=0, column=2, padx=5, pady=3)
         button3 = tk.Button(self.top_frame, text='Hamburg', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=lambda: self.show_graph('HH')) # Home.ImageHH(bildFrame, imageVar, imglabel, center_frame, bottom_frame, var))
+                            activeforeground=style.TEXT, command=lambda: self.show_graph('HH', var.get())) # Home.ImageHH(bildFrame, imageVar, imglabel, center_frame, bottom_frame, var))
         button3.grid(row=0, column=3, padx=5, pady=3)
 
         # LEFT-FRAME Radiobuttons
-        var = tk.StringVar()
-        var.set('Strommix')
-        radioButton1 = tk.Radiobutton(self.left_frame, text='Strommix', variable=var, value='Strommix', **style.STYLE,
-                                      activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT, command=lambda: Home.graph_wahl(labelcontroll, var))
-        radioButton1.grid(row=0, column=0)
+        radioButton1 = tk.Radiobutton(self.left_frame, text='Strommix', variable=var, value='Strommix', **style.STYLE, activebackground=style.BACKGROUND,
+                                      activeforeground=style.TEXT, command=lambda: self.show_graph(self.current_plot, var.get()))
+        radioButton1.grid(row=0, column=0, sticky='W')
         radioButton2 = tk.Radiobutton(self.left_frame, text='Strombilanz', variable=var, value='Strombilanz', **style.STYLE,
                                       activebackground=style.BACKGROUND,
-                                      activeforeground=style.TEXT, command=lambda: Home.graph_wahl(labelcontroll, var))
-        radioButton2.grid(row=1, column=0)
+                                      activeforeground=style.TEXT, command=lambda: self.show_graph(self.current_plot, var.get()))
+        radioButton2.grid(row=1, column=0, sticky='W')
 
         # Button_Szenarioerstellen
         B1 = tk.Button(self.left_frame, text='Szenario erstellen', command=self.move_to_Wind,
@@ -110,62 +101,45 @@ class Home(tk.Frame):
                        **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         B2.grid(row=4, column=0, padx=5, pady=3)
 
-        # CENTER-FRAME label und Graph
-        labelcontroll = tk.Label(self.center_frame, **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        labelcontroll.grid(row=0, column=0, padx=5, pady=3)
-        labelcontroll.config(text=var.get())
+        # # CENTER-FRAME label und Graph
+        # labelcontroll = tk.Label(self.center_frame, **style.STYLE,
+        #                   activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        # labelcontroll.grid(row=0, column=0, padx=5, pady=3)
+        # labelcontroll.config(text=var.get())
         
+        # Anzeigen des Plots
         self.toolbar_exists = False
+        self.show_graph('Both', var.get())
         
-        self.show_graph('Both')
-        
-    def show_graph(self, bundesland):
+    def show_graph(self, bundesland, plot_type):
         strommix = Strommix(1, 2022)
+
         plot = strommix.plot_strommix(bundesland)
-        canvas = FigureCanvasTkAgg(plot, self.center_frame)
-        canvas.get_tk_widget().grid(row=1, column=0)
+        if plot_type == 'Strombilanz':
+            plot = strommix.plot_bilanz(bundesland)
         
         if self.toolbar_exists == True:
             self.bottom_frame.destroy()
+            self.center_frame.destroy()
             self.bottom_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, width=50, height=50, pady=3)
+            self.center_frame = tk.Frame(self.datenFrame, background='yellow', pady=3)
             self.bottom_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
+            self.center_frame.grid(row=1, column=1, rowspan=1, sticky="nsew")
             
+        canvas = FigureCanvasTkAgg(plot, self.center_frame)
+        canvas.get_tk_widget().grid(row=1, column=0)
+        
         toolbar = NavigationToolbar2Tk(canvas, self.bottom_frame)
         toolbar.update()
         
         self.toolbar_exists = True
-        
-        
+        self.current_plot = bundesland
 
-#############################################
-    @classmethod
-    def ImageHH_SH(cls, bildFrame, imageVar, imglabel, img_frame, toolbar_frame, plot_typ):
-        path = 'Bilder/HH-SH.png'
+        # Change map image
+        self.change_map(bundesland)
+
+    def change_map(self, bundesland):
+        path = ("Bilder/{}.png").format(bundesland)
         img = Image.open(path).resize((1100, 440))
-        bildFrame.image = ImageTk.PhotoImage(img)
-        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar.set('HH-SH')
-        imglabel.config(text=imageVar.get())
-
-    @classmethod
-    def ImageSH(cls, bildFrame, imageVar, imglabel, img_frame, toolbar_frame, plot_typ):
-        path = 'Bilder/SH.png'
-        img = Image.open(path).resize((1100, 440))
-        bildFrame.image = ImageTk.PhotoImage(img)
-        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar.set('SH')
-        imglabel.config(text=imageVar.get())
-
-    @classmethod
-    def ImageHH(cls, bildFrame, imageVar, imglabel, img_frame, toolbar_frame, plot_typ):
-        path = 'Bilder/HH.png'
-        img = Image.open(path).resize((1100, 440))
-        bildFrame.image = ImageTk.PhotoImage(img)
-        tk.Label(bildFrame, image=bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
-        imageVar.set('HH')
-        imglabel.config(text=imageVar.get())
-
-    @classmethod
-    def graph_wahl(cls, labelcontroll, var):
-        labelcontroll.config(text=var.get())
+        self.bildFrame.image = ImageTk.PhotoImage(img)
+        tk.Label(self.bildFrame, image=self.bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)

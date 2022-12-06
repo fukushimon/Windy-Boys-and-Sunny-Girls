@@ -44,9 +44,6 @@ class Szenario:
         }, index=[self.name])
         
         params.to_sql('Szenarien', conn, if_exists='replace')
-
-        self.config.to_sql('Szenarien', conn, if_exists='append')
-
         
         c.close()
         conn.close()
@@ -56,8 +53,8 @@ class Szenario:
     
     def calc_strommix(self):
         new_strommix = Strommix(self.last_szenario, self.year)
-        v_wind = Wind(None)
-        rad_pv = Globalstrahlung(self.year, None)
+        v_wind = Wind('mean')
+        rad_pv = Globalstrahlung(self.year, 'mean')
         
         # Wind
         wind = pd.DataFrame({
