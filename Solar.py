@@ -12,9 +12,6 @@ class Solar(tk.Frame):
         self.config(bg='white')#bg=style.BACKGROUND)
         self.controller = controller
         Wind.Wind.button_menu(self)
-        #self.button_menu()
-        Wind.Wind.go_home(self)
-        #self.go_home()
         label1 = tk.Label(self, text='Scenario Solar', **style.FONTTITEL,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
@@ -59,9 +56,3 @@ class Solar(tk.Frame):
         label_Szenarioeuro = tk.Label(datenFrame, text='EURO', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioeuro.grid(row=0, column=6, padx=5, pady=3)
-
-# Züruck
-    def go_home(self):
-        tk.Button(self, text='Home', **style.STYLE, activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                  command=lambda: self.controller.show_frame(Home.Home)).pack(side='bottom', fill=tk.X, padx=10, pady=8)
-

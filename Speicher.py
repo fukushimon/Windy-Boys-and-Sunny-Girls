@@ -11,7 +11,6 @@ class Speicher(tk.Frame):
         self.config(bg='white')#style.BACKGROUND)
         self.controller = controller
         Wind.Wind.button_menu(self)
-        Wind.Wind.go_home(self)
 
         label1 = tk.Label(self, text='Scenario Speicher', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)

@@ -16,7 +16,6 @@ class Wind(tk.Frame):
         self.config(bg='white')  # bg=style.BACKGROUND)
         self.controller = controller
         self.button_menu()
-        self.go_home()
         label1 = tk.Label(self, text='Scenario Wind', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
