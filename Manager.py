@@ -1,13 +1,15 @@
 import tkinter as tk
 
+from Ergebnis import Ergebnis
+from Kosten import Kosten
 from Speicher import Speicher
 from Solar import Solar
-from Szenarioerstellen import Szenarioerstellen
+from Stabilitaet import Stabilitaet
 from Wind import Wind
 from konstante import style
 from Home import Home
 from Szenarioffnen import Szenarioffnen
-from Berechnen import Berechnen
+from Energiebilanz import Energiebilanz
 
 
 class Manager(tk.Tk):
@@ -33,7 +35,7 @@ class Manager(tk.Tk):
 
 # Screens hinzufügen in container
         self.frame = {}
-        for F in (Home, Szenarioffnen, Wind, Speicher, Solar, Berechnen):
+        for F in (Home, Szenarioffnen, Wind, Speicher, Solar, Energiebilanz, Stabilitaet, Kosten, Ergebnis):
             frame = F(container, self)
             self.frame[F] = frame
             frame.grid(row=0, column=0, sticky=tk.NSEW)

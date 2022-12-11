@@ -10,7 +10,7 @@ matplotlib.rcParams['backend'] = 'TkAgg'
 
 
 class Home(tk.Frame):
-    current_plot = 'Both'
+    #current_plot = 'Both'
 
     def __init__(self, parent, controller):
         super().__init__(parent)

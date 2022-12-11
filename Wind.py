@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.ttk import Scrollbar
 
+import Energiebilanz
 import Speicher
 import Home
 import Solar
-import Berechnen
 from konstante import style
 
 
@@ -151,7 +151,7 @@ class Wind(tk.Frame):
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioname.grid(row=0, column=2, padx=5, pady=3)
         berechnen = tk.Button(leistungFrame, text='Berechnen', **style.STYLE, activebackground=style.BACKGROUND,
-                              activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Berechnen.Berechnen))
+                              activeforeground=style.TEXT, command=lambda: Wind.neuen_daten(self))#self.neuen_daten()) #self.controller.show_frame(Energiebilanz.Energiebilanz))
         berechnen.grid(row=0, column=5, padx=5, pady=3)
         Speichern = tk.Button(leistungFrame, text='Speichern', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT)
@@ -167,7 +167,7 @@ class Wind(tk.Frame):
         self.anzahl_spinbox.config(values=0)
 
     def neuen_daten(self):
-        self.controller.show_frame(Berechnen.Berechnen)
+        self.controller.show_frame(Energiebilanz.Energiebilanz)
 
     def add_produktFrame(self, windFrame):
         produktFrame = tk.Frame(windFrame)
