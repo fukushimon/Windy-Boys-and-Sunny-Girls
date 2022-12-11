@@ -2,9 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.ttk import Scrollbar
 
-import BioGas
+import Speicher
 import Home
 import Solar
+import Berechnen
 from konstante import style
 
 
@@ -34,8 +35,8 @@ class Wind(tk.Frame):
         button2 = tk.Button(buttonFrame, text='Solar', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Solar.Solar))
         button2.grid(row=0, column=1, padx=5, pady=3)
-        button3 = tk.Button(buttonFrame, text='Biogas', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT, command=lambda: self.controller.show_frame(BioGas.BioGas))
+        button3 = tk.Button(buttonFrame, text='Speicher', **style.STYLE,
+                            activebackground=style.BACKGROUND, activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Speicher.Speicher))
         button3.grid(row=0, column=2, padx=5, pady=3)
 
 
@@ -118,8 +119,7 @@ class Wind(tk.Frame):
         anzahl = tk.Label(produktFrame, text="Anzahl", **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         anzahl.grid(row=0, column=4, padx=5, pady=3)
-        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100)#, from_=0
-        #self.anzahl_spinbox.config(values=0)
+        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100)
         self.anzahl_spinbox.grid(row=0, column=5)
 
 
@@ -135,6 +135,8 @@ class Wind(tk.Frame):
         leistungFrame = tk.Frame(self)
         leistungFrame.config(background=style.BACKGROUND)
         leistungFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)  # (row=0, column=0)
+        leistungFrame.grid_columnconfigure(3, weight=1)
+        leistungFrame.grid_columnconfigure(4, weight=1)
 
         label_Szenarioname = tk.Label(leistungFrame, text='Gesamteleistung: ', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -144,6 +146,15 @@ class Wind(tk.Frame):
         label_Szenarioname = tk.Label(leistungFrame, text=' MW', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioname.grid(row=0, column=2, padx=5, pady=3)
+        berechnen = tk.Button(leistungFrame, text='Berechnen', **style.STYLE, activebackground=style.BACKGROUND,
+                              activeforeground=style.TEXT, command=lambda: Wind.neuen_daten(self))
+        berechnen.grid(row=0, column=5, padx=5, pady=3)
+        Speichern = tk.Button(leistungFrame, text='Speichern', **style.STYLE, activebackground=style.BACKGROUND,
+                            activeforeground=style.TEXT)
+        Speichern.grid(row=0, column=6, padx=5, pady=3)
+        schliessen = tk.Button(leistungFrame, text='Schließen', **style.STYLE, activebackground=style.BACKGROUND,
+                            activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Home.Home))
+        schliessen.grid(row=0, column=7, padx=5, pady=3)
 
 # Züruck
     def go_home(self):
@@ -156,3 +167,7 @@ class Wind(tk.Frame):
         self.cbx_Modellname.current(0)
         self.anzahl_spinbox.config(values=0)
         #anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100)
+
+    def neuen_daten(self):
+        self.controller.show_frame(Berechnen.Berechnen)
+
