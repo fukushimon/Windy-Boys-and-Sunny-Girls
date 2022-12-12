@@ -10,8 +10,9 @@ import numpy as np
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
+
 class Plot:
-    def __init__(self, tablename):
+    def __init__(self):
         pass
     
     def connect_to_sql(self):
@@ -27,8 +28,10 @@ class Plot:
         s = '{}'.format(x.astype(int)) + ' MWh'
         return s
 
+
 class Strommix(Plot):
     def __init__(self, scene, year):
+        super().__init__()
         self.connect_to_sql()
         
         self.scene = scene
@@ -59,18 +62,21 @@ class Strommix(Plot):
     
     def plot_strommix(self, location):
         if location == 'HH':
-            data_to_plot = self.hh_data.loc['2021']
+            data_to_plot = self.hh_data.loc['2021'].copy()
         elif location == 'SH':
-            data_to_plot = self.sh_data.loc['2021']
+            data_to_plot = self.sh_data.loc['2021'].copy()
         elif location == 'Both':
-            data_to_plot = self.both_data.loc['2021']
+            data_to_plot = self.both_data.loc['2021'].copy()
+        else:
+            print('No data found!')
+            return None
             
         data_to_plot.drop('Erzeugung', axis=1, inplace=True)
         
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 11)
         
-        fig, ax = plt.subplots(1, 1, figsize=(13, 4))
+        fig, ax = plt.subplots(1, 1, figsize=(14, 4))
         
         ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
         #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
@@ -93,18 +99,21 @@ class Strommix(Plot):
     
     def plot_strommix_ee(self, location):
         if location == 'HH':
-            data_to_plot = self.hh_data.loc['2021']
+            data_to_plot = self.hh_data.loc['2021'].copy()
         elif location == 'SH':
-            data_to_plot = self.sh_data.loc['2021']
+            data_to_plot = self.sh_data.loc['2021'].copy()
         elif location == 'Both':
-            data_to_plot = self.both_data.loc['2021']
+            data_to_plot = self.both_data.loc['2021'].copy()
+        else:
+            print('No data found!')
+            return None
         
         data_to_plot.drop(['Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1, inplace=True)
             
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 11)
         
-        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(14, 4))
         
         ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
         ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
@@ -133,6 +142,9 @@ class Strommix(Plot):
             erzeugung = self.sh_data[list_of_ee].sum(axis=1)
         elif location == 'Both':
             erzeugung = self.both_data[list_of_ee].sum(axis=1)
+        else:
+            print('No data found!')
+            return None
         
         return erzeugung
     
@@ -140,9 +152,12 @@ class Strommix(Plot):
         if location == 'HH':
             bilanz = self.hh_data['Erzeugung'].loc['2021'] - self.hh_data['Last'].loc['2021'] 
         elif location == 'SH':
-           bilanz = self.sh_data['Erzeugung'].loc['2021'] - self.sh_data['Last'].loc['2021'] 
+            bilanz = self.sh_data['Erzeugung'].loc['2021'] - self.sh_data['Last'].loc['2021']
         elif location == 'Both':
-            bilanz = self.both_data['Erzeugung'].loc['2021'] - self.both_data['Last'].loc['2021'] 
+            bilanz = self.both_data['Erzeugung'].loc['2021'] - self.both_data['Last'].loc['2021']
+        else:
+            print('No data found!')
+            return None
         
         bilanz = bilanz.to_frame()
         bilanz.rename(columns={0: 'Bilanz'}, inplace=True)
@@ -155,7 +170,10 @@ class Strommix(Plot):
         elif location == 'SH':
             bilanz = self.calc_erzeugung_ee(location).loc['2021'] - self.sh_data['Last'].loc['2021'] 
         elif location == 'Both':
-            bilanz = self.calc_erzeugung_ee(location).loc['2021'] - self.both_data['Last'].loc['2021'] 
+            bilanz = self.calc_erzeugung_ee(location).loc['2021'] - self.both_data['Last'].loc['2021']
+        else:
+            print('No data found!')
+            return None
         
         bilanz = bilanz.to_frame()
         bilanz.rename(columns={0: 'Bilanz'}, inplace=True)
@@ -164,7 +182,7 @@ class Strommix(Plot):
     
     def calc_pct_positive_bilanz(self, location):
         bilanz = self.calc_bilanz(location)
-        filt = filt = bilanz['Bilanz'] >= 0 
+        filt = bilanz['Bilanz'] >= 0
         positive_bilanz = bilanz[filt]
         percentage = (positive_bilanz.size / len(bilanz.index)) * 100
         
@@ -172,7 +190,7 @@ class Strommix(Plot):
     
     def calc_pct_positive_bilanz_ee(self, location):
         bilanz = self.calc_bilanz_ee(location)
-        filt = filt = bilanz['Bilanz'] >= 0 
+        filt = bilanz['Bilanz'] >= 0
         positive_bilanz = bilanz[filt]
         percentage = (positive_bilanz.size / len(bilanz.index)) * 100
         
@@ -253,7 +271,7 @@ class Strommix(Plot):
         points = np.array([x, y]).T.reshape(-1, 1, 2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
     
-        fig, ax = plt.subplots(1, 1, figsize=(10, 3))
+        fig, ax = plt.subplots(1, 1, figsize=(14, 4))
         
         plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
@@ -268,7 +286,7 @@ class Strommix(Plot):
         hfmt = mdates.DateFormatter('%b')
         ax.xaxis.set_major_formatter(hfmt)
         ax.xaxis.set_major_locator(mdates.MonthLocator())
-    
+        
         ax.set_xlim(x.min(), x.max())
         
         ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
@@ -297,7 +315,7 @@ class Strommix(Plot):
         points = np.array([x, y]).T.reshape(-1, 1, 2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
     
-        fig, ax = plt.subplots(1, 1, figsize=(17, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(14, 4))
         
         plt.style.use('seaborn')
         cols = sns.color_palette("coolwarm", 2)
@@ -343,6 +361,7 @@ class Strommix(Plot):
 
 class Globalstrahlung(Plot):
     def __init__(self, year, function):
+        super().__init__()
         self.connect_to_sql()
         
         raw_data = pd.read_sql_query('SELECT * FROM Globalstrahlung', self.conn, index_col='Datum')
@@ -392,7 +411,7 @@ class Globalstrahlung(Plot):
         data_cpy = data.copy()
         
         # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2021
-        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M")) 
+        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M"))
         
         # DataFrame gruppieren nach 'Datum_Normiert'
         year_grp = data_cpy.groupby(['Datum_Normiert'])
@@ -404,6 +423,8 @@ class Globalstrahlung(Plot):
             new_data = year_grp.max()
         elif function == 'min':
             new_data = year_grp.min()
+        else:
+            return None
         
         # 'Datum_Normiert'-Spalte umbennen:
         new_data.index.rename('Datum', inplace=True)
@@ -414,6 +435,7 @@ class Globalstrahlung(Plot):
         
 class Wind(Plot):
     def __init__(self, function):
+        super().__init__()
         self.connect_to_sql()
     
         raw_data = pd.read_sql_query('SELECT * FROM Windgeschwindigkeiten', self.conn, index_col='Datum')
@@ -442,7 +464,7 @@ class Wind(Plot):
         data_cpy = data.copy()
         
         # Neue Spalte 'Datum_Normiert': Das Datum wird normiert auf 2021
-        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M")) 
+        data_cpy['Datum_Normiert'] = data_cpy.index.map(lambda x: datetime.strftime(x, "2021-%m-%d %H:%M"))
         
         # DataFrame gruppieren nach 'Datum_Normiert'
         year_grp = data_cpy.groupby(['Datum_Normiert'])
@@ -454,6 +476,8 @@ class Wind(Plot):
             new_data = year_grp.max()
         elif function == 'min':
             new_data = year_grp.min()
+        else:
+            return None
         
         # 'Datum_Normiert'-Spalte umbennen:
         new_data.index.rename('Datum', inplace=True)

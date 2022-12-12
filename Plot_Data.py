@@ -1,5 +1,7 @@
 import pandas as pd
 import sqlite3
+import matplotlib
+matplotlib.use('Agg', force=True)
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as tkr 
@@ -10,7 +12,7 @@ import numpy as np
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
-plt.style.use('seaborn')
+#plt.style.use('seaborn')
 
 conn = sqlite3.connect('Data.db')
 c = conn.cursor()
