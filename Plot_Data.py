@@ -194,14 +194,14 @@ def plot_energy_mix(data):
     pass
 
 
-df = calc_mean(get_data('Strombilanz_HH'))
-hh = plot_balance(df['Last'], df['Erzeugung'])
+# df = calc_mean(get_data('Strombilanz_HH'))
+# hh = plot_balance(df['Last'], df['Erzeugung'])
 
-df2 = get_data('Strombilanz_SH')
-sh = plot_balance(df2['Last'], df2['Erzeugung'])
+# df2 = get_data('Strombilanz_SH')
+# sh = plot_balance(df2['Last'], df2['Erzeugung'])
 
-df3 = calc_total_consumption(2022)
-gesamt = plot_balance(df3['Last_Prognose'], df3['Erzeugung'])
+# df3 = calc_total_consumption(2022)
+# gesamt = plot_balance(df3['Last_Prognose'], df3['Erzeugung'])
 
 # hh = get_data('Strommix_HH').loc['2021']
 # sh = get_data('Strommix_SH')
