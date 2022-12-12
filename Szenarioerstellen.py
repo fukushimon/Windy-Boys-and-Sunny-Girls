@@ -1,6 +1,6 @@
 import tkinter as tk
 import Home
-import BioGas
+import Speicher
 import Solar
 import Wind
 from konstante import style
