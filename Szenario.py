@@ -45,7 +45,12 @@ class Szenario:
         
         params.to_sql('Szenarien', conn, if_exists='replace')
         
-        c.close()
+    def return_from_sql(self):
+        conn = sqlite3.connect('Data.db')
+        sql_query = pd.read_sql_query ('Szenarien', conn)
+
+        df = pd.DataFrame(sql_query, columns = ['Datum','WEA_Modelle', 'WEA_Anzahl', 'WEA_Anzahl','PV_Fläche', 'PV_Modelle', 'PV_Standorte'])
+      
         conn.close()
     
     def print_config(self):

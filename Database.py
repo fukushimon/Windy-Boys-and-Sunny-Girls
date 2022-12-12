@@ -30,6 +30,7 @@ df.to_sql('Solarmodule', con=conn, if_exists='replace')
 
 # Test
 
+
 c.close()
 conn.close()
 

@@ -12,17 +12,27 @@ wind_potenzialflaechen = {
     'Standorte': ['SPO', 'Leck', 'Schleswig', 'Kiel', 'Schleswig', 'Quickborn', 'Quickborn', 'Quickborn', 'Quickborn', 'Quickborn', 'Quickborn']
     }
 
+# firstPlot.plot_energy_mix(hh)
+# firstPlot.plot_energy_mix(sh)
+# firstPlot.plot_energy_mix(total)
+    
+scene1 = Szenario('Szenario 1', ['Gamesa', 'Enercon'], [10, 12], ['A', 'C'], ['SunPower'], [200], ['A'])
+scene1.add_to_sql()
+
+sceneVorrang = Szenario('Szenario Vorranggebiet', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], ['A', 'C', 'D'], ['SunPower', 'LG', 'JA'], [200, 500, 50], ['B', 'C', 'A'])
+sceneVorrang.add_to_sql()
+
 wind_repowering = {
-    'Anlagen': ['Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon'],
-    'Anzahl': [80, 10, 38, 5, 21, 73, 59],
-    'Standorte': ['Schleswig', 'Fehmarn', 'Kiel', 'Schleswig', 'SPO', 'Leck', 'Quickborn']
-    }
+     'Anlagen': ['Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon'],
+     'Anzahl': [80, 10, 38, 5, 21, 73, 59],
+     'Standorte': ['Schleswig', 'Fehmarn', 'Kiel', 'Schleswig', 'SPO', 'Leck', 'Quickborn']
+     }
         
 solar_potenzialflaechen = {
-    'Anlagen': ['SunPower', 'SunPower', 'SunPower'],
-    'Flaeche': [125, 243, 80],
-    'Standorte': ['Schleswig', 'SPO', 'Leck']
-    }
+     'Anlagen': ['SunPower', 'SunPower', 'SunPower'],
+     'Flaeche': [125, 243, 80],
+     'Standorte': ['Schleswig', 'SPO', 'Leck']
+     }
 
 solar_5mrd = {
     'Anlagen': ['SunPower', 'SunPower', 'SunPower'],
@@ -70,7 +80,7 @@ solar_null = {
 # scene_ausweis = Szenario('Ausweisflaechen', 2030, 1, 
 #                       wind_ausweisflaechen['Anlagen'] + wind_repowering['Anlagen'], 
 #                       wind_ausweisflaechen['Anzahl'] + wind_repowering['Anzahl'], 
-#                       wind_ausweisflaechen['Standorte'] + wind_repowering['Standorte'], 
+#                       wind_ausweisflaechen['Standorte'] + wind_repowering['Standorte'],
 #                       solar_potenzialflaechen['Anlagen'], 
 #                       solar_potenzialflaechen['Flaeche'], 
 #                       solar_potenzialflaechen['Standorte']
