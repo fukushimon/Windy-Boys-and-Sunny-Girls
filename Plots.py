@@ -48,12 +48,14 @@ class Strommix(Plot):
         self.sh_data.index = pd.to_datetime(self.sh_data.index, format="%d.%m.%Y %H:%M")
         
         today = datetime.now()
+        
+        # Curretn year = 2021
         if scene == 2:
-            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.03, self.year - int(today.strftime('%Y')))
-            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.03, self.year - int(today.strftime('%Y')))
+            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.03, self.year - 2021)
+            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.03, self.year - 2021)
         elif scene == 3:
-            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.06, self.year - int(today.strftime('%Y')))
-            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.06, self.year - int(today.strftime('%Y')))
+            self.hh_data['Last'] = self.hh_data['Last'] * pow(1.06, self.year - 2021)
+            self.sh_data['Last'] = self.sh_data['Last'] * pow(1.06, self.year - 2021)
             
         # Sum of both
         self.both_data = self.hh_data + self.sh_data
@@ -360,7 +362,7 @@ class Strommix(Plot):
         self.both_data['Photovoltaik'] = self.hh_data['Photovoltaik'] + self.sh_data['Photovoltaik']
 
 class Globalstrahlung(Plot):
-    def __init__(self, year, function):
+    def __init__(self, future_year, current_year):
         super().__init__()
         self.connect_to_sql()
         
@@ -375,13 +377,11 @@ class Globalstrahlung(Plot):
         filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
         raw_data.drop(raw_data.index[filt], inplace=True)
         
-        if function == None:
-            self.data = raw_data.loc['2021']
-        else:
-            self.data = self.norm_data(raw_data, function)
+        # Get data from year (2020 or 2021)
+        self.data = raw_data.loc[('{}').format(current_year)]
         
-        today = datetime.now()
-        self.data = self.data.apply(lambda row: row*pow(1.022, year - int(today.strftime('%Y'))))
+        # Calculate future radiation
+        self.data = self.data.apply(lambda row: row*pow(1.028, future_year - current_year))
         
         self.disconnect_from_sql()
         
@@ -434,7 +434,7 @@ class Globalstrahlung(Plot):
         return new_data
         
 class Wind(Plot):
-    def __init__(self, function):
+    def __init__(self, year):
         super().__init__()
         self.connect_to_sql()
     
@@ -449,17 +449,15 @@ class Wind(Plot):
         filt = ((raw_data.index >= '2020-02-29') & (raw_data.index < '2020-03-01'))
         raw_data.drop(raw_data.index[filt], inplace=True)
         
-        if function == None:
-            self.data = raw_data.loc['2021']
-        else:
-            self.data = self.norm_data(raw_data, function)
+        # Get data from year (2020 or 2021)
+        self.data = raw_data.loc[('{}').format(year)]
         
         # Umwandeln der Windgeschwindigkeiten in int (da Windgeschwindigkeiten in WEA-Tabelle auch in int sind)
         self.data[['Hamburg', 'Schleswig', 'Leck', 'Kiel', 'Fehmarn', 'SPO', 'Quickborn']] = self.data[['Hamburg', 'Schleswig', 'Leck', 'Kiel', 'Fehmarn', 'SPO', 'Quickborn']].astype(int)
         
         self.disconnect_from_sql()
     
-    # Rechnet Durchschnitts-/ Max-/ Min-Wert aus den 3 Jahren aus
+    # NOT USED: Rechnet Durchschnitts-/ Max-/ Min-Wert aus den 3 Jahren aus
     def norm_data(self, data, function):
         data_cpy = data.copy()
         
@@ -506,36 +504,3 @@ class Wind(Plot):
         #plt.show()
         
         return fig
-
-# plot1 = Strommix(1, 2030)
-# plot2 = Strommix(3, 2030)
-# plot1.plot_strommix_ee('HH')
-# plot1.plot_bilanz_ee('Both')
-# plot1_bilanz = plot1.calc_bilanz_ee('Both')
-# print(plot1.calc_pct_positive_bilanz(plot1_bilanz))
-# plot2.plot_bilanz_ee('Both')
-# plot1.plot_bilanz('HH')
-
-# hh_bilanz = plot1.calc_bilanz('HH')
-# hh_bilanz_ee = plot1.calc_bilanz_ee('HH')
-
-# sh_bilanz = plot1.calc_bilanz('SH')
-# sh_bilanz_ee = plot1.calc_bilanz_ee('SH')
-
-# both_bilanz = plot1.calc_bilanz('Both')
-# both_bilanz_ee = plot1.calc_bilanz_ee('Both')
-
-# print('HH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(hh_bilanz).astype('str'))
-# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(hh_bilanz).loc['Dauer'].astype('str'))
-# print('HH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(hh_bilanz_ee).astype('str'))
-# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(hh_bilanz_ee).loc['Dauer'].astype('str'))
-
-# print('SH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(sh_bilanz).astype('str'))
-# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(sh_bilanz).loc['Dauer'].astype('str'))
-# print('SH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(sh_bilanz_ee).astype('str'))
-# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(sh_bilanz_ee).loc['Dauer'].astype('str'))
-
-# print('HH + SH alle Energieträger: ' + plot1.calc_pct_positive_bilanz(both_bilanz).astype('str'))
-# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(both_bilanz).loc['Dauer'].astype('str'))
-# print('HH + SH nur Erneuerbare: ' + plot1.calc_pct_positive_bilanz(both_bilanz_ee).astype('str'))
-# print('Längste Dunkelflaute: ' + plot1.calc_max_dunkelflaute(both_bilanz_ee).loc['Dauer'].astype('str'))

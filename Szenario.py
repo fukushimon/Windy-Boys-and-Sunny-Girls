@@ -9,9 +9,10 @@ class Szenario:
     wea_models = []
     pv_models = []
     
-    def __init__(self, name, year, last_szenario, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
+    def __init__(self, name, year, weather_year, last_szenario, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
         self.name = name
         self.year = year
+        self.weather_year = weather_year
         self.last_szenario = last_szenario
         self.wea_count = wea_count
         self.wea_locations = wea_locations
@@ -45,6 +46,9 @@ class Szenario:
         
         params.to_sql('Szenarien', conn, if_exists='replace')
         
+        c.close()
+        conn.close()
+        
     def return_from_sql(self):
         conn = sqlite3.connect('Data.db')
         sql_query = pd.read_sql_query ('Szenarien', conn)
@@ -58,8 +62,10 @@ class Szenario:
     
     def calc_strommix(self):
         new_strommix = Strommix(self.last_szenario, self.year)
-        v_wind = Wind('max')
-        rad_pv = Globalstrahlung(self.year, 'max')
+        
+        # Calculate wind and solar for 2021
+        v_wind = Wind(self.weather_year)
+        rad_pv = Globalstrahlung(self.year, self.weather_year)
         
         # Wind
         wind = pd.DataFrame({
@@ -119,13 +125,9 @@ class Szenario:
         # Total energy 
         total_energy_wind = energy_wind.sum(axis=1)
         total_energy_pv = energy_pv.sum(axis=1)
-        
-        #total_energy_wind.rename(columns={0: 'Wind_Onshore_Neu'}, inplace=True)
-        #total_energy_pv.rename(columns={0: 'Photovoltaik_Neu'}, inplace=True)
-        
-        # Add to Strommix
-        # new_strommix.sh_data = pd.concat([new_strommix.sh_data, total_energy_wind, total_energy_pv], axis=1, join='inner')
-        # new_strommix.sh_data 
+
+        total_energy_pv.index = total_energy_pv.index + pd.offsets.DateOffset(years = 2021 - self.weather_year)
+        total_energy_wind.index = total_energy_wind.index + pd.offsets.DateOffset(years = 2021 - self.weather_year)
         
         new_strommix.add_to_wind_onshore(total_energy_wind)
         new_strommix.add_to_pv(total_energy_pv)
