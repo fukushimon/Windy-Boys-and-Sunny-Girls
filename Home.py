@@ -123,13 +123,11 @@ class Home(tk.Frame):
         plot = strommix.plot_strommix(bundesland)
         if plot_type == 'Strombilanz':
             plot = strommix.plot_bilanz(bundesland)
-###################################################
         elif plot_type == 'StrombilanzE':
             plot = strommix.plot_bilanz_ee(bundesland)
 
         elif plot_type == 'StrommixE':
             plot = strommix.plot_strommix_ee(bundesland)
-###################################################
 
         if self.toolbar_exists:
             self.center_frame.destroy()

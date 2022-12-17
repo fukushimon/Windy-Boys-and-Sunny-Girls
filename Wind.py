@@ -49,28 +49,32 @@ class Wind(tk.Frame):
         self.windFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
         # Scrollbar hinzufügen
-        canvas = tk.Canvas(self.windFrame)
-        scrollbar = ttk.Scrollbar(self.windFrame, orient="vertical", command=canvas.yview)
-        self.scrollable_frame = ttk.Frame(canvas)
+        self.canvas = tk.Canvas(self.windFrame)
+        scrollbar = ttk.Scrollbar(self.windFrame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
 
         self.scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
             )
         )
+        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
+        self.scrollable_frame.bind('<Enter>', self._bind_to_mousewheel)
+        self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
 
-        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
 
-        canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
 
-        canvas.pack(side=LEFT, fill=BOTH, expand=True)
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
         scrollbar.pack(side="right", fill="y")
 
         add_button = tk.Button(self.scrollable_frame, text='Neue Anlage +', **style.STYLE,
                                activebackground=style.BACKGROUND, activeforeground=style.TEXT,
                                command=lambda: self.add_produktFrame())
-        add_button.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=8)
+        add_button.pack(side=tk.TOP, fill=tk.BOTH, padx=10, pady=8)
 
 #Beschreibung Szenario
         datenFrame = tk.Frame(self.scrollable_frame)
@@ -102,6 +106,16 @@ class Wind(tk.Frame):
 # Produkt 1
         self.add_produktFrame()
 
+    def _on_mousewheel(self, event):
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def _bind_to_mousewheel(self, event):
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+
+    def _unbind_from_mousewheel(self, event):
+        self.canvas.unbind_all("<MouseWheel>")
+
+
     def leistung(self):
         leistungFrame = tk.Frame(self)
         leistungFrame.config(background=style.BACKGROUND)
@@ -131,7 +145,8 @@ class Wind(tk.Frame):
         self.cbx_Hersteller.current(0)
         self.cbx_Standort.current(0)
         self.cbx_Modellname.current(0)
-        self.anzahl_spinbox.config(values=0)
+        var = IntVar(0)
+        self.anzahl_spinbox.config(textvariable=var)
 
     def berechnen(self):
         antwort = messagebox.askyesnocancel('Berechnung', 'asdfghjklöpoiuztrewqyxcvbnm')
@@ -179,8 +194,11 @@ class Wind(tk.Frame):
         anzahl = tk.Label(produktFrame, text="Anzahl", **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         anzahl.grid(row=0, column=4, padx=5, pady=3)
-        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100)
+        var = IntVar(produktFrame)
+        var.set(0)
+        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100, textvariable=var)
         self.anzahl_spinbox.grid(row=0, column=5)
+
 
         button1 = tk.Button(produktFrame, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT, command=self.loeschen)
