@@ -1,8 +1,10 @@
+import tkinter
 import tkinter as tk
+from tkinter import *
 from tkinter import ttk, messagebox
-from tkinter.ttk import Scrollbar
 
 import Energiebilanz
+import ScrollabelFrame
 import Speicher
 import Home
 import Solar
@@ -41,22 +43,38 @@ class Wind(tk.Frame):
 
 # Wind frame
     def wind_frame(self):
+
         self.windFrame = tk.Frame(self)
-        self.windFrame.config(background=style.BACKGROUND)
+        self.windFrame.config(bg='yellow')#background=style.BACKGROUND)
         self.windFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
         # Scrollbar hinzufügen
-        scrollbar = tk.Scrollbar(self.windFrame)
-        canvas = tk.Canvas(self.windFrame, bg='red', yscrollcommand=scrollbar.set)
-        scrollbar.config(command=canvas.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        add_button = tk.Button(self.windFrame, text='Neue Anlage +', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT)#, command=self.add_produktFrame(self.windFrame))
+        canvas = tk.Canvas(self.windFrame)
+        scrollbar = ttk.Scrollbar(self.windFrame, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = ttk.Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side=LEFT, fill=BOTH, expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        add_button = tk.Button(self.scrollable_frame, text='Neue Anlage +', **style.STYLE,
+                               activebackground=style.BACKGROUND, activeforeground=style.TEXT,
+                               command=lambda: self.add_produktFrame())
         add_button.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=8)
 
 #Beschreibung Szenario
-        datenFrame = tk.Frame(self.windFrame)
-        datenFrame.config(background= style.BACKGROUND)
+        datenFrame = tk.Frame(self.scrollable_frame)
+        datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
 
         label_Szenarioname = tk.Label(datenFrame, text='Szenarioname:', **style.STYLE,
@@ -82,58 +100,7 @@ class Wind(tk.Frame):
 
 # Wind-Produkte
 # Produkt 1
-        self.add_produktFrame(self.windFrame)
-        '''
-        produktFrame = tk.Frame(windFrame)
-        produktFrame.config(background='blue')  # style.BACKGROUND)
-        produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)  # (row=0, column=0)
-
-        Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Hersteller.grid(row=0, column=0, padx=5, pady=3)
-        self.cbx_Hersteller = ttk.Combobox(produktFrame, width=50)
-        Hersteller = ('', 'Enercon', 'Vestas', 'Siemens-Gamesa', 'Nordex')
-        self.cbx_Hersteller['values'] = Hersteller
-        self.cbx_Hersteller.current(0)
-        self.cbx_Hersteller.grid(row=0, column=1)
-
-        Standort = tk.Label(produktFrame, text='Standort', **style.STYLE,
-                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Standort.grid(row=1, column=0, padx=5, pady=3)
-        self.cbx_Standort = ttk.Combobox(produktFrame, width=50)
-        Standort = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
-                    'Schleswig-Holstein D', 'Schleswig-Holstein E', 'Schleswig-Holstein F', 'Hamburg')
-        self.cbx_Standort['values'] = Standort
-        self.cbx_Standort.current(0)
-        self.cbx_Standort.grid(row=1, column=1)
-
-        Modellname = tk.Label(produktFrame, text='Modellname', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Modellname.grid(row=0, column=2, padx=5, pady=3)
-        self.cbx_Modellname = ttk.Combobox(produktFrame, width=50)
-        Modellname = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
-        self.cbx_Modellname['values'] = Modellname
-        self.cbx_Modellname.current(0)
-        self.cbx_Modellname.grid(row=0, column=3)
-
-        label1 = tk.Label(produktFrame, text='Wetter daten werden automatisch beruchsichtig', **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label1.grid(row=1, column=3, padx=5, pady=3)
-
-        anzahl = tk.Label(produktFrame, text="Anzahl", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        anzahl.grid(row=0, column=4, padx=5, pady=3)
-        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100)
-        self.anzahl_spinbox.grid(row=0, column=5)
-
-
-        button1 = tk.Button(produktFrame, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=self.loeschen)
-        button1.grid(row=1, column=5, padx=5, pady=3)
-'''
-
-
-
+        self.add_produktFrame()
 
     def leistung(self):
         leistungFrame = tk.Frame(self)
@@ -151,7 +118,7 @@ class Wind(tk.Frame):
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioname.grid(row=0, column=2, padx=5, pady=3)
         berechnen = tk.Button(leistungFrame, text='Berechnen', **style.STYLE, activebackground=style.BACKGROUND,
-                              activeforeground=style.TEXT, command=lambda: Wind.berechnen(self))#self.neuen_daten()) #self.controller.show_frame(Energiebilanz.Energiebilanz))
+                              activeforeground=style.TEXT, command=lambda: Wind.berechnen(self))
         berechnen.grid(row=0, column=5, padx=5, pady=3)
         Speichern = tk.Button(leistungFrame, text='Speichern', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT)
@@ -172,10 +139,10 @@ class Wind(tk.Frame):
             self.controller.show_frame(Energiebilanz.Energiebilanz)
 
 
-    def add_produktFrame(self, windFrame):
-        produktFrame = tk.Frame(windFrame)
+    def add_produktFrame(self):
+        produktFrame = tk.Frame(self.scrollable_frame)
         produktFrame.config(background='blue')  # style.BACKGROUND)
-        produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)  # (row=0, column=0)
+        produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
 
         Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)

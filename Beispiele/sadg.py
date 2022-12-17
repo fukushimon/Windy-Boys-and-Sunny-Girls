@@ -1,38 +1,72 @@
-import tkinter as tk
-from tkinter import messagebox as msg
-
-my_w = tk.Tk()
-my_w.geometry("500x300")  # Size of the window
-my_val = ''
-
-
-def my_upd():
-    # print(r1_v.get())
-    if (r1_v.get() == 1):
-        my_title = "Value = 1"
-        my_msg = "Default Selection is Yes"
-        my_button = "yes"
-    elif (r1_v.get() == 2):
-        my_title = "Value = 2"
-        my_msg = "Default Selection is No"
-        my_button = "no"
-    elif (r1_v.get() == 3):
-        my_title = "Value = 3"
-        my_msg = "Default Selection is Cancel"
-        my_button = "cancel"
-
-    my_val = msg.askyesnocancel(my_title, my_msg, default=my_button)
+try:  # Python 2
+    import tkinter as tk
+    from tkinter.constants import *
+except ImportError:  # Python 2
+    import Tkinter as tk
+    from tkinter.constants import *
 
 
-r1_v = tk.IntVar()  # We used integer variable here
+# Based on
+#   https://web.archive.org/web/20170514022131id_/http://tkinter.unpythonic.net/wiki/VerticalScrolledFrame
 
-r1 = tk.Radiobutton(my_w, text='Yes', variable=r1_v, value=1, command=my_upd)
-r1.grid(row=1, column=1)
+class VerticalScrolledFrame(tk.Frame):
+    """A pure Tkinter scrollable frame that actually works!
+    * Use the 'interior' attribute to place widgets inside the scrollable frame.
+    * Construct and pack/place/grid normally.
+    * This frame only allows vertical scrolling.
+    """
+    def __init__(self, parent, *args, **kw):
+        tk.Frame.__init__(self, parent, *args, **kw)
 
-r2 = tk.Radiobutton(my_w, text='No', variable=r1_v, value=2, command=my_upd)
-r2.grid(row=1, column=2)
+        # Create a canvas object and a vertical scrollbar for scrolling it.
+        vscrollbar = tk.Scrollbar(self, orient=VERTICAL)
+        vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
+        canvas = tk.Canvas(self, bd=0, highlightthickness=0,
+                           yscrollcommand=vscrollbar.set)
+        canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        vscrollbar.config(command=canvas.yview)
 
-r3 = tk.Radiobutton(my_w, text='Cancel', variable=r1_v, value=3, command=my_upd)
-r3.grid(row=1, column=3)
+        # Reset the view
+        canvas.xview_moveto(0)
+        canvas.yview_moveto(0)
 
-my_w.mainloop()
+        # Create a frame inside the canvas which will be scrolled with it.
+        self.interior = interior = tk.Frame(canvas)
+        interior_id = canvas.create_window(0, 0, window=interior,
+                                           anchor=NW)
+
+        # Track changes to the canvas and frame width and sync them,
+        # also updating the scrollbar.
+        def _configure_interior(event):
+            # Update the scrollbars to match the size of the inner frame.
+            size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
+            canvas.config(scrollregion="0 0 %s %s" % size)
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # Update the canvas's width to fit the inner frame.
+                canvas.config(width=interior.winfo_reqwidth())
+        interior.bind('<Configure>', _configure_interior)
+
+        def _configure_canvas(event):
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # Update the inner frame's width to fill the canvas.
+                canvas.itemconfigure(interior_id, width=canvas.winfo_width())
+        canvas.bind('<Configure>', _configure_canvas)
+
+
+if __name__ == "__main__":
+
+    class SampleApp(tk.Tk):
+        def __init__(self, *args, **kwargs):
+            root = tk.Tk.__init__(self, *args, **kwargs)
+
+            self.frame = VerticalScrolledFrame(root)
+            self.frame.pack()
+            self.label = tk.Label(self, text="Shrink the window to activate the scrollbar.")
+            self.label.pack()
+            buttons = []
+            for i in range(10):
+                buttons.append(tk.Button(self.frame.interior, text="Button " + str(i)))
+                buttons[-1].pack()
+
+    app = SampleApp()
+    app.mainloop()

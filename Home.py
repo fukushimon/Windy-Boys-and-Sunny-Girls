@@ -14,9 +14,12 @@ class Home(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.config(background=style.BACKGROUND)
+        self.config(background='red')#style.BACKGROUND)
         self.controller = controller
         self.init_widgets()
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
     def move_to_wind(self):
         self.controller.show_frame(Wind)
@@ -149,6 +152,6 @@ class Home(tk.Frame):
 
     def change_map(self, bundesland):
         path = "Bilder/{}.png".format(bundesland)
-        img = Image.open(path).resize((1100, 440))
+        img = Image.open(path).resize((1300, 550))
         self.bildFrame.image = ImageTk.PhotoImage(img)
         tk.Label(self.bildFrame, image=self.bildFrame.image).place(x=0, y=0, relwidth=1, relheight=1)
