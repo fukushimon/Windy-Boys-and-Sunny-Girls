@@ -1,87 +1,38 @@
-from tkinter import Tk, W, E
-from tkinter.ttk import Frame, Button, Entry, Style
+import tkinter as tk
+from tkinter import messagebox as msg
 
-class Example(Frame):
-
-    def __init__(self):
-        super().__init__()
-
-        self.initUI()
+my_w = tk.Tk()
+my_w.geometry("500x300")  # Size of the window
+my_val = ''
 
 
-    def initUI(self):
+def my_upd():
+    # print(r1_v.get())
+    if (r1_v.get() == 1):
+        my_title = "Value = 1"
+        my_msg = "Default Selection is Yes"
+        my_button = "yes"
+    elif (r1_v.get() == 2):
+        my_title = "Value = 2"
+        my_msg = "Default Selection is No"
+        my_button = "no"
+    elif (r1_v.get() == 3):
+        my_title = "Value = 3"
+        my_msg = "Default Selection is Cancel"
+        my_button = "cancel"
 
-        self.master.title("Calculator")
-
-        Style().configure("TButton", padding=(0, 5, 0, 5),
-            font='serif 10')
-
-        self.columnconfigure(0, pad=3)
-        self.columnconfigure(1, pad=3)
-        self.columnconfigure(2, pad=3)
-        self.columnconfigure(3, pad=3)
-
-        self.rowconfigure(0, pad=3)
-        self.rowconfigure(1, pad=3)
-        self.rowconfigure(2, pad=3)
-        self.rowconfigure(3, pad=3)
-        self.rowconfigure(4, pad=3)
-
-        entry = Entry(self)
-        entry.grid(row=0, columnspan=4, sticky=W+E)
-        cls = Button(self, text="Cls")
-        cls.grid(row=1, column=0)
-        bck = Button(self, text="Back")
-        bck.grid(row=1, column=1)
-        lbl = Button(self)
-        lbl.grid(row=1, column=2)
-        clo = Button(self, text="Close")
-        clo.grid(row=1, column=3)
-        sev = Button(self, text="7")
-        sev.grid(row=2, column=0)
-        eig = Button(self, text="8")
-        eig.grid(row=2, column=1)
-        nin = Button(self, text="9")
-        nin.grid(row=2, column=2)
-        div = Button(self, text="/")
-        div.grid(row=2, column=3)
-
-        fou = Button(self, text="4")
-        fou.grid(row=3, column=0)
-        fiv = Button(self, text="5")
-        fiv.grid(row=3, column=1)
-        six = Button(self, text="6")
-        six.grid(row=3, column=2)
-        mul = Button(self, text="*")
-        mul.grid(row=3, column=3)
-
-        one = Button(self, text="1")
-        one.grid(row=4, column=0)
-        two = Button(self, text="2")
-        two.grid(row=4, column=1)
-        thr = Button(self, text="3")
-        thr.grid(row=4, column=2)
-        mns = Button(self, text="-")
-        mns.grid(row=4, column=3)
-
-        zer = Button(self, text="0")
-        zer.grid(row=5, column=0)
-        dot = Button(self, text=".")
-        dot.grid(row=5, column=1)
-        equ = Button(self, text="=")
-        equ.grid(row=5, column=2)
-        pls = Button(self, text="+")
-        pls.grid(row=5, column=3)
-
-        self.pack()
+    my_val = msg.askyesnocancel(my_title, my_msg, default=my_button)
 
 
-def main():
+r1_v = tk.IntVar()  # We used integer variable here
 
-    root = Tk()
-    app = Example()
-    root.mainloop()
+r1 = tk.Radiobutton(my_w, text='Yes', variable=r1_v, value=1, command=my_upd)
+r1.grid(row=1, column=1)
 
+r2 = tk.Radiobutton(my_w, text='No', variable=r1_v, value=2, command=my_upd)
+r2.grid(row=1, column=2)
 
-if __name__ == '__main__':
-    main()
+r3 = tk.Radiobutton(my_w, text='Cancel', variable=r1_v, value=3, command=my_upd)
+r3.grid(row=1, column=3)
+
+my_w.mainloop()

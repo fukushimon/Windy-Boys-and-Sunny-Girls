@@ -128,7 +128,7 @@ class Home(tk.Frame):
             plot = strommix.plot_strommix_ee(bundesland)
 ###################################################
 
-        if self.toolbar_exists == True:
+        if self.toolbar_exists:
             self.center_frame.destroy()
             self.bottom_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, width=50, height=50, pady=3)
             self.center_frame = tk.Frame(self.datenFrame, background='yellow', pady=3)
