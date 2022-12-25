@@ -48,5 +48,45 @@ class PVA:
         self.conn.close()
     
 class Speicher:
-    def __init__(self, model):
-        self.model = model
+    def __init__(self):
+        pass
+        
+    def get_charge_pct(self):
+        return self.charge / self.capacity
+    
+    def charge(self, amount):
+        self.current_charge = self.current_charge + (amount * self.efficiency)
+        if self.current_charge > self.capacity:
+            self.current_charge = self.capacity
+        
+    def decharge(self, amount):
+        if self.current_charge >= amount:
+            self.current_charge = self.current_charge - amount
+        else:
+            print("Error: Not enough charge!")
+    
+    def capacity_left(self):
+        return self.capacity - self.current_charge
+
+class Akku(Speicher):
+    def __init__(self, num_modules, efficiency, location):
+        self.num_modules = num_modules
+        self.efficiency = efficiency 
+        self.power = 5 * num_modules # MW
+        self.capacity = self.power * 1 # MWh
+        self.size = 50 * num_modules # m^2
+        self.cost = 1200000 * self.capacity # Euro
+        self.current_charge = 0 # MWh
+        self.location = location
+
+class Pumpspeicher(Speicher):
+    def __init__(self, location):
+        self.efficiency = 0.8
+        self.power = 120 # MW
+        self.capacity = 600 # MWh
+        self.current_charge = 0 # MWh
+        self.size = 0 # to be determined
+        self.cost = 0 # to be determined
+        self.location = location
+
+        

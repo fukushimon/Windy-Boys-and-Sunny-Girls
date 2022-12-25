@@ -47,9 +47,8 @@ class Strommix(Plot):
         self.sh_data.drop('index', axis=1, inplace=True)
         self.sh_data.index = pd.to_datetime(self.sh_data.index, format="%d.%m.%Y %H:%M")
         
-        today = datetime.now()
         
-        # Curretn year = 2021
+        # Current year = 2021
         if scene == 2:
             self.hh_data['Last'] = self.hh_data['Last'] * pow(1.03, self.year - 2021)
             self.sh_data['Last'] = self.sh_data['Last'] * pow(1.03, self.year - 2021)
@@ -73,7 +72,7 @@ class Strommix(Plot):
             print('No data found!')
             return None
             
-        data_to_plot.drop('Erzeugung', axis=1, inplace=True)
+        data_to_plot.drop(['Erzeugung', 'Speicher'], axis=1, inplace=True)
         
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 11)
@@ -110,7 +109,7 @@ class Strommix(Plot):
             print('No data found!')
             return None
         
-        data_to_plot.drop(['Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1, inplace=True)
+        data_to_plot.drop(['Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle', 'Speicher'], axis=1, inplace=True)
             
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 11)
@@ -136,7 +135,7 @@ class Strommix(Plot):
         return fig    
     
     def calc_erzeugung_ee(self, location):
-        list_of_ee = ['Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare', 'Speicher']
+        list_of_ee = ['Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare']
         
         if location == 'HH':
             erzeugung = self.hh_data[list_of_ee].sum(axis=1)

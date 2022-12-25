@@ -3,7 +3,7 @@ import sqlite3
 from datetime import date
 
 from Plots import Strommix, Wind, Globalstrahlung
-from Anlagen import WEA, PVA
+from Anlagen import WEA, PVA, Akku, Pumpspeicher
 
 class Szenario:
     wea_models = []
@@ -133,3 +133,72 @@ class Szenario:
         new_strommix.add_to_pv(total_energy_pv)
         
         return new_strommix
+    
+    def calc_bilanz(self):
+        # Create Akku modules
+        akku1 = Akku(20000, 0.95, 'Hamburg')
+        pump1 = Pumpspeicher('Hamburg')
+        
+        bilanz = self.calc_strommix().calc_bilanz_ee('Both')
+        
+        def speicher(val):
+            # Charge
+            if val >= 0:
+                if pump1.capacity_left() == 0:
+                    diff = val - akku1.capacity_left()
+                    if diff >= 0:
+                        akku1.charge(akku1.capacity_left())
+                        val = diff
+                    elif diff < 0:
+                        akku1.charge(val)
+                        val = 0
+                else:
+                    diff = val - pump1.capacity_left()
+                    if diff > 0:
+                        pump1.charge(pump1.capacity_left())
+                        val = diff
+                        speicher(val)
+                    elif diff <= 0:
+                        pump1.charge(val)
+                        val = 0
+            else:
+                if val > -400 and val < 0:
+                    diff = abs(val) - pump1.capacity_left()
+                    if diff > 0:
+                        pump1.decharge(pump1.current_charge)
+                        val = diff
+                    elif diff <= 0:
+                        pump1.decharge(abs(val))
+                        val = 0
+                else:
+                    diff = abs(val) - (pump1.capacity_left() + akku1.capacity_left())
+                    if diff > 0:
+                        pump1.decharge(pump1.current_charge)
+                        akku1.decharge(akku1.current_charge)
+                        val = diff
+                    elif diff <= 0:
+                        pump1.decharge(400)
+                        akku1.decharge(abs(val) - 400)
+                        val = 0
+                
+                        
+                        
+            if val > 0 and val >= akku1.capacity_left():
+                akku1.charge(akku1.capacity_left())
+                val = val - akku1.capacity_left()
+            elif val > 0 and val < akku1.capacity_left():
+                akku1.charge(val)
+                val = 0
+            # Decharge
+            elif val < 0 and abs(val) <= akku1.current_charge:
+                akku1.decharge(abs(val))
+                val = 0
+            elif val < 0 and abs(val) > akku1.current_charge:
+                akku1.decharge(akku1.current_charge)
+                val = val + akku1.current_charge
+            
+            return pd.Series([val, akku1.current_charge])
+            
+        bilanz[['Bilanz_Neu', 'Speicher']] = bilanz['Bilanz'].apply(speicher)
+        
+        return bilanz

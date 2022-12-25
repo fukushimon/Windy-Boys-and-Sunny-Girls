@@ -1,4 +1,5 @@
 from Szenario import Szenario
+from Plots import Strommix
 
 wind_ausweisflaechen = {
     'Anlagen': ['Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Enercon', 'Enercon', 'Enercon', 'Enercon'],
@@ -59,18 +60,22 @@ solar_null = {
     }
 
 # Szenario 'MAX': Wind- und Solar-Potenzialflächen werden vollständig bebaut (inkl.Repowering)
-# scene_max = Szenario('Potenzialflaechen', 2030, 1, 
-#                       wind_potenzialflaechen['Anlagen'] + wind_repowering['Anlagen'], 
-#                       wind_potenzialflaechen['Anzahl'] + wind_repowering['Anzahl'], 
-#                       wind_potenzialflaechen['Standorte'] + wind_repowering['Standorte'], 
-#                       solar_potenzialflaechen['Anlagen'], 
-#                       solar_potenzialflaechen['Flaeche'], 
-#                       solar_potenzialflaechen['Standorte']
-#                       )
+scene_max = Szenario('Potenzialflaechen', 2021, 2021, 2, 
+                      wind_potenzialflaechen['Anlagen'] + wind_repowering['Anlagen'], 
+                      wind_potenzialflaechen['Anzahl'] + wind_repowering['Anzahl'], 
+                      wind_potenzialflaechen['Standorte'] + wind_repowering['Standorte'], 
+                      solar_potenzialflaechen['Anlagen'], 
+                      solar_potenzialflaechen['Flaeche'], 
+                      solar_potenzialflaechen['Standorte']
+                      )
 
-# scene_max_mix = scene_max.calc_strommix()
+scene_max_mix = scene_max.calc_strommix()
 # scene_max_mix.plot_bilanz_ee('Both')
-# scene_max_mix.plot_strommix_ee('Both')
+scene_max_mix.plot_strommix_ee('Both')
+
+filt = scene_max_mix.both_data['Last'] > 1200
+dec = scene_max_mix.both_data[filt].loc['2021-12-09']
+
 # print("Szenario MAX:")
 # print(scene_max_mix.calc_pct_positive_bilanz_ee('Both'))
 # print(scene_max_mix.calc_dunkelflaute_ee('Both'))
@@ -131,22 +136,50 @@ solar_null = {
 # print(scene_pv_mix.calc_max_dunkelflaute_ee('Both'))
 
 #Szenario 5Mrd
-scene_5mrd = Szenario('Potenzialflaechen', 2030, 2021, 1, 
-                      wind_ausweisflaechen['Anlagen'] + wind_repowering['Anlagen'], 
-                      wind_ausweisflaechen['Anzahl'] + wind_repowering['Anzahl'], 
-                      wind_ausweisflaechen['Standorte'] + wind_repowering['Standorte'], 
-                      solar_5mrd['Anlagen'], 
-                      solar_5mrd['Flaeche'], 
-                      solar_5mrd['Standorte']
-                      )
+# scene_5mrd = Szenario('Potenzialflaechen', 2030, 2020, 2, 
+#                       wind_ausweisflaechen['Anlagen'] + wind_repowering['Anlagen'], 
+#                       wind_ausweisflaechen['Anzahl'] + wind_repowering['Anzahl'], 
+#                       wind_ausweisflaechen['Standorte'] + wind_repowering['Standorte'], 
+#                       solar_5mrd['Anlagen'], 
+#                       solar_5mrd['Flaeche'], 
+#                       solar_5mrd['Standorte']
+#                       )
 
-scene_5mrd_mix = scene_5mrd.calc_strommix()
-scene_5mrd_mix.plot_bilanz_ee('Both')
-scene_5mrd_mix.plot_strommix_ee('Both')
-print("Szenario 5 Mrd:")
-print(scene_5mrd_mix.calc_pct_positive_bilanz_ee('Both'))
-print(scene_5mrd_mix.calc_dunkelflaute_ee('Both'))
-print(scene_5mrd_mix.calc_max_dunkelflaute_ee('Both'))
+# scene_5mrd = Szenario('Potenzialflaechen', 2021, 2021, 1, 
+#                       wind_ausweisflaechen['Anlagen'], 
+#                       wind_ausweisflaechen['Anzahl'], 
+#                       wind_ausweisflaechen['Standorte'], 
+#                       solar_5mrd['Anlagen'], 
+#                       solar_5mrd['Flaeche'], 
+#                       solar_5mrd['Standorte']
+#                       )
+
+
+
+#scene_5mrd_mix = scene_5mrd.calc_strommix()
+
+#scene_5mrd_mix = Strommix(1, 2021)
+
+# bilanz_ee = scene_5mrd_mix.calc_bilanz_ee('Both')
+# bilanz_normal = scene_5mrd_mix.calc_bilanz('Both')
+# scene_5mrd_mix.plot_bilanz_ee('Both')
+# scene_5mrd_mix.plot_strommix('Both')
+# print("Szenario 5 Mrd:")
+# print(scene_5mrd_mix.calc_pct_positive_bilanz_ee('Both'))
+# dunkelflaute = scene_5mrd_mix.calc_dunkelflaute_ee('Both')
+# print(dunkelflaute)
+# max_dunkelflaute = scene_5mrd_mix.calc_max_dunkelflaute_ee('Both')
+# print(max_dunkelflaute)
+
+# filt = ((scene_5mrd_mix.both_data.index >= max_dunkelflaute.iloc[0]) & (scene_5mrd_mix.both_data.index <= max_dunkelflaute.iloc[1]))
+# max_dunkel_data_ee = bilanz_ee[filt]
+# max_dunkel_data_normal = bilanz_normal[filt]
+# max_dunkel_deficit_ee = max_dunkel_data_ee.sum()
+# max_dunkel_deficit = max_dunkel_data_normal.sum()
+
+
+#print(scene_5mrd_mix.both_data.loc[scene_5mrd_mix.both_data['Last'] == scene_5mrd_mix.both_data['Last'].max()])
+new_bilanz = scene_max.calc_bilanz()
 
 # # Szenario 10Mrd
 # scene_10mrd = Szenario('Potenzialflaechen', 2030, 1, 
