@@ -74,11 +74,6 @@ class Wind(tk.Frame):
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
         scrollbar.pack(side="right", fill="y")
 
-        add_button = tk.Button(self.scrollable_frame, text='Neue Anlage +', **style.STYLE,
-                               activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                               command=lambda: self.add_produktFrame())
-        add_button.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=8)
-
 #Beschreibung Szenario
         datenFrame = tk.Frame(self.scrollable_frame)
         datenFrame.config(background=style.BACKGROUND)
@@ -125,6 +120,7 @@ class Wind(tk.Frame):
         leistungFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)  # (row=0, column=0)
         leistungFrame.grid_columnconfigure(3, weight=1)
         leistungFrame.grid_columnconfigure(4, weight=1)
+        leistungFrame.grid_columnconfigure(5, weight=1)
 
         label_Szenarioname = tk.Label(leistungFrame, text='Gesamteleistung: ', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -134,15 +130,21 @@ class Wind(tk.Frame):
         label_Szenarioname = tk.Label(leistungFrame, text=' MW', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioname.grid(row=0, column=2, padx=5, pady=3)
+
+        anlage_button = tk.Button(leistungFrame, text='Neue Anlage +', **style.STYLE,
+                               activebackground=style.BACKGROUND, activeforeground=style.TEXT,
+                               command=lambda: self.add_produktFrame())
+        anlage_button.grid(row=0, column=4, padx=5, pady=3, sticky=EW)  #pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=8)
+
         berechnen = tk.Button(leistungFrame, text='Berechnen', **style.STYLE, activebackground=style.BACKGROUND,
                               activeforeground=style.TEXT, command=lambda: Wind.faktoren_berücksichtigen(self))
-        berechnen.grid(row=0, column=5, padx=5, pady=3)
+        berechnen.grid(row=0, column=6, padx=5, pady=3)
         Speichern = tk.Button(leistungFrame, text='Speichern', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT)
-        Speichern.grid(row=0, column=6, padx=5, pady=3)
+        Speichern.grid(row=0, column=7, padx=5, pady=3)
         schliessen = tk.Button(leistungFrame, text='Schließen', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Home.Home))
-        schliessen.grid(row=0, column=7, padx=5, pady=3)
+        schliessen.grid(row=0, column=8, padx=5, pady=3)
 
     def loeschen(self):
         self.cbx_Hersteller.current(0)
