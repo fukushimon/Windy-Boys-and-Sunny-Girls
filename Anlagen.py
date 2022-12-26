@@ -68,7 +68,6 @@ class Speicher:
             self.current_charge = self.current_charge - amount
             return amount
         else:
-            print("Error: Not enough charge!")
             discharged_amount = self.current_charge
             self.current_charge = 0
             return discharged_amount

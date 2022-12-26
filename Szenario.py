@@ -27,6 +27,9 @@ class Szenario:
         
         # Add to database
         self.add_to_sql()
+        
+        # Create Strommix
+        self.strommix = self.calc_strommix()
     
     def add_to_sql(self):
         conn = sqlite3.connect('Data.db')
@@ -132,14 +135,20 @@ class Szenario:
         new_strommix.add_to_wind_onshore(total_energy_wind)
         new_strommix.add_to_pv(total_energy_pv)
         
+        # Add Speicher columns
+        speicher = self.calc_bilanz(new_strommix)[['Pumpspeicher', 'Akku']]
+        print(speicher)
+        print(new_strommix.sh_data)
+        new_strommix.add_speicher(speicher)
+        
         return new_strommix
     
-    def calc_bilanz(self):
+    def calc_bilanz(self, mix):
         # Create Akku modules
-        akku1 = Akku(10000, 1, 0.95, 'Hamburg')
-        pump1 = Pumpspeicher(7, 1, 'Hamburg')
+        akku1 = Akku(20000, 1, 0.95, 'Hamburg')
+        pump1 = Pumpspeicher(20, 1, 'Hamburg')
         
-        bilanz = self.calc_strommix().calc_bilanz_ee('Both')
+        bilanz = mix.calc_bilanz_ee('Both')
         
         def speicher(val):
             if val >= 0: # Charge
@@ -154,22 +163,8 @@ class Szenario:
                 if val < 0:
                     val = val + akku1.discharge(abs(val))
             
-            # if val > 0 and val >= akku1.capacity_left():
-            #     akku1.charge(akku1.capacity_left())
-            #     val = val - akku1.capacity_left()
-            # elif val > 0 and val < akku1.capacity_left():
-            #     akku1.charge(val)
-            #     val = 0
-            # # Decharge
-            # elif val < 0 and abs(val) <= akku1.current_charge:
-            #     akku1.decharge(abs(val))
-            #     val = 0
-            # elif val < 0 and abs(val) > akku1.current_charge:
-            #     akku1.decharge(akku1.current_charge)
-            #     val = val + akku1.current_charge
-            
             return pd.Series([val, pump1.current_charge, akku1.current_charge])
             
-        bilanz[['Bilanz_Neu', 'Pumpspeicher', 'Akku']] = bilanz['Bilanz'].apply(speicher)
+        bilanz[['Bilanz', 'Pumpspeicher', 'Akku']] = bilanz['Bilanz'].apply(speicher)
         
         return bilanz
