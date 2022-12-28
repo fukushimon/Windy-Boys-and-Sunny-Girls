@@ -60,7 +60,7 @@ solar_null = {
     }
 
 # Szenario 'MAX': Wind- und Solar-Potenzialflächen werden vollständig bebaut (inkl.Repowering)
-scene_max = Szenario('Potenzialflaechen', 2021, 2021, 2, 
+scene_max = Szenario('Potenzialflaechen', 2021, 2021, 1, 
                       wind_potenzialflaechen['Anlagen'] + wind_repowering['Anlagen'], 
                       wind_potenzialflaechen['Anzahl'] + wind_repowering['Anzahl'], 
                       wind_potenzialflaechen['Standorte'] + wind_repowering['Standorte'], 
@@ -69,10 +69,10 @@ scene_max = Szenario('Potenzialflaechen', 2021, 2021, 2,
                       solar_potenzialflaechen['Standorte']
                       )
 
-# scene_max_mix = scene_max.calc_strommix()
-# scene_max_mix.plot_bilanz_ee('Both')
-scene_max.strommix.plot_strommix_ee('Both')
-new_mix = scene_max.strommix.both_data
+scene_max.strommix.plot_bilanz_ee('SH')
+scene_max.strommix.plot_strommix_ee('SH')
+#scene_max.strommix.plot_speicher('SH')
+# new_mix = scene_max.strommix.sh_data
 
 # print("Szenario MAX:")
 # print(scene_max_mix.calc_pct_positive_bilanz_ee('Both'))
@@ -177,8 +177,10 @@ new_mix = scene_max.strommix.both_data
 
 
 #print(scene_5mrd_mix.both_data.loc[scene_5mrd_mix.both_data['Last'] == scene_5mrd_mix.both_data['Last'].max()])
-# new_bilanz = scene_max.calc_bilanz()
-# deficits = new_bilanz.loc[new_bilanz['Bilanz'] < 0]
+#new_bilanz = scene_max.calc_speicher(scene_max.strommix)
+mix = scene_max.strommix.both_data
+original_bilanz = scene_max.strommix.calc_bilanz_ee('Both')
+deficits = original_bilanz.loc[original_bilanz['Bilanz'] < 0]
 
 # # Szenario 10Mrd
 # scene_10mrd = Szenario('Potenzialflaechen', 2030, 1, 

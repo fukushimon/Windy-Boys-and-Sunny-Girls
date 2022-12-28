@@ -39,12 +39,12 @@ class Strommix(Plot):
         
         # Hamburg Data
         self.hh_data = pd.read_sql_query('SELECT * FROM HH', self.conn, index_col='Datum')
-        self.hh_data.drop(['index', 'Speicher'], axis=1, inplace=True)
+        self.hh_data.drop('index', axis=1, inplace=True)
         self.hh_data.index = pd.to_datetime(self.hh_data.index, format="%d.%m.%Y %H:%M")
         
         # Schleswig Holstein Data
         self.sh_data = pd.read_sql_query('SELECT * FROM SH', self.conn, index_col='Datum')
-        self.sh_data.drop(['index', 'Speicher'], axis=1, inplace=True)
+        self.sh_data.drop('index', axis=1, inplace=True)
         self.sh_data.index = pd.to_datetime(self.sh_data.index, format="%d.%m.%Y %H:%M")
         
         
@@ -71,8 +71,14 @@ class Strommix(Plot):
         else:
             print('No data found!')
             return None
+        
+        columns_drop = ['Erzeugung']
+        if 'Pumpspeicher_Ladestand' in data_to_plot.columns:
+            columns_drop.append('Pumpspeicher_Ladestand')
+        if 'Akku_Ladestand' in data_to_plot.columns:
+            columns_drop.append('Akku_Ladestand')
             
-        data_to_plot.drop(['Erzeugung', 'Speicher'], axis=1, inplace=True)
+        data_to_plot.drop(columns_drop, axis=1, inplace=True)
         
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 11)
@@ -92,8 +98,7 @@ class Strommix(Plot):
         ax.set_xlabel('')
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
-        
-        #plt.show()
+
         plt.tight_layout()
         
         return fig
@@ -109,17 +114,22 @@ class Strommix(Plot):
             print('No data found!')
             return None
         
-        data_to_plot.drop(['Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle', 'Akku', 'Pumpspeicher'], axis=1, inplace=True)
+        columns_drop = ['Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle']
+        if 'Pumpspeicher_Ladestand' in data_to_plot.columns:
+            columns_drop.append('Pumpspeicher_Ladestand')
+        if 'Akku_Ladestand' in data_to_plot.columns:
+            columns_drop.append('Akku_Ladestand')
+            
+        data_to_plot.drop(columns_drop, axis=1, inplace=True)
             
         plt.style.use('seaborn')
         cols = sns.color_palette("Spectral", 12)
         
-        print(data_to_plot)
-        
         fig, ax = plt.subplots(1, 1, figsize=(14, 4))
         
-        ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[0:])
-        #ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.6, color='crimson', linewidth=1)
+        ax.stackplot(data_to_plot.index, (data_to_plot.reset_index(drop=True)).drop('Last', axis=1).T, colors=cols, labels=list(data_to_plot.columns)[1:])
+        #ax.plot(data_to_plot.index, data_to_plot['Akku'])
+        ax.plot(data_to_plot.index, data_to_plot['Last'], label='Last', alpha=0.9, color='dimgray', linewidth=1)
         
         ax.legend(loc='upper left', frameon=1, bbox_to_anchor=(1.01, 1.015))
         
@@ -132,49 +142,70 @@ class Strommix(Plot):
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
         
-        #plt.show()
-        
         return fig   
     
-    def calc_erzeugung(self, location):
+    def plot_speicher(self, location):
+        
         if location == 'HH':
-            data = self.hh_data.drop(['Last', 'Erzeugung'], axis=1)
+            data_to_plot = self.hh_data.loc['2021'].copy()
         elif location == 'SH':
-            data = self.sh_data.drop(['Last', 'Erzeugung'], axis=1)
+            data_to_plot = self.sh_data.loc['2021'].copy()
         elif location == 'Both':
-            data = self.both_data.drop(['Last', 'Erzeugung'], axis=1)
+            data_to_plot = self.both_data.loc['2021'].copy()
         else:
             print('No data found!')
             return None
         
-        return data.sum(axis=1)
+        if 'Pumpspeicher_Ladestand' or 'Akku_Ladestand' in data_to_plot:
+            data_to_plot.drop(['Last', 'Erzeugung', 'Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle', 'Speicher'], axis=1, inplace=True)
+            
+            fig, ax = plt.subplots(1, 1, figsize=(14, 4))
+            ax.plot(data_to_plot)
+            hfmt = mdates.DateFormatter('%b')
+            ax.xaxis.set_major_formatter(hfmt)
+        else:
+            print('Keine Speicher vorhanden!')
+    
+    def calc_erzeugung(self, location):
+        list_of_erzeuger = ['Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle', 'Speicher']
+        if location == 'HH':
+            erzeugung = self.hh_data[list_of_erzeuger].sum(axis=1)
+        elif location == 'SH':
+            erzeugung = self.sh_data[list_of_erzeuger].sum(axis=1)
+        elif location == 'Both':
+            erzeugung = self.both_data[list_of_erzeuger].sum(axis=1)
+        else:
+            print('No data found!')
+            return None
+        
+        return erzeugung
     
     def calc_erzeugung_ee(self, location):
-        # list_of_ee = ['Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare']
+        list_of_ee = ['Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare', 'Speicher']
         
+        if location == 'HH':
+            erzeugung = self.hh_data[list_of_ee].sum(axis=1)
+        elif location == 'SH':
+            erzeugung = self.sh_data[list_of_ee].sum(axis=1)
+        elif location == 'Both':
+            erzeugung = self.both_data[list_of_ee].sum(axis=1)
+        else:
+            print('No data found!')
+            return None
+        
+        return erzeugung
+    
         # if location == 'HH':
-        #     erzeugung = self.hh_data[list_of_ee].sum(axis=1)
+        #     data = self.hh_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
         # elif location == 'SH':
-        #     erzeugung = self.sh_data[list_of_ee].sum(axis=1)
+        #     data = self.sh_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
         # elif location == 'Both':
-        #     erzeugung = self.both_data[list_of_ee].sum(axis=1)
+        #     data = self.both_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
         # else:
         #     print('No data found!')
         #     return None
         
-        # return erzeugung
-    
-        if location == 'HH':
-            data = self.hh_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
-        elif location == 'SH':
-            data = self.sh_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
-        elif location == 'Both':
-            data = self.both_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
-        else:
-            print('No data found!')
-            return None
-        
-        return data.sum(axis=1)
+        # return data.sum(axis=1)
     
     def calc_bilanz(self, location):
         if location == 'HH':
@@ -190,7 +221,7 @@ class Strommix(Plot):
         bilanz = bilanz.to_frame()
         bilanz.rename(columns={0: 'Bilanz'}, inplace=True)
         
-        return bilanz
+        return bilanz.round(3)
     
     def calc_bilanz_ee(self, location):
         if location == 'HH':
@@ -206,7 +237,7 @@ class Strommix(Plot):
         bilanz = bilanz.to_frame()
         bilanz.rename(columns={0: 'Bilanz'}, inplace=True)
         
-        return bilanz
+        return bilanz.round(3)
     
     def calc_pct_positive_bilanz(self, location):
         bilanz = self.calc_bilanz(location)
@@ -317,7 +348,12 @@ class Strommix(Plot):
         
         ax.set_xlim(x.min(), x.max())
         
-        ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        if data_to_plot['Bilanz'].min() == 0:
+            min_y = -100
+        else:
+            min_y = data_to_plot['Bilanz'].min() * 1.1
+        
+        ax.set_ylim(min_y, data_to_plot['Bilanz'].max() * 1.1)
         
         ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
@@ -361,8 +397,12 @@ class Strommix(Plot):
     
         ax.set_xlim(x.min(), x.max())
         
-        ax.set_ylim(data_to_plot['Bilanz'].min() * 1.1, data_to_plot['Bilanz'].max() * 1.1)
+        if data_to_plot['Bilanz'].min() == 0:
+            min_y = -100
+        else:
+            min_y = data_to_plot['Bilanz'].min() * 1.1
         
+        ax.set_ylim(min_y, data_to_plot['Bilanz'].max() * 1.1)
         
         ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
@@ -387,10 +427,12 @@ class Strommix(Plot):
         self.sh_data['Photovoltaik'] = self.sh_data['Photovoltaik'] + sh_pv
         self.both_data['Photovoltaik'] = self.hh_data['Photovoltaik'] + self.sh_data['Photovoltaik']
     
-    # Nur SH
-    def add_speicher(self, speicher):
-        self.sh_data = pd.concat([self.sh_data, speicher], axis=1)
+    # Speicher derzeit nur in SH
+    def add_speicher(self, speicher, location):
+        self.sh_data['Speicher'] = self.sh_data['Speicher'] + speicher['Speicher']
+        #self.sh_data.concat(speicher.drop('Speicher', axis=1)) 
         self.both_data = self.hh_data.add(self.sh_data, fill_value=0)
+        self.both_data = pd.concat([self.both_data, speicher.drop('Speicher', axis=1)], axis=1)
         
 
 class Globalstrahlung(Plot):

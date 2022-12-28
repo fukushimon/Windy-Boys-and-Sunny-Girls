@@ -132,21 +132,19 @@ class Szenario:
         total_energy_pv.index = total_energy_pv.index + pd.offsets.DateOffset(years = 2021 - self.weather_year)
         total_energy_wind.index = total_energy_wind.index + pd.offsets.DateOffset(years = 2021 - self.weather_year)
         
-        new_strommix.add_to_wind_onshore(total_energy_wind)
-        new_strommix.add_to_pv(total_energy_pv)
+        new_strommix.add_to_wind_onshore(total_energy_wind.round(3))
+        new_strommix.add_to_pv(total_energy_pv.round(3))
         
         # Add Speicher columns
-        speicher = self.calc_bilanz(new_strommix)[['Pumpspeicher', 'Akku']]
-        print(speicher)
-        print(new_strommix.sh_data)
-        new_strommix.add_speicher(speicher)
+        speicher = self.calc_speicher(new_strommix)[['Pumpspeicher_Ladestand', 'Akku_Ladestand', 'Speicher']]
+        new_strommix.add_speicher(speicher, 'SH')
         
         return new_strommix
     
-    def calc_bilanz(self, mix):
+    def calc_speicher(self, mix):
         # Create Akku modules
-        akku1 = Akku(20000, 1, 0.95, 'Hamburg')
-        pump1 = Pumpspeicher(20, 1, 'Hamburg')
+        akku1 = Akku(30000, 1, 0.95, 'Hamburg')
+        pump1 = Pumpspeicher(15, 1, 'Hamburg')
         
         bilanz = mix.calc_bilanz_ee('Both')
         
@@ -165,6 +163,8 @@ class Szenario:
             
             return pd.Series([val, pump1.current_charge, akku1.current_charge])
             
-        bilanz[['Bilanz', 'Pumpspeicher', 'Akku']] = bilanz['Bilanz'].apply(speicher)
+        bilanz[['Bilanz_Neu', 'Pumpspeicher_Ladestand', 'Akku_Ladestand']] = bilanz['Bilanz'].apply(speicher)
+        bilanz['Speicher'] = bilanz['Bilanz_Neu'] - bilanz['Bilanz']
+        bilanz['Speicher'].where(bilanz['Speicher'] > 0, 0, inplace=True)
         
         return bilanz
