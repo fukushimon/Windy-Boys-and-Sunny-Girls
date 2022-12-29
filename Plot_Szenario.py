@@ -69,15 +69,15 @@ scene_max = Szenario('Potenzialflaechen', 2021, 2021, 1,
                       solar_potenzialflaechen['Standorte']
                       )
 
-scene_max.strommix.plot_bilanz_ee('SH')
-scene_max.strommix.plot_strommix_ee('SH')
-#scene_max.strommix.plot_speicher('SH')
+scene_max.strommix.plot_bilanz_ee('Both')
+scene_max.strommix.plot_strommix_ee('Both')
+scene_max.strommix.plot_speicher('Both')
 # new_mix = scene_max.strommix.sh_data
 
-# print("Szenario MAX:")
-# print(scene_max_mix.calc_pct_positive_bilanz_ee('Both'))
-# print(scene_max_mix.calc_dunkelflaute_ee('Both'))
-# print(scene_max_mix.calc_max_dunkelflaute_ee('Both'))
+print("Szenario MAX:")
+print(scene_max.strommix.calc_pct_positive_bilanz_ee('Both'))
+print(scene_max.strommix.calc_dunkelflaute_ee('Both'))
+print(scene_max.strommix.calc_max_dunkelflaute_ee('Both'))
 
 # Szenario 'Ausweisflächen + Repowering'
 # scene_ausweis = Szenario('Ausweisflaechen', 2030, 1, 

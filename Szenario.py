@@ -136,35 +136,45 @@ class Szenario:
         new_strommix.add_to_pv(total_energy_pv.round(3))
         
         # Add Speicher columns
-        speicher = self.calc_speicher(new_strommix)[['Pumpspeicher_Ladestand', 'Akku_Ladestand', 'Speicher']]
+        speicher = self.calc_speicher(new_strommix)[['Pumpspeicher_Ladestand', 'Druckluftspeicher_Ladestand', 'Akku_Ladestand', 'Speicher']]
         new_strommix.add_speicher(speicher, 'SH')
         
         return new_strommix
     
     def calc_speicher(self, mix):
         # Create Speicher instances from user input
-        akku = Akku(30000, 1, 'Hamburg')
-        pump = Pumpspeicher(15, 1, 'Hamburg')
-        druckluft = Druckluftspeicher(10, 1, 'Hamburg')
+        akku = Akku(10000, 1, 'Hamburg')
+        pump = Pumpspeicher(20, 1, 'Hamburg')
+        druckluft = Druckluftspeicher(20, 1, 'Hamburg')
         
         bilanz = mix.calc_bilanz_ee('Both')
         
         def speicher(val):
             if val >= 0: # Charge
-                if pump.capacity_left() == 0: # Pumpspeicher is fully charged
+                if pump.capacity_left() == 0 and druckluft.capacity_left() == 0: # Pumpspeicher and Druckluftspeicher are fully charged
                     val = val - akku.charge(val)
                 else:
-                    val = val - pump.charge(val)
+                    val = val - pump.charge(val/2)
+                    val = val - druckluft.charge(val)
                     if val > 0:
                         val = val - akku.charge(val)
             else: # Discharge
-                val = val + pump.discharge(abs(val))
+                while True:
+                    val = val + pump.discharge(abs(val/2))
+                    val = val + druckluft.discharge(abs(val))
+                    
+                    if((pump.capacity_left() == pump.capacity) and (druckluft.capacity_left() == druckluft.capacity)):
+                        break
+                    
+                    if(val >= 0):
+                        break
+                
                 if val < 0:
                     val = val + akku.discharge(abs(val))
             
-            return pd.Series([val, pump.current_charge, akku.current_charge])
+            return pd.Series([val, pump.current_charge, druckluft.current_charge, akku.current_charge])
             
-        bilanz[['Bilanz_Neu', 'Pumpspeicher_Ladestand', 'Akku_Ladestand']] = bilanz['Bilanz'].apply(speicher)
+        bilanz[['Bilanz_Neu', 'Pumpspeicher_Ladestand', 'Druckluftspeicher_Ladestand', 'Akku_Ladestand']] = bilanz['Bilanz'].apply(speicher)
         bilanz['Speicher'] = bilanz['Bilanz_Neu'] - bilanz['Bilanz']
         bilanz['Speicher'].where(bilanz['Speicher'] > 0, 0, inplace=True)
         

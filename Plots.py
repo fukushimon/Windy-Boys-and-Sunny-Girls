@@ -77,6 +77,8 @@ class Strommix(Plot):
             columns_drop.append('Pumpspeicher_Ladestand')
         if 'Akku_Ladestand' in data_to_plot.columns:
             columns_drop.append('Akku_Ladestand')
+        if 'Druckluftspeicher_Ladestand' in data_to_plot.columns:
+            columns_drop.append('Druckluftspeicher_Ladestand')
             
         data_to_plot.drop(columns_drop, axis=1, inplace=True)
         
@@ -90,9 +92,10 @@ class Strommix(Plot):
         
         ax.legend(loc='upper left', frameon=1, bbox_to_anchor=(1.01, 1.015))
         
-        hfmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_formatter(hfmt)
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+        ax.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_locator(locator)
         ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         ax.set_xlabel('')
@@ -119,6 +122,8 @@ class Strommix(Plot):
             columns_drop.append('Pumpspeicher_Ladestand')
         if 'Akku_Ladestand' in data_to_plot.columns:
             columns_drop.append('Akku_Ladestand')
+        if 'Druckluftspeicher_Ladestand' in data_to_plot.columns:
+            columns_drop.append('Druckluftspeicher_Ladestand')
             
         data_to_plot.drop(columns_drop, axis=1, inplace=True)
             
@@ -133,9 +138,10 @@ class Strommix(Plot):
         
         ax.legend(loc='upper left', frameon=1, bbox_to_anchor=(1.01, 1.015))
         
-        hfmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_formatter(hfmt)
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+        ax.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_locator(locator)
         ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         ax.set_xlabel('')
@@ -156,13 +162,17 @@ class Strommix(Plot):
             print('No data found!')
             return None
         
-        if 'Pumpspeicher_Ladestand' or 'Akku_Ladestand' in data_to_plot:
+        if 'Pumpspeicher_Ladestand' or 'Akku_Ladestand' or 'Druckluftspeicher_Ladestand' in data_to_plot:
             data_to_plot.drop(['Last', 'Erzeugung', 'Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle', 'Speicher'], axis=1, inplace=True)
             
             fig, ax = plt.subplots(1, 1, figsize=(14, 4))
             ax.plot(data_to_plot)
-            hfmt = mdates.DateFormatter('%b')
-            ax.xaxis.set_major_formatter(hfmt)
+            
+            locator = mdates.AutoDateLocator()
+            formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+            ax.xaxis.set_major_formatter(formatter)
+            ax.xaxis.set_major_locator(locator)
+            ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         else:
             print('Keine Speicher vorhanden!')
     
@@ -194,18 +204,6 @@ class Strommix(Plot):
             return None
         
         return erzeugung
-    
-        # if location == 'HH':
-        #     data = self.hh_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
-        # elif location == 'SH':
-        #     data = self.sh_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
-        # elif location == 'Both':
-        #     data = self.both_data.drop(['Last', 'Erzeugung', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle'], axis=1)
-        # else:
-        #     print('No data found!')
-        #     return None
-        
-        # return data.sum(axis=1)
     
     def calc_bilanz(self, location):
         if location == 'HH':
@@ -281,11 +279,14 @@ class Strommix(Plot):
         
         return t_dunkelflaute
     
-    def calc_dunkelflaute_ee(self, location):
+    def calc_dunkelflaute_ee(self, location): # Make filter greater equal zero, NOT greater zero!!
         bilanz = self.calc_bilanz_ee(location)
         
         # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
         bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
+        
+        print('Greater Zero:')
+        print(bilanz)
         
         # Remove Datum from index
         bilanz = bilanz.reset_index()
@@ -294,9 +295,15 @@ class Strommix(Plot):
         bilanz['Shifted'] = bilanz['Greater_Zero'].shift()
         bilanz['Cumsum'] = (bilanz['Greater_Zero'] != bilanz['Shifted']).cumsum()
         
+        print('Cumsum:')
+        print(bilanz)
+        
         # Set and apply filter
         filt = bilanz['Greater_Zero'] == False        
         bilanz = bilanz[filt]
+        
+        print('After filter:')
+        print(bilanz)
         
         # Group by cumsum column (each cumsum number represents series of consecutive 'Greater_Zero'-values)
         bilanz_grp = bilanz.groupby(['Cumsum'])
@@ -342,10 +349,6 @@ class Strommix(Plot):
         lc.set_linewidth(1)
         line = ax.add_collection(lc)
         
-        hfmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_formatter(hfmt)
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
-        
         ax.set_xlim(x.min(), x.max())
         
         if data_to_plot['Bilanz'].min() == 0:
@@ -355,16 +358,11 @@ class Strommix(Plot):
         
         ax.set_ylim(min_y, data_to_plot['Bilanz'].max() * 1.1)
         
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+        ax.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_locator(locator)
         ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
-        
-        # if self.scene == 1:
-        #     ax.set_ylim(-1500, 1500)
-        # elif self.scene == 2:
-        #     ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
-        # elif self.scene == 3:
-        #     ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
-            
-        #plt.show()
         
         return fig    
     
@@ -390,10 +388,6 @@ class Strommix(Plot):
         lc.set_array(y)
         lc.set_linewidth(1)
         line = ax.add_collection(lc)
-        
-        hfmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_formatter(hfmt)
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
     
         ax.set_xlim(x.min(), x.max())
         
@@ -404,16 +398,11 @@ class Strommix(Plot):
         
         ax.set_ylim(min_y, data_to_plot['Bilanz'].max() * 1.1)
         
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+        ax.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_locator(locator)
         ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
-        
-        # if self.scene == 1:
-        #     ax.set_ylim(-1500, 1500)
-        # elif self.scene == 2:
-        #     ax.set_ylim(-1500*pow(1.03, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
-        # elif self.scene == 3:
-        #     ax.set_ylim(-1500*pow(1.06, self.year - int(today.strftime('%Y'))), 1500*pow(1.03, self.year - int(today.strftime('%Y'))))
-        
-        #plt.show()
         
         return fig
     
@@ -468,15 +457,15 @@ class Globalstrahlung(Plot):
         
         plt.plot(data_to_plot.index, data_to_plot[('{}').format(location)], linewidth=1)
         
-        hfmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_formatter(hfmt)
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+        ax.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_locator(locator)
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         ax.set_xlabel('')
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
-        
-        #plt.show()
         
         return fig
     
@@ -567,14 +556,14 @@ class Wind(Plot):
         
         plt.plot(data_to_plot.index, data_to_plot[('{}').format(location)], linewidth=1)
         
-        hfmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_formatter(hfmt)
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+        ax.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_locator(locator)
+        ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         ax.set_xlabel('')
         
         ax.set_xlim(data_to_plot.index.min(), data_to_plot.index.max())
-        
-        #plt.show()
         
         return fig
