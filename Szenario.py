@@ -3,7 +3,7 @@ import sqlite3
 from datetime import date
 
 from Plots import Strommix, Wind, Globalstrahlung
-from Anlagen import WEA, PVA, Akku, Pumpspeicher
+from Anlagen import WEA, PVA, Akku, Pumpspeicher, Druckluftspeicher
 
 class Szenario:
     wea_models = []
@@ -142,26 +142,27 @@ class Szenario:
         return new_strommix
     
     def calc_speicher(self, mix):
-        # Create Akku modules
-        akku1 = Akku(30000, 1, 0.95, 'Hamburg')
-        pump1 = Pumpspeicher(15, 1, 'Hamburg')
+        # Create Speicher instances from user input
+        akku = Akku(30000, 1, 'Hamburg')
+        pump = Pumpspeicher(15, 1, 'Hamburg')
+        druckluft = Druckluftspeicher(10, 1, 'Hamburg')
         
         bilanz = mix.calc_bilanz_ee('Both')
         
         def speicher(val):
             if val >= 0: # Charge
-                if pump1.capacity_left() == 0: # Pumpspeicher is 90% charged
-                    val = val - akku1.charge(val)
+                if pump.capacity_left() == 0: # Pumpspeicher is fully charged
+                    val = val - akku.charge(val)
                 else:
-                    val = val - pump1.charge(val)
+                    val = val - pump.charge(val)
                     if val > 0:
-                        val = val - akku1.charge(val)
+                        val = val - akku.charge(val)
             else: # Discharge
-                val = val + pump1.discharge(abs(val))
+                val = val + pump.discharge(abs(val))
                 if val < 0:
-                    val = val + akku1.discharge(abs(val))
+                    val = val + akku.discharge(abs(val))
             
-            return pd.Series([val, pump1.current_charge, akku1.current_charge])
+            return pd.Series([val, pump.current_charge, akku.current_charge])
             
         bilanz[['Bilanz_Neu', 'Pumpspeicher_Ladestand', 'Akku_Ladestand']] = bilanz['Bilanz'].apply(speicher)
         bilanz['Speicher'] = bilanz['Bilanz_Neu'] - bilanz['Bilanz']

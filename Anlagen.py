@@ -76,11 +76,12 @@ class Speicher:
         return self.capacity - self.current_charge
 
 class Akku(Speicher):
-    def __init__(self, num_modules, start_charge, efficiency, location):
+    def __init__(self, num_modules, start_charge, location):
         self.num_modules = num_modules
-        self.efficiency = efficiency 
+        self.efficiency = 0.9
         self.power = 5 * num_modules # MW
-        self.capacity = self.power * 1 # MWh
+        self.full_load_time = 1 # h
+        self.capacity = self.power * self.full_load_time # MWh
         self.size = 50 * num_modules # m^2
         self.cost = 1200000 * self.capacity # Euro
         self.current_charge = self.capacity * start_charge # MWh
@@ -90,7 +91,19 @@ class Pumpspeicher(Speicher):
     def __init__(self, num_units, start_charge, location):
         self.efficiency = 0.8
         self.power = 120 * num_units # MW
-        self.capacity = self.power * 5 # MWh
+        self.full_load_time = 5 # h
+        self.capacity = self.power * self.full_load_time # MWh
+        self.current_charge = self.capacity * start_charge # MWh
+        self.size = 0 * num_units # to be determined
+        self.cost = 0 * num_units # to be determined
+        self.location = location
+
+class Druckluftspeicher(Speicher):
+    def __init__(self, num_units, start_charge, location):
+        self.efficiency = 0.42
+        self.power = 321 * num_units # MW
+        self.full_load_time = 5 # h
+        self.capacity = self.power * self.full_load_time # MWh
         self.current_charge = self.capacity * start_charge # MWh
         self.size = 0 * num_units # to be determined
         self.cost = 0 * num_units # to be determined
