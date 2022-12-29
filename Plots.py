@@ -120,9 +120,11 @@ class Strommix(Plot):
         
         ax.legend(loc='upper left', frameon=1, bbox_to_anchor=(1.01, 1.015))
         
-        hfmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_formatter(hfmt)
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        #hfmt = mdates.DateFormatter('%b')
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
+        ax.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_locator(locator)
         ax.yaxis.set_major_formatter(tkr.FuncFormatter(self.energy_numfmt))
         
         ax.set_xlabel('')
