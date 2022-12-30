@@ -8,7 +8,7 @@ from konstante import style
 class Speicher(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.config(bg='white')#style.BACKGROUND)
+        self.config(bg=style.BACKGROUND)
         self.controller = controller
         Wind.Wind.button_menu(self)
 
@@ -26,13 +26,13 @@ class Speicher(tk.Frame):
 
 # Scrollbar hinzufügen
         scrollbar = tk.Scrollbar(speicherFrame)
-        canvas = tk.Canvas(speicherFrame, bg='red', yscrollcommand=scrollbar.set)
+        canvas = tk.Canvas(speicherFrame, bg=style.BACKGROUND, yscrollcommand=scrollbar.set)
         scrollbar.config(command=canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
 # Beschreibung Szenario
         datenFrame = tk.Frame(speicherFrame)
-        datenFrame.config(background='blue')  # style.BACKGROUND)
+        datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)  # (row=0, column=0)
 
         label_Szenarioname = tk.Label(datenFrame, text='Szenarioname:', **style.STYLE,

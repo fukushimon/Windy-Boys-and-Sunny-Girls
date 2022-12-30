@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-import Home
-import Speicher
 import Wind
 from konstante import style
 from tkinter import *
@@ -11,7 +9,7 @@ from tkinter import *
 class Solar(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.config(bg='white')#bg=style.BACKGROUND)
+        self.config(bg=style.BACKGROUND)
         self.controller = controller
         Wind.Wind.button_menu(self)
         label1 = tk.Label(self, text='Scenario Solar', **style.FONTTITEL,
@@ -28,9 +26,9 @@ class Solar(tk.Frame):
         solarFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
 # Scrollbar hinzufügen
-        self.canvas = tk.Canvas(solarFrame)
+        self.canvas = tk.Canvas(solarFrame, background=style.BACKGROUND)
         scrollbar = tk.Scrollbar(solarFrame, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = tk.Frame(self.canvas)
+        self.scrollable_frame = tk.Frame(self.canvas, background=style.BACKGROUND)
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -52,8 +50,8 @@ class Solar(tk.Frame):
 
 # Beschreibung Szenario
         datenFrame = tk.Frame(self.scrollable_frame)
-        datenFrame.config(background='blue')  # style.BACKGROUND)
-        datenFrame.pack(side=tk.TOP, expand=True, padx=10, pady=8)  # (row=0, column=0)
+        datenFrame.config(background=style.BACKGROUND)
+        datenFrame.pack(side=tk.TOP, expand=True, padx=10, pady=8)
 
         label_Szenarioname = tk.Label(datenFrame, text='Szenarioname:', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -82,7 +80,7 @@ class Solar(tk.Frame):
     def add_produktFrame(self):
 
         produktFrame = tk.Frame(self.scrollable_frame)
-        produktFrame.config(background='blue')  # style.BACKGROUND)
+        produktFrame.config(background=style.BACKGROUND)
         produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
 
         Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
@@ -117,21 +115,26 @@ class Solar(tk.Frame):
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.grid(row=1, column=3, padx=5, pady=3)
 
-        label2 = tk.Label(produktFrame, text="Anzahl", **style.STYLE,
+        label2 = tk.Label(produktFrame, text="Fläche", **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label2.grid(row=0, column=4, padx=5, pady=3)
 
         anzahl = IntVar(produktFrame)
         anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100, textvariable=anzahl)
+        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=10, from_=0, to=100, textvariable=anzahl)
         self.anzahl_spinbox.grid(row=0, column=5)
 
         button1 = tk.Button(produktFrame, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT, command=self.loeschen)
         button1.grid(row=1, column=5, padx=5, pady=3)
 
+        label2 = tk.Label(produktFrame, text="in m^2", **style.STYLE,
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        label2.grid(row=0, column=6, padx=5, pady=3)
+
+
     def _on_mousewheel(self, event):
-        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units") #120
 
     def _bind_to_mousewheel(self, event):
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)

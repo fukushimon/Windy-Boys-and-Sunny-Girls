@@ -14,7 +14,7 @@ class Home(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.config(background='red')#style.BACKGROUND)
+        self.config(background=style.BACKGROUND)
         self.controller = controller
         self.init_widgets()
         self.grid_columnconfigure(0, weight=1)
@@ -57,7 +57,7 @@ class Home(tk.Frame):
         # Alle GridFrame erzeugen
         self.top_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, height=60, pady=3)
         self.left_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, pady=3)
-        self.center_frame = tk.Frame(self.datenFrame, background='yellow', pady=3)
+        self.center_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, pady=3)
         self.bottom_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, width=50, height=50, pady=3)
 
         # Alle gridFrame auf layout sortieren

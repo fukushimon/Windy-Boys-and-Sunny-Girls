@@ -1,10 +1,8 @@
-import tkinter
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk, messagebox
 
 import Energiebilanz
-import ScrollabelFrame
 import Speicher
 import Home
 import Solar
@@ -49,12 +47,13 @@ class Wind(tk.Frame):
 
         self.windFrame = tk.Frame(self)
         self.windFrame.config(background=style.BACKGROUND)
-        self.windFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
+        self.windFrame.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=8)
 
         # Scrollbar hinzufügen
-        self.canvas = tk.Canvas(self.windFrame)
+        self.canvas = tk.Canvas(self.windFrame, background='blue')#style.BACKGROUND)
         scrollbar = tk.Scrollbar(self.windFrame, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = tk.Frame(self.canvas)
+        self.scrollable_frame = tk.Frame(self.canvas, background='yellow')#style.BACKGROUND)
+
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -65,7 +64,6 @@ class Wind(tk.Frame):
         self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
         self.scrollable_frame.bind('<Enter>', self._bind_to_mousewheel)
         self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
-
 
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
 
@@ -157,7 +155,7 @@ class Wind(tk.Frame):
     def add_produktFrame(self):
 
         produktFrame = tk.Frame(self.scrollable_frame)
-        produktFrame.config(background='blue')  # style.BACKGROUND)
+        produktFrame.config(background=style.BACKGROUND)
         produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
 
         Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
