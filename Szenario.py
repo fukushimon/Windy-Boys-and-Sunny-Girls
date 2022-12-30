@@ -9,7 +9,21 @@ class Szenario:
     wea_models = []
     pv_models = []
     
-    def __init__(self, name, year, weather_year, last_szenario, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
+    def __init__(self, 
+                 name, 
+                 year, 
+                 weather_year, 
+                 last_szenario, 
+                 wea_models, 
+                 wea_count, 
+                 wea_locations, 
+                 pv_models, 
+                 pv_area, 
+                 pv_locations, 
+                 num_akku, 
+                 num_pump, 
+                 num_druckluft, 
+                 start_charge):
         self.name = name
         self.year = year
         self.weather_year = weather_year
@@ -18,6 +32,10 @@ class Szenario:
         self.wea_locations = wea_locations
         self.pv_area = pv_area # in km^2
         self.pv_locations = pv_locations
+        self.num_akku = num_akku
+        self.num_pump = num_pump
+        self.num_druckluft = num_druckluft
+        self.start_charge = start_charge
         
         for model in wea_models:
             self.wea_models.append(WEA(model))
@@ -143,9 +161,9 @@ class Szenario:
     
     def calc_speicher(self, mix):
         # Create Speicher instances from user input
-        akku = Akku(10000, 1, 'Hamburg')
-        pump = Pumpspeicher(20, 1, 'Hamburg')
-        druckluft = Druckluftspeicher(20, 1, 'Hamburg')
+        akku = Akku(self.num_akku, self.start_charge, 'Quickborn')
+        pump = Pumpspeicher(self.num_pump, self.start_charge, 'Quickborn')
+        druckluft = Druckluftspeicher(self.num_druckluft, self.start_charge, 'Quickborn')
         
         bilanz = mix.calc_bilanz_ee('Both')
         

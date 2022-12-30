@@ -60,7 +60,7 @@ solar_null = {
     }
 
 # Szenario 'MAX': Wind- und Solar-Potenzialflächen werden vollständig bebaut (inkl.Repowering)
-scene_max = Szenario('Potenzialflaechen', 2021, 2021, 1, 
+scene_max = Szenario('Potenzialflaechen', 2021, 2020, 1, 
                       wind_potenzialflaechen['Anlagen'] + wind_repowering['Anlagen'], 
                       wind_potenzialflaechen['Anzahl'] + wind_repowering['Anzahl'], 
                       wind_potenzialflaechen['Standorte'] + wind_repowering['Standorte'], 

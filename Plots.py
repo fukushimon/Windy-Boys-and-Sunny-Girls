@@ -168,6 +168,8 @@ class Strommix(Plot):
             fig, ax = plt.subplots(1, 1, figsize=(14, 4))
             ax.plot(data_to_plot)
             
+            ax.legend(loc='upper left', frameon=1, bbox_to_anchor=(1.01, 1.015), labels=data_to_plot.columns)
+            
             locator = mdates.AutoDateLocator()
             formatter = mdates.ConciseDateFormatter(locator, formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], zero_formats=['', '%b', '%b-%d', '%b-%d %H:%M', '%b-%d %H:%M', ''], show_offset=False)
             ax.xaxis.set_major_formatter(formatter)
@@ -257,7 +259,7 @@ class Strommix(Plot):
         bilanz = self.calc_bilanz(location)
         
         # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
-        bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
+        bilanz['Greater_Zero'] = bilanz['Bilanz'].ge(0)
         
         # Remove Datum from index
         bilanz = bilanz.reset_index()
@@ -283,10 +285,7 @@ class Strommix(Plot):
         bilanz = self.calc_bilanz_ee(location)
         
         # Create column with boolean values (0 if bilanz < 0 and 1 if bilanz > 0)
-        bilanz['Greater_Zero'] = bilanz['Bilanz'].gt(0)
-        
-        print('Greater Zero:')
-        print(bilanz)
+        bilanz['Greater_Zero'] = bilanz['Bilanz'].ge(0)
         
         # Remove Datum from index
         bilanz = bilanz.reset_index()
@@ -295,15 +294,9 @@ class Strommix(Plot):
         bilanz['Shifted'] = bilanz['Greater_Zero'].shift()
         bilanz['Cumsum'] = (bilanz['Greater_Zero'] != bilanz['Shifted']).cumsum()
         
-        print('Cumsum:')
-        print(bilanz)
-        
         # Set and apply filter
         filt = bilanz['Greater_Zero'] == False        
         bilanz = bilanz[filt]
-        
-        print('After filter:')
-        print(bilanz)
         
         # Group by cumsum column (each cumsum number represents series of consecutive 'Greater_Zero'-values)
         bilanz_grp = bilanz.groupby(['Cumsum'])
@@ -322,9 +315,12 @@ class Strommix(Plot):
     
     def calc_max_dunkelflaute_ee(self, location):
         dunkelflaute = self.calc_dunkelflaute_ee(location)
-        max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
-        
-        return max_dunkelflaute
+        try:
+            max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
+        except:
+            print('Keine Dunkelflauten vorhanden.')
+        else:
+            return max_dunkelflaute
         
     def plot_bilanz(self, location):
         data_to_plot = self.calc_bilanz(location)

@@ -8,8 +8,19 @@ class WEA:
         self.manufacturer = manufacturer
         
         # Kosten der WEA???
-        self.cost = 0
-        
+        if self.manufacturer == 'Nordex':
+            self.cost = 1000000 * 3.6 # 1000 Euro pro Kilowatt
+        if self.manufacturer == 'Vestas':
+            self.cost = 1000000 * 8
+        if self.manufacturer == 'Senvion':
+            self.cost = 1000000 * 3.4
+        if self.manufacturer == 'GE':
+            self.cost = 1000000 * 3.4
+        if self.manufacturer == 'Gamesa':
+            self.cost = 1000000 * 5
+        if self.manufacturer == 'Enercon':
+            self.cost = 1000000 * 4.2
+
         # Kennlinie der WEA 
         self.pwr_output = pd.read_sql_query(('SELECT Windgeschwindigkeit, {} FROM WEAs').format(manufacturer), self.conn)
         
@@ -33,9 +44,9 @@ class PVA:
         data_list = self.c.fetchall()
         
         self.efficiency = data_list[0][2]
-        self.cost = data_list[0][3]
         self.area = data_list[0][4]
         self.max_pwr = data_list[0][5]
+        self.cost = 1350 * self.max_pwr
         
         self.disconnect_from_sql()
         
@@ -95,7 +106,7 @@ class Pumpspeicher(Speicher):
         self.capacity = self.power * self.full_load_time # MWh
         self.current_charge = self.capacity * start_charge # MWh
         self.size = 0 * num_units # to be determined
-        self.cost = 0 * num_units # to be determined
+        self.cost = 0 * self.capacity # to be determined
         self.location = location
 
 class Druckluftspeicher(Speicher):
@@ -106,7 +117,7 @@ class Druckluftspeicher(Speicher):
         self.capacity = self.power * self.full_load_time # MWh
         self.current_charge = self.capacity * start_charge # MWh
         self.size = 0 * num_units # to be determined
-        self.cost = 0 * num_units # to be determined
+        self.cost = 120000 * self.capacity # Euro
         self.location = location
 
         
