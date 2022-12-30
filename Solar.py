@@ -134,7 +134,7 @@ class Solar(tk.Frame):
 
 
     def _on_mousewheel(self, event):
-        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units") #120
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def _bind_to_mousewheel(self, event):
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)

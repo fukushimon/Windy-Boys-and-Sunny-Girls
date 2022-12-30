@@ -56,6 +56,7 @@ class Wind(tk.Frame):
 
 
         self.scrollable_frame.bind(
+        #self.canvas.bind(
             "<Configure>",
             lambda e: self.canvas.configure(
                 scrollregion=self.canvas.bbox("all")
@@ -65,12 +66,12 @@ class Wind(tk.Frame):
         self.scrollable_frame.bind('<Enter>', self._bind_to_mousewheel)
         self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
 
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.create_window((0, 0), anchor="nw", window=self.scrollable_frame)
 
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
-        scrollbar.pack(side="right", fill="y")
+        scrollbar.pack(side=RIGHT, fill=Y)
 
 #Beschreibung Szenario
         datenFrame = tk.Frame(self.scrollable_frame)
