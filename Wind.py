@@ -53,8 +53,8 @@ class Wind(tk.Frame):
 
         # Scrollbar hinzufügen
         self.canvas = tk.Canvas(self.windFrame)
-        scrollbar = ttk.Scrollbar(self.windFrame, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = ttk.Frame(self.canvas)
+        scrollbar = tk.Scrollbar(self.windFrame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = tk.Frame(self.canvas)
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -134,10 +134,10 @@ class Wind(tk.Frame):
         anlage_button = tk.Button(leistungFrame, text='Neue Anlage +', **style.STYLE,
                                activebackground=style.BACKGROUND, activeforeground=style.TEXT,
                                command=lambda: self.add_produktFrame())
-        anlage_button.grid(row=0, column=4, padx=5, pady=3, sticky=EW)  #pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=8)
+        anlage_button.grid(row=0, column=4, padx=5, pady=3, sticky=EW)
 
         berechnen = tk.Button(leistungFrame, text='Berechnen', **style.STYLE, activebackground=style.BACKGROUND,
-                              activeforeground=style.TEXT, command=lambda: Wind.faktoren_berücksichtigen(self))
+                              activeforeground=style.TEXT, command=lambda: Wind.faktoren_beruecksichtigen(self))
         berechnen.grid(row=0, column=6, padx=5, pady=3)
         Speichern = tk.Button(leistungFrame, text='Speichern', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT)
@@ -153,22 +153,59 @@ class Wind(tk.Frame):
         var = IntVar(0)
         self.anzahl_spinbox.config(textvariable=var)
 
-    def berechnen(self):
-        confirm = messagebox.askyesnocancel('Berechnung', 'asdfghjklöpoiuztrewqyxcvbnm')
-        if confirm:
-            self.controller.show_frame(Energiebilanz.Energiebilanz)
-            self.newWindow.destroy()
-        elif confirm is None:
-            self.newWindow.destroy()
-            self.faktoren_berücksichtigen()
-        else:
-            self.newWindow.destroy()
 
+    def add_produktFrame(self):
 
+        produktFrame = tk.Frame(self.scrollable_frame)
+        produktFrame.config(background='blue')  # style.BACKGROUND)
+        produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
 
-    ########################
+        Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
+                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        Hersteller.grid(row=0, column=0, padx=5, pady=3)
+        self.cbx_Hersteller = ttk.Combobox(produktFrame, width=50)
+        Hersteller = ('', 'Enercon', 'Vestas', 'Siemens-Gamesa', 'Nordex')
+        self.cbx_Hersteller['values'] = Hersteller
+        self.cbx_Hersteller.current(0)
+        self.cbx_Hersteller.grid(row=0, column=1)
 
-    def faktoren_berücksichtigen(self):
+        Standort = tk.Label(produktFrame, text='Standort', **style.STYLE,
+                            activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        Standort.grid(row=1, column=0, padx=5, pady=3)
+        self.cbx_Standort = ttk.Combobox(produktFrame, width=50)
+        Standort = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
+                    'Schleswig-Holstein D', 'Schleswig-Holstein E', 'Schleswig-Holstein F', 'Hamburg')
+        self.cbx_Standort['values'] = Standort
+        self.cbx_Standort.current(0)
+        self.cbx_Standort.grid(row=1, column=1)
+
+        Modellname = tk.Label(produktFrame, text='Modellname', **style.STYLE,
+                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        Modellname.grid(row=0, column=2, padx=5, pady=3)
+        self.cbx_Modellname = ttk.Combobox(produktFrame, width=50)
+        Modellname = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
+        self.cbx_Modellname['values'] = Modellname
+        self.cbx_Modellname.current(0)
+        self.cbx_Modellname.grid(row=0, column=3)
+
+        label1 = tk.Label(produktFrame, text='Wetter daten werden automatisch beruchsichtig', **style.STYLE,
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        label1.grid(row=1, column=3, padx=5, pady=3)
+
+        label2 = tk.Label(produktFrame, text="Anzahl", **style.STYLE,
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        label2.grid(row=0, column=4, padx=5, pady=3)
+
+        anzahl = IntVar(produktFrame)
+        anzahl.set(0)
+        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100, textvariable=anzahl)
+        self.anzahl_spinbox.grid(row=0, column=5)
+
+        button1 = tk.Button(produktFrame, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
+                            activeforeground=style.TEXT, command=self.loeschen)
+        button1.grid(row=1, column=5, padx=5, pady=3)
+
+    def faktoren_beruecksichtigen(self):
         self.newWindow = tk.Toplevel(self)
         self.newWindow.title("Berechnen")
         self.newWindow.geometry("400x500")
@@ -242,59 +279,16 @@ class Wind(tk.Frame):
                                command=lambda: self.newWindow.destroy())
         abbrechen_button.grid(row=14, column=1, sticky=E, padx=5, pady=3)
 
-        ########################
-
-    def add_produktFrame(self):
-
-        produktFrame = tk.Frame(self.scrollable_frame)
-        produktFrame.config(background='blue')  # style.BACKGROUND)
-        produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
-
-        Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Hersteller.grid(row=0, column=0, padx=5, pady=3)
-        self.cbx_Hersteller = ttk.Combobox(produktFrame, width=50)
-        Hersteller = ('', 'Enercon', 'Vestas', 'Siemens-Gamesa', 'Nordex')
-        self.cbx_Hersteller['values'] = Hersteller
-        self.cbx_Hersteller.current(0)
-        self.cbx_Hersteller.grid(row=0, column=1)
-
-        Standort = tk.Label(produktFrame, text='Standort', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Standort.grid(row=1, column=0, padx=5, pady=3)
-        self.cbx_Standort = ttk.Combobox(produktFrame, width=50)
-        Standort = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
-                    'Schleswig-Holstein D', 'Schleswig-Holstein E', 'Schleswig-Holstein F', 'Hamburg')
-        self.cbx_Standort['values'] = Standort
-        self.cbx_Standort.current(0)
-        self.cbx_Standort.grid(row=1, column=1)
-
-        Modellname = tk.Label(produktFrame, text='Modellname', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Modellname.grid(row=0, column=2, padx=5, pady=3)
-        self.cbx_Modellname = ttk.Combobox(produktFrame, width=50)
-        Modellname = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
-        self.cbx_Modellname['values'] = Modellname
-        self.cbx_Modellname.current(0)
-        self.cbx_Modellname.grid(row=0, column=3)
-
-        label1 = tk.Label(produktFrame, text='Wetter daten werden automatisch beruchsichtig', **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label1.grid(row=1, column=3, padx=5, pady=3)
-
-        label2 = tk.Label(produktFrame, text="Anzahl", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label2.grid(row=0, column=4, padx=5, pady=3)
-
-        anzahl = IntVar(produktFrame)
-        anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100, textvariable=anzahl)
-        self.anzahl_spinbox.grid(row=0, column=5)
-
-        button1 = tk.Button(produktFrame, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=self.loeschen)
-        button1.grid(row=1, column=5, padx=5, pady=3)
-
+    def berechnen(self):
+        confirm = messagebox.askyesnocancel('Berechnung', 'asdfghjklöpoiuztrewqyxcvbnm')
+        if confirm:
+            self.controller.show_frame(Energiebilanz.Energiebilanz)
+            self.newWindow.destroy()
+        elif confirm is None:
+            self.newWindow.destroy()
+            self.faktoren_beruecksichtigen()
+        else:
+            self.newWindow.destroy()
 
 
 
