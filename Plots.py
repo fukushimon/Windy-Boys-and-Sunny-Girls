@@ -319,6 +319,7 @@ class Strommix(Plot):
             max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
         except:
             print('Keine Dunkelflauten vorhanden.')
+            return 0
         else:
             return max_dunkelflaute
         

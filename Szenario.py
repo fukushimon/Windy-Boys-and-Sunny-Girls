@@ -5,29 +5,40 @@ from datetime import date
 from Plots import Strommix, Wind, Globalstrahlung
 from Anlagen import WEA, PVA, Akku, Pumpspeicher, Druckluftspeicher
 
-class Szenario:
-    wea_models = []
-    pv_models = []
+class Szenario:    
+    wind_repower = {
+     'Anlagen': ['Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon'],
+     'Anzahl': [80, 10, 38, 5, 21, 73, 59],
+     'Standorte': ['Schleswig', 'Fehmarn', 'Kiel', 'Schleswig', 'SPO', 'Leck', 'Quickborn']
+     }
     
     def __init__(self, 
-                 name, 
-                 year, 
-                 weather_year, 
-                 last_szenario, 
-                 wea_models, 
-                 wea_count, 
-                 wea_locations, 
-                 pv_models, 
-                 pv_area, 
-                 pv_locations, 
-                 num_akku, 
-                 num_pump, 
-                 num_druckluft, 
-                 start_charge):
+                 name, # Szenario-Name
+                 year, # Szenario für welches Jahr: int
+                 weather_year, # Wetterdaten aus welchem Jahr: 2020, 2021
+                 last_szenario, # Welches Last Szenario: 1, 2, 3
+                 repowering, # Wird Repowering berücksichtigt: True or False
+                 wea_models, # Liste der WEA-Hersteller: String
+                 wea_count, # Liste der WEA-Anzahl: int
+                 wea_locations, # Liste der WEA-Standorte: String
+                 pv_models, # Liste der PVA-Hersteller: String
+                 pv_area, # Liste der PVA-Flächen: int
+                 pv_locations, # Liste der PVA-Standorte: String
+                 num_akku, # Anzahl der Akku-Module: int
+                 num_pump, # Anzahl der Pumpspeicherkraftwerke: int
+                 num_druckluft, # Anzahl der Druckluftspeicherkraftwerke: int
+                 start_charge # Zu wie viel Prozent sich die Speicher am Anfang des Szenarios gefüllt?: float
+                 ):
+        
+        self.wea_models = []
+        self.pv_models = []
+        self.pv_count = []
+    
         self.name = name
         self.year = year
         self.weather_year = weather_year
         self.last_szenario = last_szenario
+        self.repowering = repowering
         self.wea_count = wea_count
         self.wea_locations = wea_locations
         self.pv_area = pv_area # in km^2
@@ -42,6 +53,20 @@ class Szenario:
         
         for model in pv_models:
             self.pv_models.append(PVA(model))
+            
+        if repowering == True:
+            for model in self.wind_repower["Anlagen"]:
+                self.wea_models.append(WEA(model))
+            self.wea_count = self.wea_count + self.wind_repower["Anzahl"]
+            self.wea_locations = self.wea_locations + self.wind_repower["Standorte"]
+        
+        for model, area in zip(self.pv_models, self.pv_area):
+            self.pv_count.append(int(area/model.area))
+        
+        # Create Speicher instances from user input
+        self.akku = Akku(self.num_akku, self.start_charge, 'Quickborn')
+        self.pump = Pumpspeicher(self.num_pump, self.start_charge, 'Quickborn')
+        self.druckluft = Druckluftspeicher(self.num_druckluft, self.start_charge, 'Quickborn')
         
         # Add to database
         self.add_to_sql()
@@ -87,6 +112,10 @@ class Szenario:
         # Calculate wind and solar for 2021
         v_wind = Wind(self.weather_year)
         rad_pv = Globalstrahlung(self.year, self.weather_year)
+        
+        print(self.wea_models)
+        print(self.wea_count)
+        print(self.wea_locations)
         
         # Wind
         wind = pd.DataFrame({
@@ -159,41 +188,51 @@ class Szenario:
         
         return new_strommix
     
-    def calc_speicher(self, mix):
-        # Create Speicher instances from user input
-        akku = Akku(self.num_akku, self.start_charge, 'Quickborn')
-        pump = Pumpspeicher(self.num_pump, self.start_charge, 'Quickborn')
-        druckluft = Druckluftspeicher(self.num_druckluft, self.start_charge, 'Quickborn')
-        
+    def calc_speicher(self, mix):        
         bilanz = mix.calc_bilanz_ee('Both')
         
         def speicher(val):
             if val >= 0: # Charge
-                if pump.capacity_left() == 0 and druckluft.capacity_left() == 0: # Pumpspeicher and Druckluftspeicher are fully charged
-                    val = val - akku.charge(val)
+                if self.pump.capacity_left() == 0 and self.druckluft.capacity_left() == 0: # Pumpspeicher and Druckluftspeicher are fully charged
+                    val = val - self.akku.charge(val)
                 else:
-                    val = val - pump.charge(val/2)
-                    val = val - druckluft.charge(val)
+                    val = val - self.pump.charge(val/2)
+                    val = val - self.druckluft.charge(val)
                     if val > 0:
-                        val = val - akku.charge(val)
+                        val = val - self.akku.charge(val)
             else: # Discharge
                 while True:
-                    val = val + pump.discharge(abs(val/2))
-                    val = val + druckluft.discharge(abs(val))
+                    val = val + self.pump.discharge(abs(val/2))
+                    val = val + self.druckluft.discharge(abs(val))
                     
-                    if((pump.capacity_left() == pump.capacity) and (druckluft.capacity_left() == druckluft.capacity)):
+                    if((self.pump.capacity_left() == self.pump.capacity) and (self.druckluft.capacity_left() == self.druckluft.capacity)):
                         break
                     
                     if(val >= 0):
                         break
                 
                 if val < 0:
-                    val = val + akku.discharge(abs(val))
+                    val = val + self.akku.discharge(abs(val))
             
-            return pd.Series([val, pump.current_charge, druckluft.current_charge, akku.current_charge])
+            return pd.Series([val, self.pump.current_charge, self.druckluft.current_charge, self.akku.current_charge])
             
         bilanz[['Bilanz_Neu', 'Pumpspeicher_Ladestand', 'Druckluftspeicher_Ladestand', 'Akku_Ladestand']] = bilanz['Bilanz'].apply(speicher)
         bilanz['Speicher'] = bilanz['Bilanz_Neu'] - bilanz['Bilanz']
         bilanz['Speicher'].where(bilanz['Speicher'] > 0, 0, inplace=True)
         
         return bilanz
+    
+    def calc_cost(self):
+        wea_costs = []
+        for model, count in zip(self.wea_models, self.wea_count):
+            wea_costs.append(model.cost*count)
+            
+        pva_costs = []
+        for model, count in zip(self.pv_models, self.pv_count):
+            pva_costs.append(model.cost*count)   
+        
+        speicher_costs = [self.akku.cost, self.pump.cost, self.druckluft.cost]
+        
+        total_cost = sum(wea_costs) + sum(pva_costs) + sum(speicher_costs)
+        
+        return total_cost

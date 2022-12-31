@@ -1,3 +1,4 @@
+import pandas as pd
 from Szenario import Szenario
 from Plots import Strommix
 
@@ -59,25 +60,47 @@ solar_null = {
     'Standorte': ['Schleswig']
     }
 
-# Szenario 'MAX': Wind- und Solar-Potenzialflächen werden vollständig bebaut (inkl.Repowering)
-scene_max = Szenario('Potenzialflaechen', 2021, 2020, 1, 
-                      wind_potenzialflaechen['Anlagen'] + wind_repowering['Anlagen'], 
-                      wind_potenzialflaechen['Anzahl'] + wind_repowering['Anzahl'], 
-                      wind_potenzialflaechen['Standorte'] + wind_repowering['Standorte'], 
-                      solar_potenzialflaechen['Anlagen'], 
-                      solar_potenzialflaechen['Flaeche'], 
-                      solar_potenzialflaechen['Standorte']
-                      )
+scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl', 'Pumpspeicher_Anzahl', 'Druckluftspeicher_Anzahl', 'Deckung', 'Laengstes_Defizit', 'Kosten'])
 
-scene_max.strommix.plot_bilanz_ee('Both')
-scene_max.strommix.plot_strommix_ee('Both')
-scene_max.strommix.plot_speicher('Both')
+for x in range(3):
+    new_scene = Szenario('Szenario {}'.format(x), 
+                         2021, 
+                         2021, 
+                         1,
+                         1,
+                         wind_potenzialflaechen['Anlagen'], 
+                         wind_potenzialflaechen['Anzahl'],
+                         wind_potenzialflaechen['Standorte'], 
+                         solar_potenzialflaechen['Anlagen'], 
+                         solar_potenzialflaechen['Flaeche'], 
+                         solar_potenzialflaechen['Standorte'],
+                         10000,
+                         20 - x,
+                         20 - x,
+                         1
+                         )
+    
+    result = {
+        'Name': 'Potentialflaechen',
+        'WEA_Anzahl': wind_potenzialflaechen['Anzahl'],
+        'PVA_Flaeche': solar_potenzialflaechen['Flaeche'],
+        'Akku_Anzahl': new_scene.num_akku,
+        'Pumpspeicher_Anzahl': new_scene.num_pump,
+        'Druckluftspeicher_Anzahl': new_scene.num_druckluft,
+        'Deckung': new_scene.strommix.calc_pct_positive_bilanz_ee('Both'),
+        'Laengstes_Defizit': new_scene.strommix.calc_max_dunkelflaute_ee('Both'),
+        'Kosten': new_scene.calc_cost(),
+        }
+    
+    scenes = scenes.append(result, ignore_index=True)
+    
+    del new_scene
+
+
+# scene_max.strommix.plot_bilanz_ee('Both')
+# scene_max.strommix.plot_strommix_ee('Both')
+# scene_max.strommix.plot_speicher('Both')
 # new_mix = scene_max.strommix.sh_data
-
-print("Szenario MAX:")
-print(scene_max.strommix.calc_pct_positive_bilanz_ee('Both'))
-print(scene_max.strommix.calc_dunkelflaute_ee('Both'))
-print(scene_max.strommix.calc_max_dunkelflaute_ee('Both'))
 
 # Szenario 'Ausweisflächen + Repowering'
 # scene_ausweis = Szenario('Ausweisflaechen', 2030, 1, 
@@ -178,9 +201,9 @@ print(scene_max.strommix.calc_max_dunkelflaute_ee('Both'))
 
 #print(scene_5mrd_mix.both_data.loc[scene_5mrd_mix.both_data['Last'] == scene_5mrd_mix.both_data['Last'].max()])
 #new_bilanz = scene_max.calc_speicher(scene_max.strommix)
-mix = scene_max.strommix.both_data
-original_bilanz = scene_max.strommix.calc_bilanz_ee('Both')
-deficits = original_bilanz.loc[original_bilanz['Bilanz'] < 0]
+# mix = scene_max.strommix.both_data
+# original_bilanz = scene_max.strommix.calc_bilanz_ee('Both')
+# deficits = original_bilanz.loc[original_bilanz['Bilanz'] < 0]
 
 # # Szenario 10Mrd
 # scene_10mrd = Szenario('Potenzialflaechen', 2030, 1, 

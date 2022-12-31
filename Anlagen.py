@@ -46,7 +46,7 @@ class PVA:
         self.efficiency = data_list[0][2]
         self.area = data_list[0][4]
         self.max_pwr = data_list[0][5]
-        self.cost = 1350 * self.max_pwr
+        self.cost = 1.35 * self.max_pwr
         
         self.disconnect_from_sql()
         
