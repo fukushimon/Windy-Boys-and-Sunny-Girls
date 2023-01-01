@@ -57,7 +57,8 @@ class PVA:
     def disconnect_from_sql(self):
         self.c.close()
         self.conn.close()
-    
+
+# WIrkungsgrade der Speicher berücksichtigen!!
 class Speicher:
     def __init__(self):
         pass
@@ -94,7 +95,7 @@ class Akku(Speicher):
         self.full_load_time = 1 # h
         self.capacity = self.power * self.full_load_time # MWh
         self.size = 50 * num_modules # m^2
-        self.cost = 1200000 * self.capacity # Euro
+        self.cost = 100000 * self.capacity # Euro
         self.current_charge = self.capacity * start_charge # MWh
         self.location = location
 
@@ -105,7 +106,7 @@ class Pumpspeicher(Speicher):
         self.full_load_time = 5 # h
         self.capacity = self.power * self.full_load_time # MWh
         self.current_charge = self.capacity * start_charge # MWh
-        self.size = 0 * num_units # to be determined
+        #self.size = 0 * num_units # to be determined
         self.cost = 0 * self.capacity # to be determined
         self.location = location
 
@@ -117,7 +118,47 @@ class Druckluftspeicher(Speicher):
         self.capacity = self.power * self.full_load_time # MWh
         self.current_charge = self.capacity * start_charge # MWh
         self.size = 0 * num_units # to be determined
-        self.cost = 120000 * self.capacity # Euro
+        self.cost = 86000 * self.capacity # Euro
         self.location = location
 
+class GuD():
+    def __init__(self):
+        self.efficiency = 0.45
+        self.production = 59.406 # MWh pro 15min
         
+class Gasnetz():
+    def __init__(self, num_elektrolyseure, start_charge):
+        self.capacity = 10000 # MWh
+        self.current_charge = self.capacity * start_charge
+        self.elec = Elektrolyseur(num_elektrolyseure)
+        self.gud = GuD()
+        self.cost = self.elec.cost
+
+    def charge(self, amount):
+        amount = amount * self.elec.efficiency
+        if amount > self.elec.capacity:
+            self.current_charge = self.current_charge + self.elec.capacity
+            return self.elec.capacity
+        else:
+            self.current_charge = self.current_charge + amount
+            return amount
+    
+    def discharge(self, amount):
+        amount = amount * self.gud.efficiency
+        if amount > self.current_charge:
+            amount = self.current_charge
+            
+        if amount > self.gud.production:
+            self.current_charge = self.current_charge - self.gud.production
+            return self.gud.production
+        else:
+            self.current_charge = self.current_charge - amount
+            return amount
+
+class Elektrolyseur():
+    def __init__(self, num_units):
+        self.efficiency = 0.74
+        self.power = 2 * num_units # MW
+        self.capacity = 0.403 * num_units # MWh pro 15min
+        #self.size = 0 * num_units # to be determined
+        self.cost = 400000 * self.power # Euro

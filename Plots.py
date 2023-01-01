@@ -79,6 +79,8 @@ class Strommix(Plot):
             columns_drop.append('Akku_Ladestand')
         if 'Druckluftspeicher_Ladestand' in data_to_plot.columns:
             columns_drop.append('Druckluftspeicher_Ladestand')
+        if 'Gasnetz_Fuellstand' in data_to_plot.columns:
+            columns_drop.append('Gasnetz_Fuellstand')
             
         data_to_plot.drop(columns_drop, axis=1, inplace=True)
         
@@ -124,6 +126,8 @@ class Strommix(Plot):
             columns_drop.append('Akku_Ladestand')
         if 'Druckluftspeicher_Ladestand' in data_to_plot.columns:
             columns_drop.append('Druckluftspeicher_Ladestand')
+        if 'Gasnetz_Fuellstand' in data_to_plot.columns:
+            columns_drop.append('Gasnetz_Fuellstand')
             
         data_to_plot.drop(columns_drop, axis=1, inplace=True)
             
@@ -162,7 +166,7 @@ class Strommix(Plot):
             print('No data found!')
             return None
         
-        if 'Pumpspeicher_Ladestand' or 'Akku_Ladestand' or 'Druckluftspeicher_Ladestand' in data_to_plot:
+        if 'Pumpspeicher_Ladestand' or 'Akku_Ladestand' or 'Druckluftspeicher_Ladestand' or 'Gasnetz_Fuellstand' in data_to_plot:
             data_to_plot.drop(['Last', 'Erzeugung', 'Biomasse', 'Wasserkraft', 'Wind_Offshore', 'Wind_Onshore', 'Photovoltaik', 'Sonstige_Erneuerbare', 'Kernenergie', 'Kohle', 'Erdgas', 'Sonstige_Konventionelle', 'Speicher'], axis=1, inplace=True)
             
             fig, ax = plt.subplots(1, 1, figsize=(14, 4))
@@ -319,7 +323,7 @@ class Strommix(Plot):
             max_dunkelflaute = dunkelflaute.loc[dunkelflaute['Dauer'].idxmax()]
         except:
             print('Keine Dunkelflauten vorhanden.')
-            return 0
+            return pd.DataFrame([0], columns=['Dauer']).reset_index(drop=True)
         else:
             return max_dunkelflaute
         

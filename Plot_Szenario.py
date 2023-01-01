@@ -1,6 +1,14 @@
 import pandas as pd
+import sqlite3
+from datetime import datetime
 from Szenario import Szenario
 from Plots import Strommix
+
+# Get current time
+now = datetime.now()
+
+# dd/mm/YY H:M:S
+cur_time = now.strftime("%d/%m/%Y %H:%M")
 
 wind_ausweisflaechen = {
     'Anlagen': ['Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Enercon', 'Enercon', 'Enercon', 'Enercon'],
@@ -63,32 +71,37 @@ solar_null = {
 scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl', 'Pumpspeicher_Anzahl', 'Druckluftspeicher_Anzahl', 'Deckung', 'Laengstes_Defizit', 'Kosten'])
 
 for x in range(3):
-    new_scene = Szenario('Szenario {}'.format(x), 
+    new_scene = Szenario('Szenario {} '.format(x) + cur_time, 
                          2021, 
                          2021, 
                          1,
                          1,
                          wind_potenzialflaechen['Anlagen'], 
-                         wind_potenzialflaechen['Anzahl'],
+                         [num for num in wind_potenzialflaechen['Anzahl']],
                          wind_potenzialflaechen['Standorte'], 
                          solar_potenzialflaechen['Anlagen'], 
-                         solar_potenzialflaechen['Flaeche'], 
+                         [area for area in solar_potenzialflaechen['Flaeche']], 
                          solar_potenzialflaechen['Standorte'],
-                         10000,
-                         20 - x,
-                         20 - x,
+                         1000,
+                         1,
+                         100,
+                         3 - x,
                          1
                          )
     
+    new_scene.strommix.plot_speicher('Both')
+    
     result = {
-        'Name': 'Potentialflaechen',
-        'WEA_Anzahl': wind_potenzialflaechen['Anzahl'],
-        'PVA_Flaeche': solar_potenzialflaechen['Flaeche'],
+        'Name': new_scene.name,
+        'WEA_Anzahl': sum(new_scene.wea_count),
+        'PVA_Flaeche': sum(new_scene.pv_area),
         'Akku_Anzahl': new_scene.num_akku,
         'Pumpspeicher_Anzahl': new_scene.num_pump,
         'Druckluftspeicher_Anzahl': new_scene.num_druckluft,
+        'Elektrolyseure_Anzahl': new_scene.num_elektrolyseure,
         'Deckung': new_scene.strommix.calc_pct_positive_bilanz_ee('Both'),
-        'Laengstes_Defizit': new_scene.strommix.calc_max_dunkelflaute_ee('Both'),
+        'Anzahl_Defizite': len(new_scene.strommix.calc_dunkelflaute_ee('Both').index),
+        'Laengstes_Defizit': str(new_scene.strommix.calc_max_dunkelflaute_ee('Both')['Dauer']),
         'Kosten': new_scene.calc_cost(),
         }
     
@@ -96,6 +109,13 @@ for x in range(3):
     
     del new_scene
 
+conn = sqlite3.connect('Data.db')
+c = conn.cursor()
+        
+scenes.to_sql('Simulationen', conn, if_exists='replace')
+        
+c.close()
+conn.close()
 
 # scene_max.strommix.plot_bilanz_ee('Both')
 # scene_max.strommix.plot_strommix_ee('Both')
