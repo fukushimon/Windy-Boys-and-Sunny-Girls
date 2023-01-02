@@ -4,12 +4,6 @@ from datetime import datetime
 from Szenario import Szenario
 from Plots import Strommix
 
-# Get current time
-now = datetime.now()
-
-# dd/mm/YY H:M:S
-cur_time = now.strftime("%d/%m/%Y %H:%M")
-
 wind_ausweisflaechen = {
     'Anlagen': ['Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Enercon', 'Enercon', 'Enercon', 'Enercon'],
     'Anzahl': [24, 126, 21, 1, 72, 49, 4, 6, 42],
@@ -73,6 +67,11 @@ scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl
 for x in range(10):
     for y in range(10):
         for z in range(10):
+            # Get current time
+            now = datetime.now()
+            # dd/mm/YY H:M:S
+            cur_time = now.strftime("%d/%m/%Y %H:%M")
+
             new_scene = Szenario('Szenario {} '.format(x) + cur_time, 
                                  2021, 
                                  2021, 
