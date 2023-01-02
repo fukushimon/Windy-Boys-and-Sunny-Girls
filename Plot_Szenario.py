@@ -70,49 +70,53 @@ solar_null = {
 
 scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl', 'Pumpspeicher_Anzahl', 'Druckluftspeicher_Anzahl', 'Deckung', 'Laengstes_Defizit', 'Kosten'])
 
-for x in range(3):
-    new_scene = Szenario('Szenario {} '.format(x) + cur_time, 
-                         2021, 
-                         2021, 
-                         1,
-                         1,
-                         wind_potenzialflaechen['Anlagen'], 
-                         [num for num in wind_potenzialflaechen['Anzahl']],
-                         wind_potenzialflaechen['Standorte'], 
-                         solar_potenzialflaechen['Anlagen'], 
-                         [area for area in solar_potenzialflaechen['Flaeche']], 
-                         solar_potenzialflaechen['Standorte'],
-                         1000,
-                         1,
-                         100,
-                         3 - x,
-                         1
-                         )
-    
-    new_scene.strommix.plot_speicher('Both')
-    
-    result = {
-        'Name': new_scene.name,
-        'WEA_Anzahl': sum(new_scene.wea_count),
-        'PVA_Flaeche': sum(new_scene.pv_area),
-        'Akku_Anzahl': new_scene.num_akku,
-        'Pumpspeicher_Anzahl': new_scene.num_pump,
-        'Druckluftspeicher_Anzahl': new_scene.num_druckluft,
-        'Elektrolyseure_Anzahl': new_scene.num_elektrolyseure,
-        'Deckung': new_scene.strommix.calc_pct_positive_bilanz_ee('Both'),
-        'Anzahl_Defizite': len(new_scene.strommix.calc_dunkelflaute_ee('Both').index),
-        'Laengstes_Defizit': str(new_scene.strommix.calc_max_dunkelflaute_ee('Both')['Dauer']),
-        'Kosten': new_scene.calc_cost(),
-        }
-    
-    scenes = scenes.append(result, ignore_index=True)
-    
-    del new_scene
+for x in range(10):
+    for y in range(10):
+        for z in range(10):
+            new_scene = Szenario('Szenario {} '.format(x) + cur_time, 
+                                 2021, 
+                                 2021, 
+                                 1,
+                                 1,
+                                 wind_potenzialflaechen['Anlagen'], 
+                                 [num for num in wind_potenzialflaechen['Anzahl']],
+                                 wind_potenzialflaechen['Standorte'], 
+                                 solar_potenzialflaechen['Anlagen'], 
+                                 [area for area in solar_potenzialflaechen['Flaeche']], 
+                                 solar_potenzialflaechen['Standorte'],
+                                 100 * x,
+                                 1,
+                                 y,
+                                 z,
+                                 1
+                                 )
+            
+            # new_scene.strommix.plot_speicher('Both')
+            # new_scene.strommix.plot_bilanz_ee('Both')
+            # new_scene.strommix.plot_strommix_ee('Both')
+            
+            result = {
+                'Name': new_scene.name,
+                'WEA_Anzahl': sum(new_scene.wea_count),
+                'PVA_Flaeche': sum(new_scene.pv_area),
+                'Akku_Anzahl': new_scene.num_akku,
+                'Pumpspeicher_Anzahl': new_scene.num_pump,
+                'Druckluftspeicher_Anzahl': new_scene.num_druckluft,
+                'Elektrolyseure_Anzahl': new_scene.num_elektrolyseure,
+                'Deckung': new_scene.strommix.calc_pct_positive_bilanz_ee('Both'),
+                'Anzahl_Defizite': len(new_scene.strommix.calc_dunkelflaute_ee('Both').index),
+                'Laengstes_Defizit': str(new_scene.strommix.calc_max_dunkelflaute_ee('Both')['Dauer']),
+                'Kosten': new_scene.calc_cost(),
+                }
+            
+            scenes = scenes.append(result, ignore_index=True)
+            
+            del new_scene
 
 conn = sqlite3.connect('Data.db')
 c = conn.cursor()
         
-scenes.to_sql('Simulationen', conn, if_exists='replace')
+scenes.to_sql('Simulationen', conn, if_exists='append')
         
 c.close()
 conn.close()

@@ -116,10 +116,6 @@ class Szenario:
         v_wind = Wind(self.weather_year)
         rad_pv = Globalstrahlung(self.year, self.weather_year)
         
-        print(self.wea_models)
-        print(self.wea_count)
-        print(self.wea_locations)
-        
         # Wind
         wind = pd.DataFrame({
             'Modell': self.wea_models,
@@ -211,10 +207,13 @@ class Szenario:
                         val = val + self.pump.discharge(abs(val/2))
                         val = val + self.druckluft.discharge(abs(val))
                         
-                        if((self.pump.capacity_left() == self.pump.capacity) and (self.druckluft.capacity_left() == self.druckluft.capacity)):
+                        if ((self.pump.current_charge < abs(val)) and (self.druckluft.current_charge < abs(val))):
+                            if(round(val, 3) >= 0):
+                                val = 0
                             break
                         
-                        if(val >= 0):
+                        if(round(val, 3) >= 0):
+                            val = 0
                             break
                     
                     if val < 0:

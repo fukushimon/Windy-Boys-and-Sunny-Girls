@@ -60,8 +60,8 @@ class PVA:
 
 # WIrkungsgrade der Speicher berücksichtigen!!
 class Speicher:
-    def __init__(self):
-        pass
+    def __init__(self, efficiency):
+        self.efficiency = efficiency
         
     def get_charge_pct(self):
         return self.charge / self.capacity
@@ -77,10 +77,10 @@ class Speicher:
         
     def discharge(self, amount):
         if self.current_charge >= amount:
-            self.current_charge = self.current_charge - amount
+            self.current_charge = self.current_charge - amount * (1 + self.efficiency)
             return amount
         else:
-            discharged_amount = self.current_charge
+            discharged_amount = self.current_charge * self.efficiency
             self.current_charge = 0
             return discharged_amount
     
@@ -90,7 +90,7 @@ class Speicher:
 class Akku(Speicher):
     def __init__(self, num_modules, start_charge, location):
         self.num_modules = num_modules
-        self.efficiency = 0.9
+        super().__init__(0.9)
         self.power = 5 * num_modules # MW
         self.full_load_time = 1 # h
         self.capacity = self.power * self.full_load_time # MWh
@@ -101,7 +101,7 @@ class Akku(Speicher):
 
 class Pumpspeicher(Speicher):
     def __init__(self, num_units, start_charge, location):
-        self.efficiency = 0.8
+        super().__init__(0.8)
         self.power = 120 * num_units # MW
         self.full_load_time = 5 # h
         self.capacity = self.power * self.full_load_time # MWh
@@ -112,7 +112,7 @@ class Pumpspeicher(Speicher):
 
 class Druckluftspeicher(Speicher):
     def __init__(self, num_units, start_charge, location):
-        self.efficiency = 0.42
+        super().__init__(0.42)
         self.power = 321 * num_units # MW
         self.full_load_time = 5 # h
         self.capacity = self.power * self.full_load_time # MWh
@@ -128,7 +128,7 @@ class GuD():
         
 class Gasnetz():
     def __init__(self, num_elektrolyseure, start_charge):
-        self.capacity = 10000 # MWh
+        self.capacity = 100000 # MWh
         self.current_charge = self.capacity * start_charge
         self.elec = Elektrolyseur(num_elektrolyseure)
         self.gud = GuD()
