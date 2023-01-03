@@ -121,6 +121,7 @@ class Wind(tk.Frame):
         self.szenario_daten.insert(0, self.txt_name.get())
         self.szenario_daten.insert(1, self.txt_jahr.get())
         self.szenario_daten.insert(2, self.txt_budget.get())
+
         print(self.szenario_daten)
 
     def _on_mousewheel(self, event):
@@ -308,4 +309,3 @@ class Wind(tk.Frame):
                             activeforeground=style.TEXT, command=self.loeschen)
         button1.grid(row=1, column=5, padx=5, pady=3)
         '''
-

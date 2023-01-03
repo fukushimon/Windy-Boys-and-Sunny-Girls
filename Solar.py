@@ -66,23 +66,23 @@ class Solar(tk.Frame):
         label_Szenarioname = tk.Label(datenFrame, text='Szenarioname:', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioname.grid(row=0, column=0, padx=5, pady=3)
-        name = tk.Label(datenFrame, text='keine Eingabe', **style.STYLE,
+        self.name = tk.Label(datenFrame, text='keine Eingabe', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        name.grid(row=0, column=1, padx=5, pady=3, sticky=NSEW)
+        self.name.grid(row=0, column=1, padx=5, pady=3, sticky=NSEW)
 
         label_Szenariojahr = tk.Label(datenFrame, text='Szenario für: ', **style.STYLE,
                                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenariojahr.grid(row=0, column=2, padx=5, pady=3)
-        jahr = tk.Label(datenFrame, text='keine Eingabe ', **style.STYLE,
+        self.jahr = tk.Label(datenFrame, text='keine Eingabe ', **style.STYLE,
                                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        jahr.grid(row=0, column=3, padx=5, pady=3, sticky=NSEW)
+        self.jahr.grid(row=0, column=3, padx=5, pady=3, sticky=NSEW)
 
         label_Szenariobudget = tk.Label(datenFrame, text='Budget: ', **style.STYLE,
                                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenariobudget.grid(row=0, column=4, padx=5, pady=3)
-        budget = tk.Label(datenFrame, text='keine Eingabe', **style.STYLE,
+        self.budget = tk.Label(datenFrame, text='keine Eingabe', **style.STYLE,
                                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        budget.grid(row=0, column=5, padx=5, pady=3, sticky=NSEW)
+        self.budget.grid(row=0, column=5, padx=5, pady=3, sticky=NSEW)
         label_Szenarioeuro = tk.Label(datenFrame, text='EURO', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioeuro.grid(row=0, column=6, padx=5, pady=3)
