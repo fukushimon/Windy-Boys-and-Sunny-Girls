@@ -18,6 +18,8 @@ class Wind(tk.Frame):
         self.controller = controller
         self.button_menu()
         self.list_frames = []
+        self.szenario_daten = []
+
         
         label1 = tk.Label(self, text='Scenario Wind', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -77,34 +79,49 @@ class Wind(tk.Frame):
         scrollbar.pack(side=RIGHT, fill=Y)
 
 #Beschreibung Szenario
+        self.szenario_beschreibung()
+
+# Wind-Produkte
+        self.add_produktFrame()
+
+    def szenario_beschreibung(self):
         datenFrame = tk.Frame(self.scrollable_frame)
         datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+        datenFrame.grid_columnconfigure(1, weight=1)
+        datenFrame.grid_columnconfigure(3, weight=1)
+        datenFrame.grid_columnconfigure(5, weight=1)
 
         label_Szenarioname = tk.Label(datenFrame, text='Szenarioname:', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioname.grid(row=0, column=0, padx=5, pady=3)
-        self.windFrame.txt_name = tk.Entry(datenFrame, width=50)
-        self.windFrame.txt_name.grid(row=0, column=1, padx=5, pady=3)
+        self.txt_name = tk.Entry(datenFrame, width=50)
+        self.txt_name.grid(row=0, column=1, padx=5, pady=3)
 
         label_Szenariojahr = tk.Label(datenFrame, text='Szenario für: ', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenariojahr.grid(row=0, column=2, padx=5, pady=3)
-        self.windFrame.txt_jahr = tk.Entry(datenFrame, width=25)
-        self.windFrame.txt_jahr.grid(row=0, column=3, padx=5, pady=3)
+        self.txt_jahr = tk.Entry(datenFrame, width=25)
+        self.txt_jahr.grid(row=0, column=3, padx=5, pady=3)
 
         label_Szenariobudget = tk.Label(datenFrame, text='Budget: ', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenariobudget.grid(row=0, column=4, padx=5, pady=3)
-        self.windFrame.txt_budget = tk.Entry(datenFrame, width=40)
-        self.windFrame.txt_budget.grid(row=0, column=5, padx=5, pady=3)
+        self.txt_budget = tk.Entry(datenFrame, width=40)
+        self.txt_budget.grid(row=0, column=5, padx=5, pady=3)
         label_Szenarioeuro = tk.Label(datenFrame, text='EURO', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioeuro.grid(row=0, column=6, padx=5, pady=3)
+        uebernehmen_bto = tk.Button(datenFrame, text='Daten übernehmen', **style.STYLE, activebackground=style.BACKGROUND,
+                            activeforeground=style.TEXT, command=lambda: self.daten_eingabe())
+        uebernehmen_bto.grid(row=0, column=7, padx=5, pady=3)
 
-# Wind-Produkte
-# Produkt 1
-        self.add_produktFrame()
+    def daten_eingabe(self):
+        self.szenario_daten.clear()
+        self.szenario_daten.insert(0, self.txt_name.get())
+        self.szenario_daten.insert(1, self.txt_jahr.get())
+        self.szenario_daten.insert(2, self.txt_budget.get())
+        print(self.szenario_daten)
 
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")

@@ -22,9 +22,8 @@ class ProduktFrameSolar(tk.Frame):
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         Standort.grid(row=1, column=0, padx=5, pady=3)
         self.cbx_standort = ttk.Combobox(self, width=50)
-        Standort = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
+        self.cbx_standort['values'] = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
                     'Schleswig-Holstein D', 'Schleswig-Holstein E', 'Schleswig-Holstein F', 'Hamburg')
-        self.cbx_standort['values'] = Standort
         self.cbx_standort.current(0)
         self.cbx_standort.grid(row=1, column=1)
 
@@ -32,8 +31,7 @@ class ProduktFrameSolar(tk.Frame):
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         Modellname.grid(row=0, column=2, padx=5, pady=3)
         self.cbx_modellname = ttk.Combobox(self, width=50)
-        Modellname = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
-        self.cbx_modellname['values'] = Modellname
+        self.cbx_modellname['values'] = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
         self.cbx_modellname.current(0)
         self.cbx_modellname.grid(row=0, column=3)
 
@@ -49,10 +47,6 @@ class ProduktFrameSolar(tk.Frame):
         anzahl.set(0)
         self.anzahl_spinbox = tk.Spinbox(self, width=10, from_=0, to=100, textvariable=anzahl)
         self.anzahl_spinbox.grid(row=0, column=5)
-
-        button1 = tk.Button(self, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=self.loeschen)
-        button1.grid(row=1, column=5, padx=5, pady=3)
 
         label2 = tk.Label(self, text="in m^2", **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
