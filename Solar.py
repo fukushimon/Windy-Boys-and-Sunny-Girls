@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import Wind
+from Solarmaske import ProduktFrameSolar
 from konstante import style
 from tkinter import *
 
@@ -11,6 +12,7 @@ class Solar(tk.Frame):
         super().__init__(parent)
         self.config(bg=style.BACKGROUND)
         self.controller = controller
+        self.list_frames = []
         Wind.Wind.button_menu(self)
         label1 = tk.Label(self, text='Scenario Solar', **style.FONTTITEL,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -79,58 +81,11 @@ class Solar(tk.Frame):
 
     def add_produktFrame(self):
 
-        produktFrame = tk.Frame(self.scrollable_frame)
+        produktFrame = ProduktFrameSolar(self.scrollable_frame)
         produktFrame.config(background=style.BACKGROUND)
         produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
 
-        Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Hersteller.grid(row=0, column=0, padx=5, pady=3)
-        self.cbx_Hersteller = ttk.Combobox(produktFrame, width=50)
-        Hersteller = ('', 'Enercon', 'Vestas', 'Siemens-Gamesa', 'Nordex')
-        self.cbx_Hersteller['values'] = Hersteller
-        self.cbx_Hersteller.current(0)
-        self.cbx_Hersteller.grid(row=0, column=1)
-
-        Standort = tk.Label(produktFrame, text='Standort', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Standort.grid(row=1, column=0, padx=5, pady=3)
-        self.cbx_Standort = ttk.Combobox(produktFrame, width=50)
-        Standort = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
-                    'Schleswig-Holstein D', 'Schleswig-Holstein E', 'Schleswig-Holstein F', 'Hamburg')
-        self.cbx_Standort['values'] = Standort
-        self.cbx_Standort.current(0)
-        self.cbx_Standort.grid(row=1, column=1)
-
-        Modellname = tk.Label(produktFrame, text='Modellname', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Modellname.grid(row=0, column=2, padx=5, pady=3)
-        self.cbx_Modellname = ttk.Combobox(produktFrame, width=50)
-        Modellname = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
-        self.cbx_Modellname['values'] = Modellname
-        self.cbx_Modellname.current(0)
-        self.cbx_Modellname.grid(row=0, column=3)
-
-        label1 = tk.Label(produktFrame, text='Wetter daten werden automatisch beruchsichtig', **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label1.grid(row=1, column=3, padx=5, pady=3)
-
-        label2 = tk.Label(produktFrame, text="Fläche", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label2.grid(row=0, column=4, padx=5, pady=3)
-
-        anzahl = IntVar(produktFrame)
-        anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=10, from_=0, to=100, textvariable=anzahl)
-        self.anzahl_spinbox.grid(row=0, column=5)
-
-        button1 = tk.Button(produktFrame, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=self.loeschen)
-        button1.grid(row=1, column=5, padx=5, pady=3)
-
-        label2 = tk.Label(produktFrame, text="in m^2", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label2.grid(row=0, column=6, padx=5, pady=3)
+        self.list_frames.append(produktFrame)
 
 
     def _on_mousewheel(self, event):
@@ -141,9 +96,3 @@ class Solar(tk.Frame):
 
     def _unbind_from_mousewheel(self, event):
         self.canvas.unbind_all("<MouseWheel>")
-    def loeschen(self):
-        self.cbx_Hersteller.current(0)
-        self.cbx_Standort.current(0)
-        self.cbx_Modellname.current(0)
-        var = IntVar(0)
-        self.anzahl_spinbox.config(textvariable=var)
