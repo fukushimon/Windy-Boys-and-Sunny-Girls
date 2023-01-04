@@ -62,31 +62,31 @@ solar_null = {
     'Standorte': ['Schleswig']
     }
 
-scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl', 'Pumpspeicher_Anzahl', 'Druckluftspeicher_Anzahl', 'Deckung', 'Laengstes_Defizit', 'Kosten'])
+scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl', 'Pumpspeicher_Anzahl', 'Druckluftspeicher_Anzahl', 'Elektrolyseure_Anzahl', 'Deckung', 'Anzahl_Defizite', 'Laengstes_Defizit', 'Kosten'])
 
-for x in range(10):
-    for y in range(10):
-        for z in range(10):
+for x in range(0, 5):
+    for y in range(0, 5):
+        # for z in range(0, 10):
             # Get current time
             now = datetime.now()
             # dd/mm/YY H:M:S
             cur_time = now.strftime("%d/%m/%Y %H:%M")
 
             new_scene = Szenario('Szenario {} '.format(x) + cur_time, 
+                                 2030, 
                                  2021, 
-                                 2021, 
+                                 2,
                                  1,
-                                 1,
-                                 wind_potenzialflaechen['Anlagen'], 
-                                 [num for num in wind_potenzialflaechen['Anzahl']],
-                                 wind_potenzialflaechen['Standorte'], 
+                                 wind_ausweisflaechen['Anlagen'], 
+                                 [num - x for num in wind_ausweisflaechen['Anzahl']],
+                                 wind_ausweisflaechen['Standorte'], 
                                  solar_potenzialflaechen['Anlagen'], 
-                                 [area for area in solar_potenzialflaechen['Flaeche']], 
+                                 [area - y for area in solar_potenzialflaechen['Flaeche']], 
                                  solar_potenzialflaechen['Standorte'],
-                                 100 * x,
+                                 750000,
                                  1,
-                                 y,
-                                 z,
+                                 32,
+                                 130,
                                  1
                                  )
             
@@ -115,7 +115,7 @@ for x in range(10):
 conn = sqlite3.connect('Data.db')
 c = conn.cursor()
         
-scenes.to_sql('Simulationen', conn, if_exists='append')
+scenes.to_sql('Simulationen_2030_Ausweisflaechen', conn, if_exists='append')
         
 c.close()
 conn.close()

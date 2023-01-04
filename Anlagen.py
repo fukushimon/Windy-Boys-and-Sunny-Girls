@@ -76,7 +76,7 @@ class Speicher:
             return amount
         
     def discharge(self, amount):
-        if self.current_charge >= amount:
+        if self.current_charge >= (amount * (1 + self.efficiency)):
             self.current_charge = self.current_charge - amount * (1 + self.efficiency)
             return amount
         else:
@@ -128,7 +128,7 @@ class GuD():
         
 class Gasnetz():
     def __init__(self, num_elektrolyseure, start_charge):
-        self.capacity = 100000 # MWh
+        self.capacity = 0 # MWh
         self.current_charge = self.capacity * start_charge
         self.elec = Elektrolyseur(num_elektrolyseure)
         self.gud = GuD()
