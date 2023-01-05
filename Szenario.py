@@ -75,14 +75,9 @@ class Szenario:
             'PR_factor': df['PR_factor'],
             })
         
-        def convert_to_int(str_list):
-            result = [int(i) for i in str_list]
-            return result
-       
-        wea_anzahl = df['WEA_Anzahl'].str.split(',')
-        wea_anzahl.apply(convert_to_int)
-        
-        print(wea_anzahl[0][1].dtpye())
+        # def convert_to_int(str_list):
+        #     result = [int(i) for i in str_list]
+        #     return result
         
         # Wind
         wind = pd.DataFrame({
@@ -96,7 +91,7 @@ class Szenario:
             #num_of_WEA = df['WEA_Anzahl'].str.split(","),
            #'#Anzahl': list(map(int, num_of_WEA)),
             #.astype(int),
-            'Anzahl': wea_anzahl,
+            'Anzahl': df['WEA_Anzahl'].str.split(","),
             'Standort': df['WEA_Standorte'].str.split(",")
             })
         
