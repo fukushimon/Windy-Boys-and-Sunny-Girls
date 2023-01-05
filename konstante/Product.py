@@ -2,7 +2,17 @@
 REFERENCE = ['keine Eingabe', 'keine Eingabe', 'keine Eingabe']
 
 LIST_WIND = []
+HERSTELLER_WIND = []
+MODELL_WIND = []
+STANDORT_WIND = []
+ANZAHL_WIND = []
 
 LIST_SOLAR = []
+HERSTELLER_SOLAR = []
+MODELL_SOLAR = []
+STANDORT_SOLAR = []
+FLAECHE_SOLAR = []
 
 LIST_SPEICHER = []
+ANLAGE_SPEICHER = []
+ANZAHL_SPEICHER = []

@@ -8,7 +8,9 @@ import Home
 import Solar
 from Windmaske import ProduktFrameWind
 from konstante import style
-from konstante.Product import LIST_WIND, LIST_SOLAR, LIST_SPEICHER, REFERENCE
+from konstante.Product import LIST_WIND, LIST_SOLAR, LIST_SPEICHER, REFERENCE, HERSTELLER_WIND, MODELL_WIND, \
+    STANDORT_WIND, ANZAHL_WIND, HERSTELLER_SOLAR, MODELL_SOLAR, STANDORT_SOLAR, FLAECHE_SOLAR, ANLAGE_SPEICHER, \
+    ANZAHL_SPEICHER
 
 
 class Wind(tk.Frame):
@@ -18,6 +20,7 @@ class Wind(tk.Frame):
         self.config(bg=style.BACKGROUND)
         self.controller = controller
         self.button_menu()
+
         
         label1 = tk.Label(self, text='Scenario Wind', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -173,7 +176,6 @@ class Wind(tk.Frame):
         produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
 
         LIST_WIND.append(produktFrame)
-        #self.list_wind.append(produktFrame)
 
     def faktoren_beruecksichtigen(self):
         self.newWindow = tk.Toplevel(self)
@@ -264,7 +266,17 @@ class Wind(tk.Frame):
                 print(frame.anzahl.get())
                 print(frame.cbx_standort.get())
                 print()
+                print('---------------------------------------------------')
+                print(LIST_WIND[0])
+                print('---------------------------------------------------')
+                print()
                 wind +=1
+            # Liste für Shimon
+            for frame in LIST_WIND:
+                HERSTELLER_WIND.append(frame.cbx_hersteller.get())
+                MODELL_WIND.append(frame.cbx_modellname.get())
+                STANDORT_WIND.append(frame.cbx_standort.get())
+                ANZAHL_WIND.append(frame.anzahl.get())
 
             for frame in LIST_SOLAR:
                 print('--------------------------')
@@ -276,6 +288,12 @@ class Wind(tk.Frame):
                 print(frame.cbx_standort.get())
                 print()
                 solar += 1
+            # Liste für Shimon
+            for frame in LIST_SOLAR:
+                HERSTELLER_SOLAR.append(frame.cbx_hersteller.get())
+                MODELL_SOLAR.append(frame.cbx_modellname.get())
+                STANDORT_SOLAR.append(frame.cbx_standort.get())
+                FLAECHE_SOLAR.append(frame.anzahl.get())
 
             for frame in LIST_SPEICHER:
                 print('--------------------------')
@@ -285,6 +303,17 @@ class Wind(tk.Frame):
                 print(frame.anzahl.get())
                 print()
                 speicher += 1
+            # Liste für Shimon
+            for frame in LIST_SPEICHER:
+                ANLAGE_SPEICHER.append(frame.lbl1['text'])
+                ANZAHL_SPEICHER.append(frame.anzahl.get())
+
+            print(HERSTELLER_WIND)
+            print(MODELL_WIND)
+            print(STANDORT_WIND)
+            print(ANZAHL_WIND)
+            print(HERSTELLER_SOLAR)
+            print(ANLAGE_SPEICHER)
             
             self.controller.show_frame(Energiebilanz.Energiebilanz)
             self.newWindow.destroy()
