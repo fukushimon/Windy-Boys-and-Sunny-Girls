@@ -8,7 +8,7 @@ from Elektrolyseurmaske import ProduktFrameElektrolyseur
 from konstante import style
 from tkinter import *
 
-from konstante.Product import LIST_SPEICHER
+from konstante.Product import LIST_SPEICHER, REFERENCE
 
 
 class Speicher(tk.Frame):
@@ -23,7 +23,7 @@ class Speicher(tk.Frame):
         label1 = tk.Label(self, text='Scenario Speicher', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-        ####
+
         AkkuFrame = ProduktFrameAkku(self)
         AkkuFrame.config(background=style.BACKGROUND)
         AkkuFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
@@ -38,156 +38,9 @@ class Speicher(tk.Frame):
         elektrolyseurFrame.config(background=style.BACKGROUND)
         elektrolyseurFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         LIST_SPEICHER.append(elektrolyseurFrame)
-        ####
+
         Wind.Wind.leistung(self)
 
-
-
-    def akku_Frame(self):
-
-        # Akku-Produkte
-        akkuFrame = tk.Frame(self)
-        akkuFrame.config(background=style.BACKGROUND)
-        akkuFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-
-        akkuFrame.grid_columnconfigure(3, weight=1)
-        akkuFrame.grid_columnconfigure(4, weight=1)
-
-        lbl1 = tk.Label(akkuFrame, text="Lithium-Ionen-Batterien", **style.FONSUBTTITEL,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl1.grid(row=0, column=0, columnspan=6, padx=5, pady=3, sticky=NSEW)
-
-        lbl2 = tk.Label(akkuFrame, text="Wh-Wirkungsgrad: 95%", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl2.grid(row=1, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl3 = tk.Label(akkuFrame, text="Selbstentladungsrate: <5%/Monat", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl3.grid(row=2, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl4 = tk.Label(akkuFrame, text="Lade-/Entladezyklen: ca. 10.000", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl4.grid(row=3, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl5 = tk.Label(akkuFrame, text="Leistung: 5MW", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-
-        lbl5.grid(row=1, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl6 = tk.Label(akkuFrame, text="Lade-/Entladedauer: 1h", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl6.grid(row=2, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl7 = tk.Label(akkuFrame, text="Dimensionierung/Kapazität: 5MWh", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl7.grid(row=3, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl8 = tk.Label(akkuFrame, text="Größe: 50m^2", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl8.grid(row=1, column=2, padx=5, pady=3, sticky=NSEW)
-
-        lbl9 = tk.Label(akkuFrame, text="Aktuele Investitionskosten (2022): 500,- EUR", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl9.grid(row=2, column=2, padx=5, pady=3, sticky=NSEW)
-
-        label2 = tk.Label(akkuFrame, text="Anzahl", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
-
-        self.anzahl = IntVar(akkuFrame)
-        self.anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(akkuFrame, width=6, from_=0, to=100, textvariable=self.anzahl)
-        self.anzahl_spinbox.grid(row=3, column=5)
-
-        LIST_SPEICHER.append(akkuFrame)
-
-    # Druckluftspeicher-Produkte
-    def druckluftspeicherFrame(self):
-        druckluftspeicherFrame = tk.Frame(self)
-        druckluftspeicherFrame.config(background=style.BACKGROUND)
-        druckluftspeicherFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-
-        druckluftspeicherFrame.grid_columnconfigure(3, weight=1)
-        druckluftspeicherFrame.grid_columnconfigure(4, weight=1)
-
-        lbl1 = tk.Label(druckluftspeicherFrame, text="Druckluftspeicherwerk", **style.FONSUBTTITEL,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl1.grid(row=0, column=0, columnspan=6, padx=5, pady=3, sticky=NSEW)
-
-        lbl2 = tk.Label(druckluftspeicherFrame, text="Wirkungsgrad: 42%", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl2.grid(row=1, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl3 = tk.Label(druckluftspeicherFrame, text="Nennleistung: 321MW", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl3.grid(row=2, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl4 = tk.Label(druckluftspeicherFrame, text="Volllestzeit: 5h", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl4.grid(row=3, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl5 = tk.Label(druckluftspeicherFrame, text="Größe der Kavernen: 310.000m^3", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl5.grid(row=1, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl6 = tk.Label(druckluftspeicherFrame, text="Kapazität: 1630 MWh", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl6.grid(row=2, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl7 = tk.Label(druckluftspeicherFrame, text="Einschaltdauer: 10 min für 100%", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl7.grid(row=3, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl8 = tk.Label(druckluftspeicherFrame, text="Größe der Anlage: ca. 750m^2", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl8.grid(row=1, column=2, padx=5, pady=3, sticky=NSEW)
-
-        lbl9 = tk.Label(druckluftspeicherFrame, text="Aktuele Investitionskosten (2022): 120 EUR/KWh", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl9.grid(row=2, column=2, padx=5, pady=3, sticky=NSEW)
-
-        label2 = tk.Label(druckluftspeicherFrame, text="Anzahl", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
-
-        self.anzahl = IntVar(druckluftspeicherFrame)
-        self.anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(druckluftspeicherFrame, width=6, from_=0, to=100, textvariable=self.anzahl)
-        self.anzahl_spinbox.grid(row=3, column=5)
-
-        LIST_SPEICHER.append(druckluftspeicherFrame)
-
-        # elektrolyseur-Produkte
-    def elektrolyseurFrame(self):
-        elektrolyseurFrame = tk.Frame(self)
-        elektrolyseurFrame.config(background=style.BACKGROUND)
-        elektrolyseurFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-
-        elektrolyseurFrame.grid_columnconfigure(3, weight=1)
-        elektrolyseurFrame.grid_columnconfigure(4, weight=1)
-        elektrolyseurFrame.grid_rowconfigure(1, weight=1)
-
-        lbl1 = tk.Label(elektrolyseurFrame, text="Elektrolyseur von h-Tec systems (PEM)", **style.FONSUBTTITEL,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl1.grid(row=0, column=0, columnspan=6, padx=5, pady=3, sticky=NSEW)
-
-        lbl2 = tk.Label(elektrolyseurFrame, text="Leistung: 2 MW", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl2.grid(row=1, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl3 = tk.Label(elektrolyseurFrame, text="Nennproduktion: 900 Kg/d bzw. 420 Nm^3/h", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl3.grid(row=2, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl4 = tk.Label(elektrolyseurFrame, text="Umwandlung: 43 KWh für 1 KgH2", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl4.grid(row=3, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl5 = tk.Label(elektrolyseurFrame, text="Fläche: 18,4m^2", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl5.grid(row=1, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl6 = tk.Label(elektrolyseurFrame, text="Aktuelle Investitionskosten: 400 EUR/KW", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl6.grid(row=2, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl7 = tk.Label(elektrolyseurFrame, text="Wirkungsgrad: 74%", **style.STYLE,
-                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        lbl7.grid(row=3, column=1, padx=5, pady=3, sticky=NSEW)
-
-        label2 = tk.Label(elektrolyseurFrame, text="Anzahl", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
-
-        self.anzahl = IntVar(elektrolyseurFrame)
-        self.anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(elektrolyseurFrame, width=6, from_=0, to=100, textvariable=self.anzahl)
-        self.anzahl_spinbox.grid(row=3, column=5)
-
-        LIST_SPEICHER.append(elektrolyseurFrame)
     def szenario_beschreibung(self):
         datenFrame = tk.Frame(self)
         datenFrame.config(background=style.BACKGROUND)
@@ -200,21 +53,21 @@ class Speicher(tk.Frame):
         label_Szenarioname = tk.Label(datenFrame, text='Szenarioname:', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioname.grid(row=0, column=0, padx=5, pady=3)
-        name = tk.Label(datenFrame, text='keine Eingabe', **style.STYLE,
+        name = tk.Label(datenFrame, text=REFERENCE[0], **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         name.grid(row=0, column=1, padx=5, pady=3, sticky=NSEW)
 
         label_Szenariojahr = tk.Label(datenFrame, text='Szenario für: ', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenariojahr.grid(row=0, column=2, padx=5, pady=3)
-        jahr = tk.Label(datenFrame, text='keine Eingabe ', **style.STYLE,
+        jahr = tk.Label(datenFrame, text=REFERENCE[1], **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         jahr.grid(row=0, column=3, padx=5, pady=3, sticky=NSEW)
 
         label_Szenariobudget = tk.Label(datenFrame, text='Budget: ', **style.STYLE,
                                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenariobudget.grid(row=0, column=4, padx=5, pady=3)
-        budget = tk.Label(datenFrame, text='keine Eingabe', **style.STYLE,
+        budget = tk.Label(datenFrame, text=REFERENCE[2], **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         budget.grid(row=0, column=5, padx=5, pady=3, sticky=NSEW)
 

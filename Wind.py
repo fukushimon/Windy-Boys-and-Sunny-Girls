@@ -8,7 +8,7 @@ import Home
 import Solar
 from Windmaske import ProduktFrameWind
 from konstante import style
-from konstante.Product import LIST_WIND, LIST_SOLAR, LIST_SPEICHER
+from konstante.Product import LIST_WIND, LIST_SOLAR, LIST_SPEICHER, REFERENCE
 
 
 class Wind(tk.Frame):
@@ -18,9 +18,6 @@ class Wind(tk.Frame):
         self.config(bg=style.BACKGROUND)
         self.controller = controller
         self.button_menu()
-        #self.list_wind = []
-        self.szenario_daten = []
-
         
         label1 = tk.Label(self, text='Scenario Wind', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -114,16 +111,19 @@ class Wind(tk.Frame):
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioeuro.grid(row=0, column=6, padx=5, pady=3)
         uebernehmen_bto = tk.Button(datenFrame, text='Daten übernehmen', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=lambda: self.daten_eingabe())
+                                    activeforeground=style.TEXT, command=lambda: self.daten_eingabe())
         uebernehmen_bto.grid(row=0, column=7, padx=5, pady=3)
 
     def daten_eingabe(self):
-        self.szenario_daten.clear()
-        self.szenario_daten.insert(0, self.txt_name.get())
-        self.szenario_daten.insert(1, self.txt_jahr.get())
-        self.szenario_daten.insert(2, self.txt_budget.get())
+        REFERENCE.clear()
+        REFERENCE.insert(0, self.txt_name.get())
+        REFERENCE.insert(1, self.txt_jahr.get())
+        REFERENCE.insert(2, self.txt_budget.get())
+        print(REFERENCE)
 
-        print(self.szenario_daten)
+        #Solar.Solar.daten_szenario(self)
+        #Solar.Solar.update(self)
+        #self.name.update()
 
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
@@ -256,29 +256,34 @@ class Wind(tk.Frame):
             solar = 1
             speicher = 1
             for frame in LIST_WIND:
+                print('--------------------------')
                 print('Wind-Product', wind)
                 print('--------------------------')
                 print(frame.cbx_hersteller.get())
                 print(frame.cbx_modellname.get())
                 print(frame.anzahl.get())
                 print(frame.cbx_standort.get())
-                print('--------------------------')
+                print()
                 wind +=1
+
             for frame in LIST_SOLAR:
+                print('--------------------------')
                 print('Solar-Product', solar)
                 print('--------------------------')
                 print(frame.cbx_hersteller.get())
                 print(frame.cbx_modellname.get())
                 print(frame.anzahl.get())
                 print(frame.cbx_standort.get())
-                print('--------------------------')
+                print()
                 solar += 1
+
             for frame in LIST_SPEICHER:
+                print('--------------------------')
                 print('Speicher-Product', speicher)
                 print('--------------------------')
                 print(frame.lbl1['text'])
                 print(frame.anzahl.get())
-                print('--------------------------')
+                print()
                 speicher += 1
             
             self.controller.show_frame(Energiebilanz.Energiebilanz)
@@ -289,50 +294,3 @@ class Wind(tk.Frame):
         else:
             self.newWindow.destroy()
 
-    '''
-    #########################
-        Hersteller = tk.Label(produktFrame, text='Hersteller', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Hersteller.grid(row=0, column=0, padx=5, pady=3)
-        self.cbx_Hersteller = ttk.Combobox(produktFrame, width=50)
-        Hersteller = ('', 'Enercon', 'Vestas', 'Siemens-Gamesa', 'Nordex')
-        self.cbx_Hersteller['values'] = Hersteller
-        self.cbx_Hersteller.current(0)
-        self.cbx_Hersteller.grid(row=0, column=1)
-
-        Standort = tk.Label(produktFrame, text='Standort', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Standort.grid(row=1, column=0, padx=5, pady=3)
-        self.cbx_Standort = ttk.Combobox(produktFrame, width=50)
-        Standort = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
-                    'Schleswig-Holstein D', 'Schleswig-Holstein E', 'Schleswig-Holstein F', 'Hamburg')
-        self.cbx_Standort['values'] = Standort
-        self.cbx_Standort.current(0)
-        self.cbx_Standort.grid(row=1, column=1)
-
-        Modellname = tk.Label(produktFrame, text='Modellname', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        Modellname.grid(row=0, column=2, padx=5, pady=3)
-        self.cbx_Modellname = ttk.Combobox(produktFrame, width=50)
-        Modellname = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
-        self.cbx_Modellname['values'] = Modellname
-        self.cbx_Modellname.current(0)
-        self.cbx_Modellname.grid(row=0, column=3)
-
-        label1 = tk.Label(produktFrame, text='Wetter daten werden automatisch beruchsichtig', **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label1.grid(row=1, column=3, padx=5, pady=3)
-
-        anzahl = tk.Label(produktFrame, text="Anzahl", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        anzahl.grid(row=0, column=4, padx=5, pady=3)
-        var = IntVar(produktFrame)
-        var.set(0)
-        self.anzahl_spinbox = tk.Spinbox(produktFrame, width=5, from_=0, to=100, textvariable=var)
-        self.anzahl_spinbox.grid(row=0, column=5)
-
-
-        button1 = tk.Button(produktFrame, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT, command=self.loeschen)
-        button1.grid(row=1, column=5, padx=5, pady=3)
-        '''
