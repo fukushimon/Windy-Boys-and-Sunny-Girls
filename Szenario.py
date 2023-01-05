@@ -86,20 +86,25 @@ class Szenario:
         c = conn.cursor()
         
         params = pd.DataFrame({
-            'Datum': date.today(),
+            'Name': self.name,
             'Jahr': self.year,
-            'Year_2017': self.year_2017,
+            'Wetter_Jahr': self.weather_year,
             'Last_Szenario': self.last_szenario,
-            'Global_radiation': self.global_radiation,
+            'Datum': date.today(),
             'Repowering': self.repowering,
-            'PR_factor': self.pr_factor,
             'WEA_Modelle': ','.join(map(str, self.wea_models)),
             'WEA_Anzahl': ','.join(map(str, self.wea_count)),
             'WEA_Standorte': ','.join(map(str, self.wea_locations)),
             'PV_Modelle': ','.join(map(str, self.pv_models)),
             'PV_Flaeche': ','.join(map(str, self.pv_area)),
-            'PV_Standorte': ','.join(map(str, self.pv_locations))
-        }, index=[self.name])
+            'PV_Standorte': ','.join(map(str, self.pv_locations)),
+            'Anzahl_Akku': ','.join(map(str, self.num_akku)),
+            'Anzahl_Pumpspeicherkraftwerke': self.num_pump,
+            'Anzahl_Druckluftspeicherkraftwerke': self. num_druckluft,
+            'Anzahl_Elektrolyseure': self.num_elektrolyseure,
+            'Fuellstand_Speicher': self.start_charge
+          
+        })
         
         params.to_sql('Szenarien', conn, if_exists='replace')
         
