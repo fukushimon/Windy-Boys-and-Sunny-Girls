@@ -39,16 +39,7 @@ class Szenario:
         self.year = year
         self.weather_year = weather_year
         self.last_szenario = last_szenario
-        self.repowering = repowering
-
-    # def __init__(self, name, year, year_2017, last_szenario, global_radiation, repowering, pr_factor, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
-    #     self.name = name
-    #     self.year = year #20/21/22
-    #     self.year_2017 = year_2017 #0/1
-    #     self.last_szenario = last_szenario #1/2/3
-    #     self.global_radiation = global_radiation #%
-    #     self.repowering = repowering #0/1
-    #     self.pr_factor = pr_factor 
+        self.repowering = repowering 
 
         self.wea_count = wea_count
         self.wea_locations = wea_locations
@@ -92,20 +83,25 @@ class Szenario:
         c = conn.cursor()
         
         params = pd.DataFrame({
-            'Datum': date.today(),
+            'Name': self.name,
             'Jahr': self.year,
-            'Year_2017': self.year_2017,
+            'Wetter_Jahr': self.weather_year,
             'Last_Szenario': self.last_szenario,
-            'Global_radiation': self.global_radiation,
+            'Datum': date.today(),
             'Repowering': self.repowering,
-            'PR_factor': self.pr_factor,
             'WEA_Modelle': ','.join(map(str, self.wea_models)),
             'WEA_Anzahl': ','.join(map(str, self.wea_count)),
             'WEA_Standorte': ','.join(map(str, self.wea_locations)),
             'PV_Modelle': ','.join(map(str, self.pv_models)),
             'PV_Flaeche': ','.join(map(str, self.pv_area)),
-            'PV_Standorte': ','.join(map(str, self.pv_locations))
-        }, index=[self.name])
+            'PV_Standorte': ','.join(map(str, self.pv_locations)),
+            'Anzahl_Akku': ','.join(map(str, self.num_akku)),
+            'Anzahl_Pumpspeicherkraftwerke': self.num_pump,
+            'Anzahl_Druckluftspeicherkraftwerke': self. num_druckluft,
+            'Anzahl_Elektrolyseure': self.num_elektrolyseure,
+            'Fuellstand_Speicher': self.start_charge
+          
+        })
         
         params.to_sql('Szenarien', conn, if_exists='replace')
         
