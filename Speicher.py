@@ -2,8 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 
 import Wind
+from Akkumaske import ProduktFrameAkku
+from Druckluftspeichermaske import ProduktFrameDruckluft
+from Elektrolyseurmaske import ProduktFrameElektrolyseur
 from konstante import style
 from tkinter import *
+
+from konstante.Product import LIST_SPEICHER
 
 
 class Speicher(tk.Frame):
@@ -11,25 +16,37 @@ class Speicher(tk.Frame):
         super().__init__(parent)
         self.config(bg=style.BACKGROUND)
         self.controller = controller
-        self.list_frames = []
         Wind.Wind.button_menu(self)
+        # Beschreibung Szenario
+        self.szenario_beschreibung()
 
         label1 = tk.Label(self, text='Scenario Speicher', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-        self.speicher_Frame()
+        ####
+        AkkuFrame = ProduktFrameAkku(self)
+        AkkuFrame.config(background=style.BACKGROUND)
+        AkkuFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+        LIST_SPEICHER.append(AkkuFrame)
+
+        DruckluftFrame = ProduktFrameDruckluft(self)
+        DruckluftFrame.config(background=style.BACKGROUND)
+        DruckluftFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+        LIST_SPEICHER.append(DruckluftFrame)
+
+        elektrolyseurFrame = ProduktFrameElektrolyseur(self)
+        elektrolyseurFrame.config(background=style.BACKGROUND)
+        elektrolyseurFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+        LIST_SPEICHER.append(elektrolyseurFrame)
+        ####
         Wind.Wind.leistung(self)
 
-    # Biogas Frame
-    def speicher_Frame(self):
-        self.speicherFrame = tk.Frame(self)
-        self.speicherFrame.config(background=style.BACKGROUND)
-        self.speicherFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
-        # Beschreibung Szenario
-        self.szenario_beschreibung()
+
+    def akku_Frame(self):
+
         # Akku-Produkte
-        akkuFrame = tk.Frame(self.speicherFrame)
+        akkuFrame = tk.Frame(self)
         akkuFrame.config(background=style.BACKGROUND)
         akkuFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
 
@@ -71,13 +88,16 @@ class Speicher(tk.Frame):
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
 
-        anzahl = IntVar(akkuFrame)
-        anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(akkuFrame, width=6, from_=0, to=100, textvariable=anzahl)
+        self.anzahl = IntVar(akkuFrame)
+        self.anzahl.set(0)
+        self.anzahl_spinbox = tk.Spinbox(akkuFrame, width=6, from_=0, to=100, textvariable=self.anzahl)
         self.anzahl_spinbox.grid(row=3, column=5)
 
-        # Druckluftspeicher-Produkte
-        druckluftspeicherFrame = tk.Frame(self.speicherFrame)
+        LIST_SPEICHER.append(akkuFrame)
+
+    # Druckluftspeicher-Produkte
+    def druckluftspeicherFrame(self):
+        druckluftspeicherFrame = tk.Frame(self)
         druckluftspeicherFrame.config(background=style.BACKGROUND)
         druckluftspeicherFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
 
@@ -118,13 +138,16 @@ class Speicher(tk.Frame):
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
 
-        anzahl = IntVar(druckluftspeicherFrame)
-        anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(druckluftspeicherFrame, width=6, from_=0, to=100, textvariable=anzahl)
+        self.anzahl = IntVar(druckluftspeicherFrame)
+        self.anzahl.set(0)
+        self.anzahl_spinbox = tk.Spinbox(druckluftspeicherFrame, width=6, from_=0, to=100, textvariable=self.anzahl)
         self.anzahl_spinbox.grid(row=3, column=5)
 
+        LIST_SPEICHER.append(druckluftspeicherFrame)
+
         # elektrolyseur-Produkte
-        elektrolyseurFrame = tk.Frame(self.speicherFrame)
+    def elektrolyseurFrame(self):
+        elektrolyseurFrame = tk.Frame(self)
         elektrolyseurFrame.config(background=style.BACKGROUND)
         elektrolyseurFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
 
@@ -159,13 +182,14 @@ class Speicher(tk.Frame):
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
 
-        anzahl = IntVar(elektrolyseurFrame)
-        anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(elektrolyseurFrame, width=6, from_=0, to=100, textvariable=anzahl)
+        self.anzahl = IntVar(elektrolyseurFrame)
+        self.anzahl.set(0)
+        self.anzahl_spinbox = tk.Spinbox(elektrolyseurFrame, width=6, from_=0, to=100, textvariable=self.anzahl)
         self.anzahl_spinbox.grid(row=3, column=5)
 
+        LIST_SPEICHER.append(elektrolyseurFrame)
     def szenario_beschreibung(self):
-        datenFrame = tk.Frame(self.speicherFrame)
+        datenFrame = tk.Frame(self)
         datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
 

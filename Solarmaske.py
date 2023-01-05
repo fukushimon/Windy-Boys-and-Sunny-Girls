@@ -8,16 +8,17 @@ from konstante import style
 class ProduktFrameSolar(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-
+        # Hersteller
         Hersteller = tk.Label(self, text='Hersteller', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         Hersteller.grid(row=0, column=0, padx=5, pady=3)
+
         self.cbx_hersteller = ttk.Combobox(self, width=50)
-        Hersteller = ('', 'Solar-A', 'Solar-B', 'Solar-C', 'Solar-D')
-        self.cbx_hersteller['values'] = Hersteller
+        self.cbx_hersteller['values'] = ('', 'Solar-A', 'Solar-B', 'Solar-C', 'Solar-D')
         self.cbx_hersteller.current(0)
         self.cbx_hersteller.grid(row=0, column=1)
 
+        # Standort
         Standort = tk.Label(self, text='Standort', **style.STYLE,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         Standort.grid(row=1, column=0, padx=5, pady=3)
@@ -27,6 +28,7 @@ class ProduktFrameSolar(tk.Frame):
         self.cbx_standort.current(0)
         self.cbx_standort.grid(row=1, column=1)
 
+        # Modellname
         Modellname = tk.Label(self, text='Modellname', **style.STYLE,
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         Modellname.grid(row=0, column=2, padx=5, pady=3)
@@ -43,6 +45,7 @@ class ProduktFrameSolar(tk.Frame):
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label2.grid(row=0, column=4, padx=5, pady=3)
 
+        # Anzahl
         self.anzahl = IntVar(self)
         self.anzahl.set(0)
         self.anzahl_spinbox = tk.Spinbox(self, width=10, from_=0, to=100, textvariable=self.anzahl)

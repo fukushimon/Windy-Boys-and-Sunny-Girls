@@ -67,7 +67,7 @@ class ProduktFrameWind(tk.Frame):
 
     def freimachen(self):
         self.cbx_hersteller.current(0)
-        self.cbx_Standort.current(0)
+        self.cbx_standort.current(0)
         self.cbx_modellname.current(0)
         var = IntVar(0)
         self.anzahl_spinbox.config(textvariable=var)

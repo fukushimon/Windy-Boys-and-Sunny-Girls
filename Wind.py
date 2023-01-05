@@ -8,7 +8,7 @@ import Home
 import Solar
 from Windmaske import ProduktFrameWind
 from konstante import style
-from konstante.Product import LIST_WIND, LIST_SOLAR
+from konstante.Product import LIST_WIND, LIST_SOLAR, LIST_SPEICHER
 
 
 class Wind(tk.Frame):
@@ -138,7 +138,7 @@ class Wind(tk.Frame):
     def leistung(self):
         leistungFrame = tk.Frame(self)
         leistungFrame.config(background=style.BACKGROUND)
-        leistungFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+        leistungFrame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=8)
         leistungFrame.grid_columnconfigure(3, weight=1)
         leistungFrame.grid_columnconfigure(4, weight=1)
         leistungFrame.grid_columnconfigure(5, weight=1)
@@ -273,6 +273,13 @@ class Wind(tk.Frame):
                 print(frame.cbx_standort.get())
                 print('--------------------------')
                 solar += 1
+            for frame in LIST_SPEICHER:
+                print('Speicher-Product', speicher)
+                print('--------------------------')
+                print(frame.lbl1['text'])
+                print(frame.anzahl.get())
+                print('--------------------------')
+                speicher += 1
             
             self.controller.show_frame(Energiebilanz.Energiebilanz)
             self.newWindow.destroy()
