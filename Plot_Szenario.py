@@ -16,11 +16,11 @@ wind_potenzialflaechen = {
 # firstPlot.plot_energy_mix(sh)
 # firstPlot.plot_energy_mix(total)
     
-scene1 = Szenario('Szenario 1', ['Gamesa', 'Enercon'], [10, 12], ['A', 'C'], ['SunPower'], [200], ['A'])
-scene1.add_to_sql()
+# scene1 = Szenario('Szenario 1', ['Gamesa', 'Enercon'], [10, 12], ['A', 'C'], ['SunPower'], [200], ['A'])
+# scene1.add_to_sql()
 
-sceneVorrang = Szenario('Szenario Vorranggebiet', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], ['A', 'C', 'D'], ['SunPower', 'LG', 'JA'], [200, 500, 50], ['B', 'C', 'A'])
-sceneVorrang.add_to_sql()
+# sceneVorrang = Szenario('Szenario Vorranggebiet', ['Gamesa', 'Siemens', 'Enercon'], [10, 12, 5], ['A', 'C', 'D'], ['SunPower', 'LG', 'JA'], [200, 500, 50], ['B', 'C', 'A'])
+# sceneVorrang.add_to_sql()
 
 wind_repowering = {
      'Anlagen': ['Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon'],
@@ -53,22 +53,30 @@ solar_null = {
     }
 
 # Szenario 'MAX': Wind- und Solar-Potenzialflächen werden vollständig bebaut (inkl.Repowering)
-scene_max = Szenario('Potenzialflaechen', 2030, 1, 
-                      wind_potenzialflaechen['Anlagen'] + wind_repowering['Anlagen'], 
-                      wind_potenzialflaechen['Anzahl'] + wind_repowering['Anzahl'], 
-                      wind_potenzialflaechen['Standorte'] + wind_repowering['Standorte'], 
-                      solar_potenzialflaechen['Anlagen'], 
-                      solar_potenzialflaechen['Flaeche'], 
-                      solar_potenzialflaechen['Standorte']
-                      )
+# scene_max = Szenario('Potenzialflaechen', 2030, 1, 
+#                       wind_potenzialflaechen['Anlagen'] + wind_repowering['Anlagen'], 
+#                       wind_potenzialflaechen['Anzahl'] + wind_repowering['Anzahl'], 
+#                       wind_potenzialflaechen['Standorte'] + wind_repowering['Standorte'], 
+#                       solar_potenzialflaechen['Anlagen'], 
+#                       solar_potenzialflaechen['Flaeche'], 
+#                       solar_potenzialflaechen['Standorte']
+#                       )
 
-scene_max_mix = scene_max.calc_strommix()
-scene_max_mix.plot_bilanz_ee('Both')
-scene_max_mix.plot_strommix_ee('Both')
-print("Szenario MAX:")
-print(scene_max_mix.calc_pct_positive_bilanz_ee('Both'))
-print(scene_max_mix.calc_dunkelflaute_ee('Both'))
-print(scene_max_mix.calc_max_dunkelflaute_ee('Both'))
+# scene_max_mix = scene_max.calc_strommix()
+# scene_max_mix.plot_bilanz_ee('Both')
+# scene_max_mix.plot_strommix_ee('Both')
+# print("Szenario MAX:")
+# print(scene_max_mix.calc_pct_positive_bilanz_ee('Both'))
+# print(scene_max_mix.calc_dunkelflaute_ee('Both'))
+# print(scene_max_mix.calc_max_dunkelflaute_ee('Both'))
+
+# scene_max.return_from_sql()
+
+scene_test = Szenario('Test', 2020, 0, 1, 30, 0, 0.7, ['Gamesa', 'Enercon'], [100, 200], ['Hamburg', 'Quickborn'], ['SunPower', 'SunPower'], [100, 300], ['Quickborn', 'SPO'])
+
+df = scene_test.return_from_sql('Test')
+
+
 
 # Szenario 'Ausweisflächen + Repowering'
 # scene_ausweis = Szenario('Ausweisflaechen', 2030, 1, 

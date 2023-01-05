@@ -9,10 +9,14 @@ class Szenario:
     wea_models = []
     pv_models = []
     
-    def __init__(self, name, year, last_szenario, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
+    def __init__(self, name, year, year_2017, last_szenario, global_radiation, repowering, pr_factor, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
         self.name = name
-        self.year = year
-        self.last_szenario = last_szenario
+        self.year = year #20/21/22
+        self.year_2017 = year_2017 #0/1
+        self.last_szenario = last_szenario #1/2/3
+        self.global_radiation = global_radiation #%
+        self.repowering = repowering #0/1
+        self.pr_factor = pr_factor 
         self.wea_count = wea_count
         self.wea_locations = wea_locations
         self.pv_area = pv_area # in km^2
@@ -34,7 +38,11 @@ class Szenario:
         params = pd.DataFrame({
             'Datum': date.today(),
             'Jahr': self.year,
+            'Year_2017': self.year_2017,
             'Last_Szenario': self.last_szenario,
+            'Global_radiation': self.global_radiation,
+            'Repowering': self.repowering,
+            'PR_factor': self.pr_factor,
             'WEA_Modelle': ','.join(map(str, self.wea_models)),
             'WEA_Anzahl': ','.join(map(str, self.wea_count)),
             'WEA_Standorte': ','.join(map(str, self.wea_locations)),
@@ -45,14 +53,72 @@ class Szenario:
         
         params.to_sql('Szenarien', conn, if_exists='replace')
         
-    def return_from_sql(self):
-        conn = sqlite3.connect('Data.db')
-        sql_query = pd.read_sql_query ('Szenarien', conn)
-
-        df = pd.DataFrame(sql_query, columns = ['Datum','WEA_Modelle', 'WEA_Anzahl', 'WEA_Anzahl','PV_Fläche', 'PV_Modelle', 'PV_Standorte'])
-      
+        c.close()
         conn.close()
-    
+        
+    def return_from_sql(self, name):
+        conn = sqlite3.connect('Data.db')
+        c = conn.cursor()
+        
+        #sql_df = pd.read_sql('Szenarien', conn, index_col = 'Respondent')
+
+        df = pd.read_sql_query('SELECT * FROM Szenarien', conn)
+      
+        # Configuration
+        configuration = pd.DataFrame({
+            'Datum': df['Datum'],
+            'Jahr': df['Jahr'],
+            'Year_2017': df['Year_2017'],
+            'Last_Szenario': df['Last_Szenario'],
+            'Global_radiation': df['Global_radiation'],
+            'Repowering': df['Repowering'],
+            'PR_factor': df['PR_factor'],
+            })
+        
+        def convert_to_int(str_list):
+            result = [int(i) for i in str_list]
+            return result
+       
+        wea_anzahl = df['WEA_Anzahl'].str.split(',')
+        wea_anzahl.apply(convert_to_int)
+        
+        print(wea_anzahl[0][1].dtpye())
+        
+        # Wind
+        wind = pd.DataFrame({
+            'Modell': df['WEA_Modelle'].str.split(","),
+            #'Anzahl': df['WEA_Anzahl'].str.split(",").astype(int),
+            #pd.to_numeric(df['WEA_Anzahl'], errors='raise', downcast = None),
+            #'Anzahl': map(int, df['WEA_Anzahl']),
+            #'Anzahl': [int(x) for x in df['WEA_Anzahl'].str.split(",")],
+            #'Anzahl': eval(df['WEA_Anzahl'].str.split(",")),
+            #'Anzahl': map(int, df['WEA_Anzahl'].split(",")),
+            #num_of_WEA = df['WEA_Anzahl'].str.split(","),
+           #'#Anzahl': list(map(int, num_of_WEA)),
+            #.astype(int),
+            'Anzahl': wea_anzahl,
+            'Standort': df['WEA_Standorte'].str.split(",")
+            })
+        
+       # df = pd.DataFrame(wind)
+        #df['Anzahl'] = pd.to_numeric(df['Anzahl'])
+        
+        #data_new1 = wind.copy()                                    
+        ##data_new1['Anzahl'] = data_new1['Anzahl'].astype(int)  
+        #data_new1['Anzahl'] = pd.to_numeric(data_new1['Anzahl'])
+        
+        # PV
+        # pv = pd.DataFrame({
+        #     'Modell': df['PV_Modelle'].str.split(","),
+        #     'Flaeche': df['PV_Flaeche'].str.split(","),
+        #     'Standort': df['PV_Standorte'].str.split(",")
+        #     })
+                     
+        c.close()
+        conn.close()
+        
+        return wind
+        
     def print_config(self):
         print(self.config)
     
@@ -68,11 +134,11 @@ class Szenario:
             'Standort': self.wea_locations
             })
         
-        # PV
+        # PV.pv_models,
         pv = pd.DataFrame({
-            'Modell': self.pv_models,
             'Flaeche': self.pv_area,
-            'Standort': self.pv_locations
+            'Standort': self.pv_locations,
+            'Modell': self.pv_models
             })
         
         # Wind Erzeugung
@@ -131,3 +197,4 @@ class Szenario:
         new_strommix.add_to_pv(total_energy_pv)
         
         return new_strommix
+    
