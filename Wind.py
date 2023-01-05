@@ -10,7 +10,7 @@ from Windmaske import ProduktFrameWind
 from konstante import style
 from konstante.Product import LIST_WIND, LIST_SOLAR, LIST_SPEICHER, REFERENCE, HERSTELLER_WIND, MODELL_WIND, \
     STANDORT_WIND, ANZAHL_WIND, HERSTELLER_SOLAR, MODELL_SOLAR, STANDORT_SOLAR, FLAECHE_SOLAR, ANLAGE_SPEICHER, \
-    ANZAHL_SPEICHER
+    ANZAHL_SPEICHER, FAKTOREN_LIST
 
 
 class Wind(tk.Frame):
@@ -183,62 +183,75 @@ class Wind(tk.Frame):
         self.newWindow.geometry("400x500")
         self.newWindow.config(bg=style.BACKGROUND)
         tk.Label(self.newWindow, text="Faktoren zu berücksichtigen ", **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT).grid(row=0, columnspan=2, sticky=W, padx=5, pady=3)
+                 activeforeground=style.TEXT).grid(row=0, columnspan=2, sticky=W, padx=5, pady=3)
 
         tk.Label(self.newWindow, text="Wetterdaten: ", **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT).grid(row=1, columnspan=1, sticky=W, padx=5, pady=3)
-        option1 = IntVar()
-        option2 = IntVar()
-        Checkbutton(self.newWindow, text="(2020/2021", variable=option1, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT).grid(row=2, column=0, sticky=W, padx=5, pady=3)
-        Checkbutton(self.newWindow, text="2022", variable=option2, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT).grid(row=2, column=1, sticky=W, padx=5, pady=3)
+                 activeforeground=style.TEXT).grid(row=1, columnspan=1, sticky=W, padx=5, pady=3)
 
+        self.option1 = IntVar()
+        self.option1.set(0)
+        Radiobutton(self.newWindow, text="(2020/2021", variable=self.option1, value=0, **style.STYLE,
+                    activebackground=style.BACKGROUND, activeforeground=style.TEXT).\
+            grid(row=2, column=0, sticky=W, padx=5, pady=3)
+        Radiobutton(self.newWindow, text="2022", variable=self.option1, value=1, **style.STYLE,
+                    activebackground=style.BACKGROUND,activeforeground=style.TEXT).\
+            grid(row=2, column=1, sticky=W, padx=5, pady=3)
         tk.Label(self.newWindow, text="Globalstrahlungsfaktor", **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT).grid(row=3, columnspan=1, sticky=W, padx=5, pady=3)
-        option3 = IntVar()
-        option4 = IntVar()
-        Checkbutton(self.newWindow, text="Ja", variable=option3, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+                 activeforeground=style.TEXT).grid(row=3, columnspan=1, sticky=W, padx=5, pady=3)
+
+        self.option2 = IntVar()
+        self.option2.set(0)
+        Radiobutton(self.newWindow, text="Ja", variable=self.option2, value=0, **style.STYLE,
+                    activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=4, column=0, sticky=W, padx=5, pady=3)
-        Checkbutton(self.newWindow, text="Nein", variable=option4, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+        Radiobutton(self.newWindow, text="Nein", variable=self.option2, value=1, **style.STYLE,
+                    activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=4, column=1, sticky=W, padx=5, pady=3)
 
         tk.Label(self.newWindow, text="Repowering", **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=5, columnspan=1, sticky=W, padx=5, pady=3)
-        option5 = IntVar()
-        option6 = IntVar()
-        Checkbutton(self.newWindow, text="Ja", variable=option5, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+
+        self.option3 = IntVar()
+        self.option3.set(0)
+        Radiobutton(self.newWindow, text="Ja", variable=self.option3, value=0, **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=6, column=0, sticky=W, padx=5, pady=3)
-        Checkbutton(self.newWindow, text="Nein", variable=option6, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+        Radiobutton(self.newWindow, text="Nein", variable=self.option3, value=1, **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=6, column=1, sticky=W, padx=5, pady=3)
 
         tk.Label(self.newWindow, text="Verbaruchsszenarien", **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=7, columnspan=1, sticky=W, padx=5, pady=3)
-        option7 = IntVar()
-        option8 = IntVar()
-        option9 = IntVar()
-        Checkbutton(self.newWindow, text="Bundesregierung", variable=option7, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+
+        self.option4 = IntVar()
+        self.option4.set(0)
+        Radiobutton(self.newWindow, text="Bundesregierung", variable=self.option4, value=0, **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=8, column=0, sticky=W, padx=5, pady=3)
-        Checkbutton(self.newWindow, text="alles bleibt gleich", variable=option8, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+        Radiobutton(self.newWindow, text="alles bleibt gleich", variable=self.option4, value=1, **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=8, column=1, sticky=W, padx=5, pady=3)
-        Checkbutton(self.newWindow, text="Sektorenkopplung", variable=option9, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+        Radiobutton(self.newWindow, text="Sektorenkopplung", variable=self.option4, value=2, **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=9, column=0, sticky=W, padx=5, pady=3)
 
         tk.Label(self.newWindow, text="PR-Faktor verändern?", **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=10, columnspan=1, sticky=W, padx=5, pady=3)
-        option10 = IntVar()
-        option11 = IntVar()
-        Checkbutton(self.newWindow, text="Ja", variable=option10, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+
+        self.option5 = IntVar()
+        self.option5.set(0)
+        Radiobutton(self.newWindow, text="Ja", variable=self.option5, value=0, **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=11, column=0, sticky=W, padx=5, pady=3)
-        Checkbutton(self.newWindow, text="Nein", variable=option11, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+        Radiobutton(self.newWindow, text="Nein", variable=self.option5, value=1, **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=11, column=1, sticky=W, padx=5, pady=3)
+        #option10 = IntVar()
+        #option11 = IntVar()
+        #Checkbutton(self.newWindow, text="Ja", variable=option10, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+        #                    activeforeground=style.TEXT).grid(row=11, column=0, sticky=W, padx=5, pady=3)
+        #Checkbutton(self.newWindow, text="Nein", variable=option11, onvalue=1, offvalue=0, **style.STYLE, activebackground=style.BACKGROUND,
+        #                    activeforeground=style.TEXT).grid(row=11, column=1, sticky=W, padx=5, pady=3)
 
         tk.Label(self.newWindow, text="Startwert  der Speicher in % : ", **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT).grid(row=12, columnspan=1, sticky=W, padx=5, pady=3)
 
-        ladung = IntVar(self.newWindow)
-        ladung.set(0)
-        self.ladung_spinbox = tk.Spinbox(self.newWindow, width=5, from_=0, to=100, textvariable=ladung)
+        self.ladung = IntVar(self.newWindow)
+        self.ladung.set(0)
+        self.ladung_spinbox = tk.Spinbox(self.newWindow, width=5, from_=0, to=100, textvariable=self.ladung)
         self.ladung_spinbox.grid(row=13, sticky=W, padx=5, pady=3)
 
         weiter_button = tk.Button(self.newWindow, text='Weiter', **style.STYLE,
@@ -252,8 +265,13 @@ class Wind(tk.Frame):
         abbrechen_button.grid(row=14, column=1, sticky=E, padx=5, pady=3)
 
     def berechnen(self):
-        confirm = messagebox.askyesnocancel('Berechnung', 'asdfghjklöpoiuztrewqyxcvbnm')
+        confirm = messagebox.askyesnocancel('Berechnung', 'Alle zuvor ausgewählten Faktoren werden für die Berechnungsoperation berücksichtigt. \nWenn Sie die Faktoren erneut ändern möchten, klicken Sie auf Abbrechen')
         if confirm:
+            FAKTOREN_LIST.clear()
+            FAKTOREN_LIST.append([self.option1.get(), self.option2.get(), self.option3.get(), self.option4.get(), self.option5.get(), self.ladung.get()])
+            print(FAKTOREN_LIST)
+
+
             wind = 1
             solar = 1
             speicher = 1
@@ -266,13 +284,14 @@ class Wind(tk.Frame):
                 print(frame.anzahl.get())
                 print(frame.cbx_standort.get())
                 print()
-                print('---------------------------------------------------')
-                print(LIST_WIND[0])
-                print('---------------------------------------------------')
-                print()
-                wind +=1
+                wind += 1
             # Liste für Shimon
             for frame in LIST_WIND:
+                HERSTELLER_WIND.clear()
+                MODELL_WIND.clear()
+                STANDORT_WIND.clear()
+                ANZAHL_WIND.clear()
+
                 HERSTELLER_WIND.append(frame.cbx_hersteller.get())
                 MODELL_WIND.append(frame.cbx_modellname.get())
                 STANDORT_WIND.append(frame.cbx_standort.get())
@@ -290,6 +309,11 @@ class Wind(tk.Frame):
                 solar += 1
             # Liste für Shimon
             for frame in LIST_SOLAR:
+                HERSTELLER_SOLAR.clear()
+                MODELL_SOLAR.clear()
+                STANDORT_SOLAR.clear()
+                FLAECHE_SOLAR.clear()
+
                 HERSTELLER_SOLAR.append(frame.cbx_hersteller.get())
                 MODELL_SOLAR.append(frame.cbx_modellname.get())
                 STANDORT_SOLAR.append(frame.cbx_standort.get())
@@ -305,6 +329,9 @@ class Wind(tk.Frame):
                 speicher += 1
             # Liste für Shimon
             for frame in LIST_SPEICHER:
+                ANLAGE_SPEICHER.clear()
+                ANZAHL_SPEICHER.clear()
+
                 ANLAGE_SPEICHER.append(frame.lbl1['text'])
                 ANZAHL_SPEICHER.append(frame.anzahl.get())
 
