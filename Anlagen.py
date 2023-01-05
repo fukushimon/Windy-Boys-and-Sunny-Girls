@@ -125,14 +125,22 @@ class GuD():
     def __init__(self):
         self.efficiency = 0.45
         self.production = 59.406 # MWh pro 15min
+
+class Brennstoffzelle():
+    def __init__(self, num_units):
+        self.efficiency = 0.49
+        self.power = 1 * num_units # MW
+        self.production = 0.228 * num_units # MWh
+        self.cost = 110000 * self.power # Euro
         
 class Gasnetz():
-    def __init__(self, num_elektrolyseure, start_charge):
+    def __init__(self, num_elektrolyseure, num_brennstoffzellen, start_charge):
         self.capacity = 0 # MWh
         self.current_charge = self.capacity * start_charge
         self.elec = Elektrolyseur(num_elektrolyseure)
+        self.bsz = Brennstoffzelle(num_brennstoffzellen)
         self.gud = GuD()
-        self.cost = self.elec.cost
+        self.cost = self.elec.cost + self.bsz.cost
 
     def charge(self, amount):
         amount = amount * self.elec.efficiency
@@ -143,17 +151,75 @@ class Gasnetz():
             self.current_charge = self.current_charge + amount
             return amount
     
-    def discharge(self, amount):
-        amount = amount * self.gud.efficiency
+    def discharge(self, amount):            
+        # amount = amount * self.gud.efficiency
+        
+        # if amount > self.current_charge:
+        #     amount = self.current_charge
+            
+        # if amount > self.gud.production:
+        #     self.current_charge = self.current_charge - self.gud.production
+        #     amount = (amount - self.gud.production) * self.bsz.efficiency
+            
+        #     if amount > self.bsz.production:
+        #         self.current_charge = self.current_charge - self.bsz.production
+        #         return (self.gud.production + self.bsz.production)
+        #     else:
+        #         self.current_charge = self.current_charge - amount
+        #         return (self.gud.production + amount)
+        # else:
+        #     self.current_charge = self.current_charge - amount
+        #     return amount
+        
         if amount > self.current_charge:
             amount = self.current_charge
             
-        if amount > self.gud.production:
+        if (amount > (self.gud.production * (1 + self.gud.efficiency))):
+            self.current_charge = self.current_charge - (self.gud.production * (1 + self.gud.efficiency))
+            amount = amount - (self.gud.production * (1 + self.gud.efficiency))
+            
+            if (amount > (self.bsz.production * (1 + self.bsz.efficiency))):
+                self.current_charge = self.current_charge - (self.bsz.production * (1 + self.bsz.efficiency))
+                return (self.gud.production + self.bsz.production)
+            
+            elif ((amount > self.bsz.production) and (amount < (self.bsz.production * (1 + self.bsz.efficiency)))):
+                self.current_charge = self.current_charge - self.bsz.production
+                return (self.gud.production + (self.bsz.production * self.bsz.efficiency))
+            
+            elif ((amount * (1 + self.bsz.efficiency)) <= self.bsz.production):
+                self.current_charge = self.current_charge - (amount * (1 + self.bsz.efficiency))
+                return (self.gud.production + amount)
+            
+            elif ((amount * (1 + self.bsz.efficiency)) > self.bsz.production) and (amount <= self.bsz.production):
+                self.current_charge = self.current_charge - amount
+                return (self.gud.production + (amount * self.bsz.efficiency))
+            
+        elif ((amount > self.gud.production) and (amount < (self.gud.production * (1 + self.gud.efficiency)))):
             self.current_charge = self.current_charge - self.gud.production
-            return self.gud.production
-        else:
-            self.current_charge = self.current_charge - amount
+            amount = amount - self.gud.production
+            
+            if (amount > (self.bsz.production * (1 + self.bsz.efficiency))):
+                self.current_charge = self.current_charge - (self.bsz.production * (1 + self.bsz.efficiency))
+                return ((self.gud.production * self.gud.efficiency) + self.bsz.production)
+            
+            elif ((amount > self.bsz.production) and (amount < (self.bsz.production * (1 + self.bsz.efficiency)))):
+                self.current_charge = self.current_charge - self.bsz.production
+                return ((self.gud.production * self.gud.efficiency) + (self.bsz.production * self.bsz.efficiency))
+            
+            elif ((amount * (1 + self.bsz.efficiency)) <= self.bsz.production):
+                self.current_charge = self.current_charge - (amount * (1 + self.bsz.efficiency))
+                return ((self.gud.production * self.gud.efficiency) + amount)
+            
+            elif ((amount * (1 + self.bsz.efficiency)) > self.bsz.production) and (amount <= self.bsz.production):
+                self.current_charge = self.current_charge - amount
+                return ((self.gud.production * self.gud.efficiency) + (amount * self.bsz.efficiency))
+            
+        elif ((amount * (1 + self.gud.efficiency)) <= self.gud.production):
+            self.current_charge = self.current_charge - (amount * (1 + self.gud.efficiency))
             return amount
+        elif ((amount * (1 + self.gud.efficiency)) > self.gud.production) and (amount <= self.gud.production):
+            self.current_charge = self.current_charge - amount
+            return (amount * self.gud.efficiency)
 
 class Elektrolyseur():
     def __init__(self, num_units):

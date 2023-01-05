@@ -28,6 +28,7 @@ class Szenario:
                  num_pump, # Anzahl der Pumpspeicherkraftwerke: int
                  num_druckluft, # Anzahl der Druckluftspeicherkraftwerke: int
                  num_elektrolyseure, # Anzahl der Elektrolyseure: int
+                 num_brennstoffzellen, # Anzahl der Brennstoffzellen
                  start_charge # Zu wie viel Prozent sich die Speicher am Anfang des Szenarios gefüllt?: float
                  ):
         
@@ -48,6 +49,7 @@ class Szenario:
         self.num_pump = num_pump
         self.num_druckluft = num_druckluft
         self.num_elektrolyseure = num_elektrolyseure
+        self.num_brennstoffzellen = num_brennstoffzellen
         self.start_charge = start_charge
         
         for model in wea_models:
@@ -69,7 +71,7 @@ class Szenario:
         self.akku = Akku(self.num_akku, self.start_charge, 'Quickborn')
         self.pump = Pumpspeicher(self.num_pump, self.start_charge, 'Quickborn')
         self.druckluft = Druckluftspeicher(self.num_druckluft, self.start_charge, 'Quickborn')
-        self.gasnetz = Gasnetz(num_elektrolyseure, self.start_charge)
+        self.gasnetz = Gasnetz(self.num_elektrolyseure, self.num_brennstoffzellen, self.start_charge)
         
         # Add to database
         self.add_to_sql()
