@@ -44,12 +44,12 @@ class ProduktFrameWind(tk.Frame):
         self.standort_lbl = tk.Label(self, text='Standort', **style.STYLE, activebackground=style.BACKGROUND,
                                      activeforeground=style.TEXT)
         self.standort_lbl.grid(row=1, column=0, padx=5, pady=3)
-        self.cbx_Standort = ttk.Combobox(self, width=50)
-        self.cbx_Standort['values'] = (
+        self.cbx_standort = ttk.Combobox(self, width=50)
+        self.cbx_standort['values'] = (
         '', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C', 'Schleswig-Holstein D',
         'Schleswig-Holstein E', 'Schleswig-Holstein F', 'Hamburg')
-        self.cbx_Standort.current(0)
-        self.cbx_Standort.grid(row=1, column=1)
+        self.cbx_standort.current(0)
+        self.cbx_standort.grid(row=1, column=1)
         label2 = tk.Label(self, text="Anzahl", **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label2.grid(row=0, column=5, padx=5, pady=3)

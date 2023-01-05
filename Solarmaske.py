@@ -13,7 +13,7 @@ class ProduktFrameSolar(tk.Frame):
                               activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         Hersteller.grid(row=0, column=0, padx=5, pady=3)
         self.cbx_hersteller = ttk.Combobox(self, width=50)
-        Hersteller = ('', 'Enercon', 'Vestas', 'Siemens-Gamesa', 'Nordex')
+        Hersteller = ('', 'Solar-A', 'Solar-B', 'Solar-C', 'Solar-D')
         self.cbx_hersteller['values'] = Hersteller
         self.cbx_hersteller.current(0)
         self.cbx_hersteller.grid(row=0, column=1)
@@ -43,9 +43,9 @@ class ProduktFrameSolar(tk.Frame):
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label2.grid(row=0, column=4, padx=5, pady=3)
 
-        anzahl = IntVar(self)
-        anzahl.set(0)
-        self.anzahl_spinbox = tk.Spinbox(self, width=10, from_=0, to=100, textvariable=anzahl)
+        self.anzahl = IntVar(self)
+        self.anzahl.set(0)
+        self.anzahl_spinbox = tk.Spinbox(self, width=10, from_=0, to=100, textvariable=self.anzahl)
         self.anzahl_spinbox.grid(row=0, column=5)
 
         label2 = tk.Label(self, text="in m^2", **style.STYLE,

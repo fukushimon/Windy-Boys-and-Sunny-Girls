@@ -8,6 +8,7 @@ import Home
 import Solar
 from Windmaske import ProduktFrameWind
 from konstante import style
+from konstante.Product import LIST_WIND, LIST_SOLAR
 
 
 class Wind(tk.Frame):
@@ -17,7 +18,7 @@ class Wind(tk.Frame):
         self.config(bg=style.BACKGROUND)
         self.controller = controller
         self.button_menu()
-        self.list_frames = []
+        #self.list_wind = []
         self.szenario_daten = []
 
         
@@ -137,7 +138,7 @@ class Wind(tk.Frame):
     def leistung(self):
         leistungFrame = tk.Frame(self)
         leistungFrame.config(background=style.BACKGROUND)
-        leistungFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)  # (row=0, column=0)
+        leistungFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         leistungFrame.grid_columnconfigure(3, weight=1)
         leistungFrame.grid_columnconfigure(4, weight=1)
         leistungFrame.grid_columnconfigure(5, weight=1)
@@ -170,8 +171,9 @@ class Wind(tk.Frame):
         produktFrame = ProduktFrameWind(self.scrollable_frame)
         produktFrame.config(background=style.BACKGROUND)
         produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
-        
-        self.list_frames.append(produktFrame)
+
+        LIST_WIND.append(produktFrame)
+        #self.list_wind.append(produktFrame)
 
     def faktoren_beruecksichtigen(self):
         self.newWindow = tk.Toplevel(self)
@@ -239,7 +241,7 @@ class Wind(tk.Frame):
 
         weiter_button = tk.Button(self.newWindow, text='Weiter', **style.STYLE,
                                activebackground=style.BACKGROUND, activeforeground=style.TEXT,
-                               command=lambda: self.berechnen())
+                               command=lambda: Wind.berechnen(self))
         weiter_button.grid(row=14, column=0, sticky=E, padx=5, pady=3)
 
         abbrechen_button = tk.Button(self.newWindow, text='Abbrechen', **style.STYLE,
@@ -250,9 +252,27 @@ class Wind(tk.Frame):
     def berechnen(self):
         confirm = messagebox.askyesnocancel('Berechnung', 'asdfghjklöpoiuztrewqyxcvbnm')
         if confirm:
-            for frame in self.list_frames:
+            wind = 1
+            solar = 1
+            speicher = 1
+            for frame in LIST_WIND:
+                print('Wind-Product', wind)
+                print('--------------------------')
                 print(frame.cbx_hersteller.get())
-                
+                print(frame.cbx_modellname.get())
+                print(frame.anzahl.get())
+                print(frame.cbx_standort.get())
+                print('--------------------------')
+                wind +=1
+            for frame in LIST_SOLAR:
+                print('Solar-Product', solar)
+                print('--------------------------')
+                print(frame.cbx_hersteller.get())
+                print(frame.cbx_modellname.get())
+                print(frame.anzahl.get())
+                print(frame.cbx_standort.get())
+                print('--------------------------')
+                solar += 1
             
             self.controller.show_frame(Energiebilanz.Energiebilanz)
             self.newWindow.destroy()

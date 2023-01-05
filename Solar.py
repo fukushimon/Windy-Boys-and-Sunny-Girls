@@ -6,13 +6,14 @@ from Solarmaske import ProduktFrameSolar
 from konstante import style
 from tkinter import *
 
+from konstante.Product import LIST_SOLAR
+
 
 class Solar(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.config(bg=style.BACKGROUND)
         self.controller = controller
-        self.list_frames = []
         Wind.Wind.button_menu(self)
         label1 = tk.Label(self, text='Scenario Solar', **style.FONTTITEL,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -93,7 +94,7 @@ class Solar(tk.Frame):
         produktFrame.config(background=style.BACKGROUND)
         produktFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8, expand=True)
 
-        self.list_frames.append(produktFrame)
+        LIST_SOLAR.append(produktFrame)
 
 
     def _on_mousewheel(self, event):

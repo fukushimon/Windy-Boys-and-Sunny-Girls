@@ -1,0 +1,6 @@
+
+LIST_WIND = []
+
+LIST_SOLAR = []
+
+LIST_SPEICHER = []
