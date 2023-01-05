@@ -40,18 +40,12 @@ class Szenario:
         self.weather_year = weather_year
         self.last_szenario = last_szenario
         self.repowering = repowering
-
-    # def __init__(self, name, year, year_2017, last_szenario, global_radiation, repowering, pr_factor, wea_models, wea_count, wea_locations, pv_models, pv_area, pv_locations):
-    #     self.name = name
-    #     self.year = year #20/21/22
-    #     self.year_2017 = year_2017 #0/1
-    #     self.last_szenario = last_szenario #1/2/3
-    #     self.global_radiation = global_radiation #%
-    #     self.repowering = repowering #0/1
-    #     self.pr_factor = pr_factor 
-
+        
+        self.wea_models_names = wea_models
         self.wea_count = wea_count
         self.wea_locations = wea_locations
+        
+        self.pv_models_names = pv_models
         self.pv_area = pv_area # in km^2
         self.pv_locations = pv_locations
         self.num_akku = num_akku
@@ -122,13 +116,22 @@ class Szenario:
       
         # Configuration
         configuration = pd.DataFrame({
+            'Name': df.index,
             'Datum': df['Datum'],
             'Jahr': df['Jahr'],
-            'Year_2017': df['Year_2017'],
+            'Wetter_Jahr': df['Wetter_Jahr'],
             'Last_Szenario': df['Last_Szenario'],
-            'Global_radiation': df['Global_radiation'],
             'Repowering': df['Repowering'],
-            'PR_factor': df['PR_factor'],
+            'WEA_Modelle': df['WEA_Modelle'],
+            'WEA_Anzahl': df['WEA_Anzahl'],
+            'WEA_Standorte': df['WEA_Standorte'],
+            'PVA_Modelle': df['PVA_Modelle'],
+            'PVA_Standorte': df['PVA_Standorte'],
+            'Anzahl_Akkus': df['Anzahl_Akkus'],
+            'Anzahl_Pumpspeicher': df['Anzahl_Pumpspeicher'],
+            'Anzahl_Druckluftspeicher': df['Anzahl_Druckluftspeicher'],
+            'Anzahl_Elektrolyseure': df['Anzahl_Elektrolyseure'],
+            'Fuellstand_Speicher': df['Fuellstand_Speicher']
             })
         
         def convert_to_int(str_list):
