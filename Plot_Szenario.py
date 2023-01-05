@@ -4,6 +4,79 @@ from datetime import datetime
 from Szenario import Szenario
 from Plots import Strommix
 
+def get_szenario_from_sql(name):
+    conn = sqlite3.connect('Data.db')
+    c = conn.cursor()
+    
+    #sql_df = pd.read_sql('Szenarien', conn, index_col = 'Respondent')
+
+    df = pd.read_sql_query("SELECT * FROM Szenarien WHERE Name = %s", name, con=conn)
+  
+    # Configuration
+    configuration = pd.DataFrame({
+        'Name': df.index,
+        'Datum': df['Datum'],
+        'Jahr': df['Jahr'],
+        'Wetter_Jahr': df['Wetter_Jahr'],
+        'Last_Szenario': df['Last_Szenario'],
+        'Repowering': df['Repowering'],
+        'WEA_Modelle': df['WEA_Modelle'].str.split(","),
+        'WEA_Anzahl': df['WEA_Anzahl'].str.split(","),
+        'WEA_Standorte': df['WEA_Standorte'].str.split(","),
+        'PVA_Modelle': df['PVA_Modelle'].str.split(","),
+        'PVA_Flaechen': df['PVA_Flaechen'].str.split(","),
+        'PVA_Standorte': df['PVA_Standorte'].str.split(","),
+        'Anzahl_Akkus': df['Anzahl_Akkus'],
+        'Anzahl_Pumpspeicher': df['Anzahl_Pumpspeicher'],
+        'Anzahl_Druckluftspeicher': df['Anzahl_Druckluftspeicher'],
+        'Anzahl_Elektrolyseure': df['Anzahl_Elektrolyseure'],
+        'Fuellstand_Speicher': df['Fuellstand_Speicher']
+        })
+    
+    # def convert_to_int(str_list):
+    #     result = [int(i) for i in str_list]
+    #     return result
+   
+    # wea_anzahl = df['WEA_Anzahl'].str.split(',')
+    # wea_anzahl.apply(convert_to_int)
+    
+    # Wind
+    # wind = pd.DataFrame({
+    #     'Modell': df['WEA_Modelle'].str.split(","),
+    #     #'Anzahl': df['WEA_Anzahl'].str.split(",").astype(int),
+    #     #pd.to_numeric(df['WEA_Anzahl'], errors='raise', downcast = None),
+    #     #'Anzahl': map(int, df['WEA_Anzahl']),
+    #     #'Anzahl': [int(x) for x in df['WEA_Anzahl'].str.split(",")],
+    #     #'Anzahl': eval(df['WEA_Anzahl'].str.split(",")),
+    #     #'Anzahl': map(int, df['WEA_Anzahl'].split(",")),
+    #     #num_of_WEA = df['WEA_Anzahl'].str.split(","),
+    #    #'#Anzahl': list(map(int, num_of_WEA)),
+    #     #.astype(int),
+    #     'Anzahl': df['WEA_Anzahl'].str.split(","),
+    #     'Standort': df['WEA_Standorte'].str.split(",")
+    #     })
+    
+   # df = pd.DataFrame(wind)
+    #df['Anzahl'] = pd.to_numeric(df['Anzahl'])
+    
+    #data_new1 = wind.copy()                                    
+    ##data_new1['Anzahl'] = data_new1['Anzahl'].astype(int)  
+    #data_new1['Anzahl'] = pd.to_numeric(data_new1['Anzahl'])
+    
+    # PV
+    # pv = pd.DataFrame({
+    #     'Modell': df['PV_Modelle'].str.split(","),
+    #     'Flaeche': df['PV_Flaeche'].str.split(","),
+    #     'Standort': df['PV_Standorte'].str.split(",")
+    #     })
+                 
+    c.close()
+    conn.close()
+    
+    szenario = Szenario(configuration)
+    
+    return szenario
+
 wind_ausweisflaechen = {
     'Anlagen': ['Gamesa', 'Enercon', 'Gamesa', 'Gamesa', 'Enercon', 'Enercon', 'Enercon', 'Enercon', 'Enercon'],
     'Anzahl': [24, 126, 21, 1, 72, 49, 4, 6, 42],
@@ -62,63 +135,68 @@ solar_null = {
     'Standorte': ['Schleswig']
     }
 
-scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl', 'Pumpspeicher_Anzahl', 'Druckluftspeicher_Anzahl', 'Elektrolyseure_Anzahl', 'Deckung', 'Anzahl_Defizite', 'Laengstes_Defizit', 'Kosten'])
+########################
+# scenes = pd.DataFrame(columns=['Name', 'WEA_Anzahl', 'PVA_Flaeche', 'Akku_Anzahl', 'Pumpspeicher_Anzahl', 'Druckluftspeicher_Anzahl', 'Elektrolyseure_Anzahl', 'Deckung', 'Anzahl_Defizite', 'Laengstes_Defizit', 'Kosten'])
 
-for x in range(0, 5):
-    for y in range(0, 5):
-        # for z in range(0, 10):
-            # Get current time
-            now = datetime.now()
-            # dd/mm/YY H:M:S
-            cur_time = now.strftime("%d/%m/%Y %H:%M")
+# for x in range(0, 2):
+#     for y in range(0, 2):
+#         # for z in range(0, 10):
+#             # Get current time
+#             now = datetime.now()
+#             # dd/mm/YY H:M:S
+#             cur_time = now.strftime("%d/%m/%Y %H:%M")
 
-            new_scene = Szenario('Szenario {} '.format(x) + cur_time, 
-                                 2030, 
-                                 2021, 
-                                 2,
-                                 1,
-                                 wind_ausweisflaechen['Anlagen'], 
-                                 [num - x for num in wind_ausweisflaechen['Anzahl']],
-                                 wind_ausweisflaechen['Standorte'], 
-                                 solar_potenzialflaechen['Anlagen'], 
-                                 [area - y for area in solar_potenzialflaechen['Flaeche']], 
-                                 solar_potenzialflaechen['Standorte'],
-                                 750000,
-                                 1,
-                                 32,
-                                 130,
-                                 1
-                                 )
+#             new_scene = Szenario('Szenario {} '.format(x + y), 
+#                                  2030, 
+#                                  2021, 
+#                                  2,
+#                                  1,
+#                                  wind_ausweisflaechen['Anlagen'], 
+#                                  [num - x for num in wind_ausweisflaechen['Anzahl']],
+#                                  wind_ausweisflaechen['Standorte'], 
+#                                  solar_potenzialflaechen['Anlagen'], 
+#                                  [area - y for area in solar_potenzialflaechen['Flaeche']], 
+#                                  solar_potenzialflaechen['Standorte'],
+#                                  750000,
+#                                  1,
+#                                  32,
+#                                  130,
+#                                  1
+#                                  )
             
-            # new_scene.strommix.plot_speicher('Both')
-            # new_scene.strommix.plot_bilanz_ee('Both')
-            # new_scene.strommix.plot_strommix_ee('Both')
+#             # new_scene.strommix.plot_speicher('Both')
+#             # new_scene.strommix.plot_bilanz_ee('Both')
+#             # new_scene.strommix.plot_strommix_ee('Both')
             
-            result = {
-                'Name': new_scene.name,
-                'WEA_Anzahl': sum(new_scene.wea_count),
-                'PVA_Flaeche': sum(new_scene.pv_area),
-                'Akku_Anzahl': new_scene.num_akku,
-                'Pumpspeicher_Anzahl': new_scene.num_pump,
-                'Druckluftspeicher_Anzahl': new_scene.num_druckluft,
-                'Elektrolyseure_Anzahl': new_scene.num_elektrolyseure,
-                'Deckung': new_scene.strommix.calc_pct_positive_bilanz_ee('Both'),
-                'Anzahl_Defizite': len(new_scene.strommix.calc_dunkelflaute_ee('Both').index),
-                'Laengstes_Defizit': str(new_scene.strommix.calc_max_dunkelflaute_ee('Both')['Dauer']),
-                'Kosten': new_scene.calc_cost(),
-                }
+#             result = {
+#                 'Name': new_scene.name,
+#                 'WEA_Anzahl': sum(new_scene.wea_count),
+#                 'PVA_Flaeche': sum(new_scene.pv_area),
+#                 'Akku_Anzahl': new_scene.num_akku,
+#                 'Pumpspeicher_Anzahl': new_scene.num_pump,
+#                 'Druckluftspeicher_Anzahl': new_scene.num_druckluft,
+#                 'Elektrolyseure_Anzahl': new_scene.num_elektrolyseure,
+#                 'Deckung': new_scene.strommix.calc_pct_positive_bilanz_ee('Both'),
+#                 'Anzahl_Defizite': len(new_scene.strommix.calc_dunkelflaute_ee('Both').index),
+#                 'Laengstes_Defizit': str(new_scene.strommix.calc_max_dunkelflaute_ee('Both')['Dauer']),
+#                 'Kosten': new_scene.calc_cost(),
+#                 }
             
-            scenes = scenes.append(result, ignore_index=True)
+#             scenes = scenes.append(result, ignore_index=True)
             
-            del new_scene
+#             del new_scene
 
-conn = sqlite3.connect('Data.db')
-c = conn.cursor()
+# conn = sqlite3.connect('Data.db')
+# c = conn.cursor()
         
-scenes.to_sql('Simulationen_2030_Ausweisflaechen', conn, if_exists='append')
+# scenes.to_sql('Simulationen_2030_Ausweisflaechen', conn, if_exists='append')
         
-c.close()
-conn.close()
+# c.close()
+# conn.close()
+########################
+
+scene1 = get_szenario_from_sql('Szenario 0')
+scene1.strommix.plot_bilanz_ee('Both')
 
 # scene_max.strommix.plot_bilanz_ee('Both')
 # scene_max.strommix.plot_strommix_ee('Both')

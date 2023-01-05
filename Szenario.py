@@ -87,26 +87,25 @@ class Szenario:
         
         params = pd.DataFrame({
             'Name': self.name,
+            'Datum': date.today(),
             'Jahr': self.year,
             'Wetter_Jahr': self.weather_year,
             'Last_Szenario': self.last_szenario,
-            'Datum': date.today(),
             'Repowering': self.repowering,
-            'WEA_Modelle': ','.join(map(str, self.wea_models)),
+            'WEA_Modelle': ','.join(map(str, self.wea_models_names)),
             'WEA_Anzahl': ','.join(map(str, self.wea_count)),
             'WEA_Standorte': ','.join(map(str, self.wea_locations)),
-            'PV_Modelle': ','.join(map(str, self.pv_models)),
-            'PV_Flaeche': ','.join(map(str, self.pv_area)),
-            'PV_Standorte': ','.join(map(str, self.pv_locations)),
-            'Anzahl_Akku': ','.join(map(str, self.num_akku)),
-            'Anzahl_Pumpspeicherkraftwerke': self.num_pump,
-            'Anzahl_Druckluftspeicherkraftwerke': self. num_druckluft,
+            'PVA_Modelle': ','.join(map(str, self.pv_models_names)),
+            'PVA_Flaechen': ','.join(map(str, self.pv_area)),
+            'PVA_Standorte': ','.join(map(str, self.pv_locations)),
+            'Anzahl_Akku': self.num_akku,
+            'Anzahl_Pumpspeicher': self.num_pump,
+            'Anzahl_Druckluftspeicher': self. num_druckluft,
             'Anzahl_Elektrolyseure': self.num_elektrolyseure,
             'Fuellstand_Speicher': self.start_charge
-          
-        })
+        }, index = [self.name])
         
-        params.to_sql('Szenarien', conn, if_exists='replace')
+        params.to_sql('Szenarien', conn, if_exists='append')
         
         c.close()
         conn.close()
@@ -117,7 +116,7 @@ class Szenario:
         
         #sql_df = pd.read_sql('Szenarien', conn, index_col = 'Respondent')
 
-        df = pd.read_sql_query('SELECT * FROM Szenarien', conn)
+        df = pd.read_sql_query("SELECT * FROM Szenarien WHERE Name = (%s)", name, con=conn)
       
         # Configuration
         configuration = pd.DataFrame({
@@ -127,11 +126,12 @@ class Szenario:
             'Wetter_Jahr': df['Wetter_Jahr'],
             'Last_Szenario': df['Last_Szenario'],
             'Repowering': df['Repowering'],
-            'WEA_Modelle': df['WEA_Modelle'],
-            'WEA_Anzahl': df['WEA_Anzahl'],
-            'WEA_Standorte': df['WEA_Standorte'],
-            'PVA_Modelle': df['PVA_Modelle'],
-            'PVA_Standorte': df['PVA_Standorte'],
+            'WEA_Modelle': df['WEA_Modelle'].str.split(","),
+            'WEA_Anzahl': df['WEA_Anzahl'].str.split(","),
+            'WEA_Standorte': df['WEA_Standorte'].str.split(","),
+            'PVA_Modelle': df['PVA_Modelle'].str.split(","),
+            'PVA_Flaechen': df['PVA_Flaechen'].str.split(","),
+            'PVA_Standorte': df['PVA_Standorte'].str.split(","),
             'Anzahl_Akkus': df['Anzahl_Akkus'],
             'Anzahl_Pumpspeicher': df['Anzahl_Pumpspeicher'],
             'Anzahl_Druckluftspeicher': df['Anzahl_Druckluftspeicher'],
@@ -139,30 +139,28 @@ class Szenario:
             'Fuellstand_Speicher': df['Fuellstand_Speicher']
             })
         
-        def convert_to_int(str_list):
-            result = [int(i) for i in str_list]
-            return result
+        # def convert_to_int(str_list):
+        #     result = [int(i) for i in str_list]
+        #     return result
        
-        wea_anzahl = df['WEA_Anzahl'].str.split(',')
-        wea_anzahl.apply(convert_to_int)
-        
-        print(wea_anzahl[0][1].dtpye())
+        # wea_anzahl = df['WEA_Anzahl'].str.split(',')
+        # wea_anzahl.apply(convert_to_int)
         
         # Wind
-        wind = pd.DataFrame({
-            'Modell': df['WEA_Modelle'].str.split(","),
-            #'Anzahl': df['WEA_Anzahl'].str.split(",").astype(int),
-            #pd.to_numeric(df['WEA_Anzahl'], errors='raise', downcast = None),
-            #'Anzahl': map(int, df['WEA_Anzahl']),
-            #'Anzahl': [int(x) for x in df['WEA_Anzahl'].str.split(",")],
-            #'Anzahl': eval(df['WEA_Anzahl'].str.split(",")),
-            #'Anzahl': map(int, df['WEA_Anzahl'].split(",")),
-            #num_of_WEA = df['WEA_Anzahl'].str.split(","),
-           #'#Anzahl': list(map(int, num_of_WEA)),
-            #.astype(int),
-            'Anzahl': wea_anzahl,
-            'Standort': df['WEA_Standorte'].str.split(",")
-            })
+        # wind = pd.DataFrame({
+        #     'Modell': df['WEA_Modelle'].str.split(","),
+        #     #'Anzahl': df['WEA_Anzahl'].str.split(",").astype(int),
+        #     #pd.to_numeric(df['WEA_Anzahl'], errors='raise', downcast = None),
+        #     #'Anzahl': map(int, df['WEA_Anzahl']),
+        #     #'Anzahl': [int(x) for x in df['WEA_Anzahl'].str.split(",")],
+        #     #'Anzahl': eval(df['WEA_Anzahl'].str.split(",")),
+        #     #'Anzahl': map(int, df['WEA_Anzahl'].split(",")),
+        #     #num_of_WEA = df['WEA_Anzahl'].str.split(","),
+        #    #'#Anzahl': list(map(int, num_of_WEA)),
+        #     #.astype(int),
+        #     'Anzahl': df['WEA_Anzahl'].str.split(","),
+        #     'Standort': df['WEA_Standorte'].str.split(",")
+        #     })
         
        # df = pd.DataFrame(wind)
         #df['Anzahl'] = pd.to_numeric(df['Anzahl'])
@@ -181,7 +179,9 @@ class Szenario:
         c.close()
         conn.close()
         
-        return wind
+        szenario = Szenario(configuration)
+        
+        return szenario
         
     def print_config(self):
         print(self.config)
