@@ -136,7 +136,8 @@ class Brennstoffzelle():
 class Gasnetz():
     def __init__(self, num_elektrolyseure, num_brennstoffzellen, start_charge):
         self.capacity = 0 # MWh
-        self.current_charge = self.capacity * start_charge
+        # self.current_charge = self.capacity * start_charge
+        self.current_charge = 1000000
         self.elec = Elektrolyseur(num_elektrolyseure)
         self.bsz = Brennstoffzelle(num_brennstoffzellen)
         self.gud = GuD()
