@@ -11,7 +11,7 @@ class ProduktFrameBrennstoffzellen(tk.Frame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
-        self.lbl1 = tk.Label(self, text="Brennstoffzellen", **style.FONSUBTTITEL,
+        self.lbl1 = tk.Label(self, text="Brennstoffzellen-kraftwerk", **style.FONSUBTTITEL,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=50)
         self.lbl1.grid(row=0, column=0, columnspan=6, padx=5, pady=3, sticky=NSEW)
 
@@ -33,7 +33,11 @@ class ProduktFrameBrennstoffzellen(tk.Frame):
         lbl7 = tk.Label(self, text="Umwandlung: 1kgH2 -> 16 KWh", **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=50)
         lbl7.grid(row=3, column=1, padx=5, pady=3, sticky=NSEW)
+        lbl8 = tk.Label(self, text="Anzahl", **style.STYLE,
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=15)
+        lbl8.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
 
-        label2 = tk.Label(self, text="Aktuell vorhanden", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=25)
-        label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
+        self.anzahl = IntVar(self)
+        self.anzahl.set(0)
+        self.anzahl_spinbox = tk.Spinbox(self, width=10, from_=0, to=100, textvariable=self.anzahl)
+        self.anzahl_spinbox.grid(row=3, column=5)

@@ -73,25 +73,22 @@ class Speicher(tk.Frame):
         elektrolyseurFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         LIST_SPEICHER.append(elektrolyseurFrame)
 
-        wasserstoffFrame = ProduktFrameWasserstoff(self.scrollable_frame)
-        wasserstoffFrame.config(background=style.BACKGROUND)
-        wasserstoffFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-        LIST_SPEICHER.append(wasserstoffFrame)
-
-        pumpspeicherFrame = ProduktFramePumpspeicherkraftwerk(self.scrollable_frame)
-        pumpspeicherFrame.config(background=style.BACKGROUND)
-        pumpspeicherFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-        LIST_SPEICHER.append(pumpspeicherFrame)
-
         brennstoffzellenFrame = ProduktFrameBrennstoffzellen(self.scrollable_frame)
         brennstoffzellenFrame.config(background=style.BACKGROUND)
         brennstoffzellenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         LIST_SPEICHER.append(brennstoffzellenFrame)
 
+        wasserstoffFrame = ProduktFrameWasserstoff(self.scrollable_frame)
+        wasserstoffFrame.config(background=style.BACKGROUND)
+        wasserstoffFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+
+        pumpspeicherFrame = ProduktFramePumpspeicherkraftwerk(self.scrollable_frame)
+        pumpspeicherFrame.config(background=style.BACKGROUND)
+        pumpspeicherFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+
         gudFrame = ProduktFrameGuD(self.scrollable_frame)
         gudFrame.config(background=style.BACKGROUND)
         gudFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-        LIST_SPEICHER.append(gudFrame)
 
         Wind.Wind.leistung(self)
 

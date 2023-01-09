@@ -12,7 +12,7 @@ class ProduktFrameWasserstoff(tk.Frame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
-        self.lbl1 = tk.Label(self, text="Wasserstoff", **style.FONSUBTTITEL,
+        self.lbl1 = tk.Label(self, text="Wasserstoff-Kraftwerk", **style.FONSUBTTITEL,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=50)
         self.lbl1.grid(row=0, column=0, columnspan=6, padx=5, pady=3, sticky=NSEW)
 

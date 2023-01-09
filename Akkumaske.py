@@ -45,9 +45,9 @@ class ProduktFrameAkku(tk.Frame):
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=50)
         lbl10.grid(row=3, column=2, padx=5, pady=3, sticky=NSEW)
 
-        label2 = tk.Label(self, text="Anzahl", **style.STYLE,
+        lbl11 = tk.Label(self, text="Anzahl", **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=15)
-        label2.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
+        lbl11.grid(row=2, column=5, padx=5, pady=3, sticky=NSEW)
 
         self.anzahl = IntVar(self)
         self.anzahl.set(0)

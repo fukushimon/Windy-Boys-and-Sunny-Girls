@@ -140,14 +140,14 @@ class Wind(tk.Frame):
         leistungFrame.grid_columnconfigure(4, weight=1)
         leistungFrame.grid_columnconfigure(5, weight=1)
 
-        label_Szenarioname = tk.Label(leistungFrame, text='Gesamteleistung: ', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label_Szenarioname.grid(row=0, column=0, padx=5, pady=3)
-        leistungFrame.txt_name = tk.Entry(leistungFrame, width=50)
-        leistungFrame.txt_name.grid(row=0, column=1, padx=5, pady=3)
-        label_Szenarioname = tk.Label(leistungFrame, text=' MW', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label_Szenarioname.grid(row=0, column=2, padx=5, pady=3)
+        #label_Szenarioname = tk.Label(leistungFrame, text='Gesamteleistung: ', **style.STYLE,
+        #                      activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        #label_Szenarioname.grid(row=0, column=0, padx=5, pady=3)
+        #leistungFrame.txt_name = tk.Entry(leistungFrame, width=50)
+        #leistungFrame.txt_name.grid(row=0, column=1, padx=5, pady=3)
+        #label_Szenarioname = tk.Label(leistungFrame, text=' MW', **style.STYLE,
+        #                      activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        #label_Szenarioname.grid(row=0, column=2, padx=5, pady=3)
 
         anlage_button = tk.Button(leistungFrame, text='Neue Anlage +', **style.STYLE,
                                activebackground=style.BACKGROUND, activeforeground=style.TEXT,
@@ -368,7 +368,6 @@ class Wind(tk.Frame):
             print(HERSTELLER_SOLAR)
             print(ANLAGE_SPEICHER)
 
-            
             self.controller.show_frame(Energiebilanz.Energiebilanz)
             self.newWindow.destroy()
         elif confirm is None:
