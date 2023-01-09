@@ -29,7 +29,7 @@ class ProduktFrameElektrolyseur(tk.Frame):
         lbl5 = tk.Label(self, text="Fläche: 18,4m^2", **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl5.grid(row=1, column=1, padx=5, pady=3, sticky=NSEW)
-        lbl6 = tk.Label(self, text="Aktuelle Investitionskosten: 400 EUR/KW", **style.STYLE,
+        lbl6 = tk.Label(self, text="Aktuelle Investitionskosten: 400...600 EUR/KW", **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl6.grid(row=2, column=1, padx=5, pady=3, sticky=NSEW)
         lbl7 = tk.Label(self, text="Wirkungsgrad: 74%", **style.STYLE,

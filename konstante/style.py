@@ -1,9 +1,9 @@
 BACKGROUND = '#121212'#'#DCDCDC'
-FONT = ('Arial',12)
+FONT = ('Arial', 12)
 COMPONENT = '#363636'#'#C0C0C0'#
 TEXT = '#84C9FB'
-FONTTITEL= ('Arial',20)
-FONSUBTTITEL= ('Arial',16)
+FONTTITEL= ('Arial', 20)
+FONSUBTTITEL= ('Arial', 16)
 
 
 STYLE ={

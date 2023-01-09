@@ -16,10 +16,10 @@ class ProduktFrameAkku(tk.Frame):
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         self.lbl1.grid(row=0, column=0, columnspan=6, padx=5, pady=3, sticky=NSEW)
 
-        lbl2 = tk.Label(self, text="Wh-Wirkungsgrad: 95%", **style.STYLE,
+        lbl2 = tk.Label(self, text="Wh-Wirkungsgrad: 90...95%", **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl2.grid(row=1, column=0, padx=5, pady=3, sticky=NSEW)
-        lbl3 = tk.Label(self, text="Selbstentladungsrate: <5%/Monat", **style.STYLE,
+        lbl3 = tk.Label(self, text="Selbstentladungsrate: < 5%/Monat", **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl3.grid(row=2, column=0, padx=5, pady=3, sticky=NSEW)
         lbl4 = tk.Label(self, text="Lade-/Entladezyklen: ca. 10.000", **style.STYLE,
@@ -39,7 +39,7 @@ class ProduktFrameAkku(tk.Frame):
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl8.grid(row=1, column=2, padx=5, pady=3, sticky=NSEW)
 
-        lbl9 = tk.Label(self, text="Aktuele Investitionskosten (2022): 500,- EUR", **style.STYLE,
+        lbl9 = tk.Label(self, text="Aktuele Investitionskosten (2022): 400...1200 EUR", **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl9.grid(row=2, column=2, padx=5, pady=3, sticky=NSEW)
 

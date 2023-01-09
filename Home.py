@@ -132,7 +132,7 @@ class Home(tk.Frame):
         if self.toolbar_exists:
             self.center_frame.destroy()
             self.bottom_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, width=50, height=50, pady=3)
-            self.center_frame = tk.Frame(self.datenFrame, background='yellow', pady=3)
+            self.center_frame = tk.Frame(self.datenFrame, background=style.BACKGROUND, pady=3)
             self.bottom_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
             self.center_frame.grid(row=1, column=1, rowspan=1, sticky="nsew")
             

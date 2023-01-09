@@ -25,12 +25,12 @@ class Energiebilanz(tk.Frame):
 
 #Mittlere bereich
         self.buttonframe = tk.Frame(self)
-        self.buttonframe.config(bg='yellow')
+        self.buttonframe.config(bg=style.BACKGROUND)
         self.buttonframe.grid(row=1, column=0, sticky='nsew')
         self.button_simulation()
 
         textframe = tk.Frame(self)
-        textframe.config(bg='red')
+        textframe.config(bg=style.BACKGROUND)
         textframe.grid(row=1, column=1, sticky='nsew')
         textframe.grid_columnconfigure(0, weight=1)
         text = tk.Label(textframe, text='Wie hoch der Bedarf genau sein wird, hängt unter anderem davon ab,\n'
@@ -38,7 +38,7 @@ class Energiebilanz(tk.Frame):
                                  ' im Fokus stehen. Derzeit sollte insbesondere die Entwicklung bei Onshore-Wind\n'
                                  ' zum Beispiel durch eine Erhöhung der Ausschreibungsmengen, der Ausweisung von\n'
                                  ' mehr Flächen und einer Verbesserung des Genehmigungsprozesses beschleunigt werden.')
-        text.config(font=style.FONTTITEL)
+        text.config(font=style.FONTTITEL, fg=style.TEXT, bg=style.BACKGROUND)
         text.grid(row=3, column=0, padx=5, pady=3, sticky='nsew')
 
 
@@ -53,7 +53,7 @@ class Energiebilanz(tk.Frame):
 
 #Untere bereich
         frame = tk.Frame(self)
-        frame.config(background='blue')#style.BACKGROUND)
+        frame.config(background=style.BACKGROUND)
         frame.grid(row=3, column=0, columnspan=3, sticky='ew')
         frame.grid_columnconfigure(0, weight=2)
         frame.grid_columnconfigure(1, weight=1)

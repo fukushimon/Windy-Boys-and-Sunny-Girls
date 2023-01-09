@@ -164,11 +164,42 @@ class Wind(tk.Frame):
                               activeforeground=style.TEXT, command=lambda: Wind.faktoren_beruecksichtigen(self))
         berechnen.grid(row=0, column=6, padx=5, pady=3)
         Speichern = tk.Button(leistungFrame, text='Speichern', **style.STYLE, activebackground=style.BACKGROUND,
-                            activeforeground=style.TEXT)
+                            activeforeground=style.TEXT, command=lambda: Wind.szenario_speichern(self))
         Speichern.grid(row=0, column=7, padx=5, pady=3)
         schliessen = tk.Button(leistungFrame, text='Schließen', **style.STYLE, activebackground=style.BACKGROUND,
                             activeforeground=style.TEXT, command=lambda: self.controller.show_frame(Home.Home))
         schliessen.grid(row=0, column=8, padx=5, pady=3)
+
+    def szenario_speichern(self):
+        for frame in LIST_WIND:
+            HERSTELLER_WIND.clear()
+            MODELL_WIND.clear()
+            STANDORT_WIND.clear()
+            ANZAHL_WIND.clear()
+
+            HERSTELLER_WIND.append(frame.cbx_hersteller.get())
+            MODELL_WIND.append(frame.cbx_modellname.get())
+            STANDORT_WIND.append(frame.cbx_standort.get())
+            ANZAHL_WIND.append(frame.anzahl.get())
+
+        for frame in LIST_SOLAR:
+            HERSTELLER_SOLAR.clear()
+            MODELL_SOLAR.clear()
+            STANDORT_SOLAR.clear()
+            FLAECHE_SOLAR.clear()
+
+            HERSTELLER_SOLAR.append(frame.cbx_hersteller.get())
+            MODELL_SOLAR.append(frame.cbx_modellname.get())
+            STANDORT_SOLAR.append(frame.cbx_standort.get())
+            FLAECHE_SOLAR.append(frame.anzahl.get())
+
+        for frame in LIST_SPEICHER:
+            ANLAGE_SPEICHER.clear()
+            ANZAHL_SPEICHER.clear()
+
+            ANLAGE_SPEICHER.append(frame.lbl1['text'])
+            ANZAHL_SPEICHER.append(frame.anzahl.get())
+
 
     def add_produktFrame(self):
         produktFrame = ProduktFrameWind(self.scrollable_frame)
@@ -269,6 +300,7 @@ class Wind(tk.Frame):
         if confirm:
             FAKTOREN_LIST.clear()
             FAKTOREN_LIST.append([self.option1.get(), self.option2.get(), self.option3.get(), self.option4.get(), self.option5.get(), self.ladung.get()])
+            print('FAKTOREN_LIST')
             print(FAKTOREN_LIST)
 
 
@@ -341,6 +373,7 @@ class Wind(tk.Frame):
             print(ANZAHL_WIND)
             print(HERSTELLER_SOLAR)
             print(ANLAGE_SPEICHER)
+
             
             self.controller.show_frame(Energiebilanz.Energiebilanz)
             self.newWindow.destroy()
@@ -349,4 +382,3 @@ class Wind(tk.Frame):
             self.faktoren_beruecksichtigen()
         else:
             self.newWindow.destroy()
-
