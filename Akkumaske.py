@@ -9,8 +9,11 @@ class ProduktFrameAkku(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
         self.lbl1 = tk.Label(self, text="Lithium-Ionen-Batterien", **style.FONSUBTTITEL,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
@@ -39,9 +42,12 @@ class ProduktFrameAkku(tk.Frame):
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl8.grid(row=1, column=2, padx=5, pady=3, sticky=NSEW)
 
-        lbl9 = tk.Label(self, text="Aktuele Investitionskosten (2022): 400...1200 EUR", **style.STYLE,
+        lbl9 = tk.Label(self, text="Aktuele Investitionskosten (2022): 400...1200 EUR/KWh", **style.STYLE,
                         activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         lbl9.grid(row=2, column=2, padx=5, pady=3, sticky=NSEW)
+        lbl10 = tk.Label(self, text="Zukünftige Investitionskosten (2030) (ISI): 100 EUR/KWh", **style.STYLE,
+                        activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+        lbl10.grid(row=3, column=2, padx=5, pady=3, sticky=NSEW)
 
         label2 = tk.Label(self, text="Anzahl", **style.STYLE,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)

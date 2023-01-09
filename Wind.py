@@ -25,6 +25,8 @@ class Wind(tk.Frame):
         label1 = tk.Label(self, text='Scenario Wind', **style.FONTTITEL,
                           activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
+        # Beschreibung Szenario
+        self.szenario_beschreibung()
         self.wind_frame()
         self.leistung()
 
@@ -72,21 +74,18 @@ class Wind(tk.Frame):
         self.scrollable_frame.bind('<Enter>', self._bind_to_mousewheel)
         self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
 
-        self.canvas.create_window((0, 0), anchor="nw", window=self.scrollable_frame)
+        self.canvas.create_window((0, 0), anchor=NW, window=self.scrollable_frame)
 
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
         scrollbar.pack(side=RIGHT, fill=Y)
 
-#Beschreibung Szenario
-        self.szenario_beschreibung()
-
 # Wind-Produkte
         self.add_produktFrame()
 
     def szenario_beschreibung(self):
-        datenFrame = tk.Frame(self.scrollable_frame)
+        datenFrame = tk.Frame(self)
         datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         datenFrame.grid_columnconfigure(1, weight=1)

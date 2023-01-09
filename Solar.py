@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 
 import Wind
 from Solarmaske import ProduktFrameSolar
@@ -18,8 +17,9 @@ class Solar(tk.Frame):
         label1 = tk.Label(self, text='Scenario Solar', **style.FONTTITEL,
                             activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
-        self.Solar_frame()
+        self.szenario_beschreibung()
         Wind.Wind.leistung(self)
+        self.Solar_frame()
 
 
 # Solar Frame
@@ -29,11 +29,12 @@ class Solar(tk.Frame):
         solarFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
 # Scrollbar hinzufügen
-        self.canvas = tk.Canvas(solarFrame, background=style.BACKGROUND)
+        self.canvas = tk.Canvas(solarFrame, background='blue')#style.BACKGROUND)
         scrollbar = tk.Scrollbar(solarFrame, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas, background=style.BACKGROUND)
 
-        self.scrollable_frame.bind(
+        #self.scrollable_frame.bind(
+        self.canvas.bind(
             "<Configure>",
             lambda e: self.canvas.configure(
                 scrollregion=self.canvas.bbox("all")
@@ -44,20 +45,20 @@ class Solar(tk.Frame):
         self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
 
 
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor=NW)
 
-        self.canvas.configure(yscrollcommand=scrollbar.set)
+        #self.canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
         scrollbar.pack(side="right", fill="y")
-# Beschreibung Szenario
-        self.szenario_beschreibung()
+
 # Solar-Produkte
         self.add_produktFrame()
 
 # Beschreibung Szenario
     def szenario_beschreibung(self):
-        datenFrame = tk.Frame(self.scrollable_frame)
+        datenFrame = tk.Frame(self) #(self.scrollable_frame)
         datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         datenFrame.grid_columnconfigure(1, weight=1)
