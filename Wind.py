@@ -64,15 +64,14 @@ class Wind(tk.Frame):
 
 
         self.scrollable_frame.bind(
-        #self.canvas.bind(
             "<Configure>",
             lambda e: self.canvas.configure(
                 scrollregion=self.canvas.bbox("all")
             )
         )
-        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
-        self.scrollable_frame.bind('<Enter>', self._bind_to_mousewheel)
-        self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
+        self.canvas.bind("<MouseWheel>", self._on_mousewheel)
+        self.canvas.bind('<Enter>', self._bind_to_mousewheel)
+        self.canvas.bind('<Leave>', self._unbind_from_mousewheel)
 
         self.canvas.create_window((0, 0), anchor=NW, window=self.scrollable_frame)
 
@@ -122,10 +121,6 @@ class Wind(tk.Frame):
         REFERENCE.insert(1, self.txt_jahr.get())
         REFERENCE.insert(2, self.txt_budget.get())
         print(REFERENCE)
-
-        #Solar.Solar.daten_szenario(self)
-        #Solar.Solar.update(self)
-        #self.name.update()
 
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")

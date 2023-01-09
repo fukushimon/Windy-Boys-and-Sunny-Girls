@@ -1,108 +1,31 @@
 import tkinter as tk
-from tkinter import font as tkfont
 
-scoreDecisionTree = None
-scoreKnn = None
-scoreRandomForest = None
-scoreKmeans = None
+root=tk.Tk()
 
+vscrollbar = tk.Scrollbar(root)
 
-class SampleApp(tk.Tk):
+c= tk.Canvas(root,background = "#D2D2D2",yscrollcommand=vscrollbar.set)
 
-    def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+vscrollbar.config(command=c.yview)
+vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.title_font = tkfont.Font(
-            family='Helvetica', size=18, weight="bold", slant="italic")
+f=tk.Frame(c) #Create the frame which will hold the widgets
 
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand=True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+c.pack(side="left", fill="both", expand=True)
 
-        self.frames = {}
-        self.frames["StartPage"] = StartPage(parent=container, controller=self)
-        self.frames["PageOne"] = PageOne(parent=container, controller=self)
+#Updated the window creation
+c.create_window(0,0,window=f, anchor='nw')
 
-        self.frames["StartPage"].grid(row=0, column=0, sticky="nsew")
-        self.frames["PageOne"].grid(row=0, column=0, sticky="nsew")
+#Added more content here to activate the scroll
+for i in range(100):
+    tk.Label(f,wraplength=350 ,text=r"Det er en kendsgerning, at man bliver distraheret af læsbart indhold på en side, når man betragter dens websider, som stadig er på udviklingsstadiet. Der har været et utal af websider, som stadig er på udviklingsstadiet. Der har været et utal af variationer, som er opstået enten på grund af fejl og andre gange med vilje (som blandt andet et resultat af humor).").pack()
+    tk.Button(f,text="anytext").pack()
 
-        self.show_frame("StartPage")
+#Removed the frame packing
+#f.pack()
 
-    def show_frame(self, page_name):
-        '''Show a frame for the given page name'''
-        frame = self.frames[page_name]
-        frame.tkraise()
+#Updated the screen before calculating the scrollregion
+root.update()
+c.config(scrollregion=c.bbox("all"))
 
-    def update_globals(self):
-        frame = self.frames["PageOne"]
-        frame.update_globals()
-
-class StartPage(tk.Frame):
-
-    def __init__(self, parent, controller):
-        sp = login()
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        label = tk.Label(
-            self, text="ID playlist canzoni piaciute", font="Times 15")
-        label.pack(side="top", fill="x", pady=10)
-
-        self.entry1 = tk.Entry(self, width=30)
-        self.entry1.pack(side="top", fill="x", pady=10)
-
-        label = tk.Label(
-            self, text="ID playlist canzoni non piaciute", font="Times 15")
-        label.pack(side="top", fill="x", pady=10)
-
-        self.entry2 = tk.Entry(self, width=30)
-        self.entry2.pack(side="top", fill="x", pady=10)
-
-        def parametri():
-            estrazioneCanzoni(sp, self.entry1.get(), self.entry2.get())
-            controller.update_globals()
-            controller.show_frame("PageOne")
-
-        button1 = tk.Button(self, text="Analizza", command=lambda: parametri())
-
-        button1.pack()
-
-
-class PageOne(tk.Frame):
-
-    def __init__(self, parent, controller):
-
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        label = tk.Label(self, text="Accuratezza", font=controller.title_font)
-        label.pack(side="top", fill="x", pady=10)
-        self.label1 = tk.Label(self, font="Times 12")
-        self.label1.pack(side="top", fill="x", pady=10)
-        self.label2 = tk.Label(self, font="Times 12")
-        self.label2.pack(side="top", fill="x", pady=10)
-        self.label3 = tk.Label(self, font="Times 12")
-        self.label3.pack(side="top", fill="x", pady=10)
-        self.label4 = tk.Label(self, font="Times 12")
-        self.label4.pack(side="top", fill="x", pady=10)
-
-    def update_globals(self):
-        self.label1.config(text="Decision tree: {}".format(scoreDecisionTree))
-        self.label2.config(text="Knn: {}".format(scoreKnn))
-        self.label3.config(text="Random forest: {}".format(scoreRandomForest))
-        self.label4.config(text="Kmeans: {}".format(scoreKmeans))
-
-def login():
-    # just a simple example to allow the program to run
-    return 10
-
-
-def estrazioneCanzoni(sp, a, b):
-    # just a simple example to allow the program to run
-    global scoreDecisionTree, scoreKnn, scoreRandomForest, scoreKmeans
-    scoreDecisionTree, scoreKnn, scoreRandomForest, scoreKmeans = sp, a, b, a+b
-
-
-if __name__ == "__main__":
-    app = SampleApp()
-    app.mainloop()
+root.mainloop()

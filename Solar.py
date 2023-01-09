@@ -9,6 +9,7 @@ from konstante.Product import LIST_SOLAR, REFERENCE
 
 
 class Solar(tk.Frame):
+
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.config(bg=style.BACKGROUND)
@@ -29,26 +30,24 @@ class Solar(tk.Frame):
         solarFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=8)
 
 # Scrollbar hinzufügen
-        self.canvas = tk.Canvas(solarFrame, background='blue')#style.BACKGROUND)
+        self.canvas = tk.Canvas(solarFrame, background=style.BACKGROUND)
         scrollbar = tk.Scrollbar(solarFrame, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas, background=style.BACKGROUND)
 
-        #self.scrollable_frame.bind(
-        self.canvas.bind(
+        self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(
                 scrollregion=self.canvas.bbox("all")
             )
         )
-        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
-        self.scrollable_frame.bind('<Enter>', self._bind_to_mousewheel)
-        self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
+        self.canvas.bind("<MouseWheel>", self._on_mousewheel)
+        self.canvas.bind('<Enter>', self._bind_to_mousewheel)
+        self.canvas.bind('<Leave>', self._unbind_from_mousewheel)
 
 
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor=NW)
 
-        #self.canvas.configure(yscrollcommand=scrollbar.set)
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        self.canvas.configure(yscrollcommand=scrollbar.set)
 
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
         scrollbar.pack(side="right", fill="y")
@@ -58,7 +57,7 @@ class Solar(tk.Frame):
 
 # Beschreibung Szenario
     def szenario_beschreibung(self):
-        datenFrame = tk.Frame(self) #(self.scrollable_frame)
+        datenFrame = tk.Frame(self)
         datenFrame.config(background=style.BACKGROUND)
         datenFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=8)
         datenFrame.grid_columnconfigure(1, weight=1)
@@ -88,7 +87,14 @@ class Solar(tk.Frame):
         label_Szenarioeuro = tk.Label(datenFrame, text='EURO', **style.STYLE,
                                       activebackground=style.BACKGROUND, activeforeground=style.TEXT)
         label_Szenarioeuro.grid(row=0, column=6, padx=5, pady=3)
+        uebernehmen_bto = tk.Button(datenFrame, text='Daten Aktualisieren', **style.STYLE, activebackground=style.BACKGROUND,
+                                    activeforeground=style.TEXT, command=lambda: Solar.beschreibung_actualizieren(self))
+        uebernehmen_bto.grid(row=0, column=7, padx=5, pady=3)
 
+    def beschreibung_actualizieren(self):
+        self.name.config(text=REFERENCE[0])
+        self.jahr.config(text=REFERENCE[1])
+        self.budget.config(text=REFERENCE[2])
 
     def daten_szenario(self):
         #self.name.update()

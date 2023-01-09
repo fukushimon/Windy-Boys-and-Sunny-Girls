@@ -10,7 +10,7 @@ class ProduktFrameSolar(tk.Frame):
         super().__init__(parent)
         # Hersteller
         Hersteller = tk.Label(self, text='Hersteller', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+                              activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=25)
         Hersteller.grid(row=0, column=0, padx=5, pady=3)
 
         self.cbx_hersteller = ttk.Combobox(self, width=50)
@@ -20,7 +20,7 @@ class ProduktFrameSolar(tk.Frame):
 
         # Standort
         Standort = tk.Label(self, text='Standort', **style.STYLE,
-                            activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+                            activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=25)
         Standort.grid(row=1, column=0, padx=5, pady=3)
         self.cbx_standort = ttk.Combobox(self, width=50)
         self.cbx_standort['values'] = ('', 'Schleswig-Holstein A', 'Schleswig-Holstein B', 'Schleswig-Holstein C',
@@ -30,7 +30,7 @@ class ProduktFrameSolar(tk.Frame):
 
         # Modellname
         Modellname = tk.Label(self, text='Modellname', **style.STYLE,
-                              activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+                              activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=25)
         Modellname.grid(row=0, column=2, padx=5, pady=3)
         self.cbx_modellname = ttk.Combobox(self, width=50)
         self.cbx_modellname['values'] = ('', 'AAA', 'BBB', 'CCC', 'DDD', 'EEE',)
@@ -42,7 +42,7 @@ class ProduktFrameSolar(tk.Frame):
         label1.grid(row=1, column=3, padx=5, pady=3)
 
         label2 = tk.Label(self, text="Fläche", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=25)
         label2.grid(row=0, column=4, padx=5, pady=3)
 
         # Anzahl

@@ -9,9 +9,18 @@ class ProduktFrameWind(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
+
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(3, weight=1)
+        self.grid_columnconfigure(4, weight=1)
+        self.grid_columnconfigure(5, weight=1)
+        self.grid_columnconfigure(6, weight=1)
+        self.grid_columnconfigure(7, weight=1)
+
         # Hersteller
         self.hersteller_lbl = tk.Label(self, text='Hersteller', **style.STYLE, activebackground=style.BACKGROUND,
-                                       activeforeground=style.TEXT)
+                                       activeforeground=style.TEXT, width=25)
         self.hersteller_lbl.grid(row=0, column=0, padx=5, pady=3)
 
         self.cbx_hersteller = ttk.Combobox(self, width=50)
@@ -21,7 +30,7 @@ class ProduktFrameWind(tk.Frame):
 
         # Modellname
         self.modellname_lbl = tk.Label(self, text='Modellname', **style.STYLE, activebackground=style.BACKGROUND,
-                                       activeforeground=style.TEXT)
+                                       activeforeground=style.TEXT, width=25)
         self.modellname_lbl.grid(row=0, column=2, padx=5, pady=3)
 
         self.cbx_modellname = ttk.Combobox(self, width=50)
@@ -38,11 +47,11 @@ class ProduktFrameWind(tk.Frame):
         self.anzahl = IntVar(self)
         self.anzahl.set(0)
         self.anzahl_spinbox = tk.Spinbox(self, width=10, from_=0, to=100, textvariable=self.anzahl)
-        self.anzahl_spinbox.grid(row=0, column=6)
+        self.anzahl_spinbox.grid(row=0, column=5)
 
         # Standort
         self.standort_lbl = tk.Label(self, text='Standort', **style.STYLE, activebackground=style.BACKGROUND,
-                                     activeforeground=style.TEXT)
+                                     activeforeground=style.TEXT, width=25)
         self.standort_lbl.grid(row=1, column=0, padx=5, pady=3)
         self.cbx_standort = ttk.Combobox(self, width=50)
         self.cbx_standort['values'] = (
@@ -51,16 +60,16 @@ class ProduktFrameWind(tk.Frame):
         self.cbx_standort.current(0)
         self.cbx_standort.grid(row=1, column=1)
         label2 = tk.Label(self, text="Anzahl", **style.STYLE,
-                          activebackground=style.BACKGROUND, activeforeground=style.TEXT)
-        label2.grid(row=0, column=5, padx=5, pady=3)
+                          activebackground=style.BACKGROUND, activeforeground=style.TEXT, width=25)
+        label2.grid(row=0, column=4, padx=6, pady=3)
 
         # Löschen-Button
         self.button_del = tk.Button(self, text='Löschen', **style.STYLE, activebackground=style.BACKGROUND,
-                                    activeforeground=style.TEXT, command=self.loeschen)
-        self.button_del.grid(row=1, column=5, padx=5, pady=3)
+                                    activeforeground=style.TEXT, command=self.loeschen, width=25)
+        self.button_del.grid(row=1, column=4, padx=5, pady=3)
         self.button_clear = tk.Button(self, text='Clear', **style.STYLE, activebackground=style.BACKGROUND,
                                     activeforeground=style.TEXT, command=self.freimachen)
-        self.button_clear.grid(row=1, column=6, padx=5, pady=3, sticky=NSEW)
+        self.button_clear.grid(row=1, column=5, padx=5, pady=3, sticky=NSEW)
 
     def loeschen(self):
         self.destroy()

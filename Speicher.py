@@ -17,6 +17,7 @@ from konstante.Product import LIST_SPEICHER, REFERENCE
 
 
 class Speicher(tk.Frame):
+
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.config(bg=style.BACKGROUND)
@@ -46,9 +47,9 @@ class Speicher(tk.Frame):
                 scrollregion=self.canvas.bbox("all")
             )
         )
-        self.scrollable_frame.bind("<MouseWheel>", self._on_mousewheel)
-        self.scrollable_frame.bind('<Enter>', self._bind_to_mousewheel)
-        self.scrollable_frame.bind('<Leave>', self._unbind_from_mousewheel)
+        self.canvas.bind("<MouseWheel>", self._on_mousewheel)
+        self.canvas.bind('<Enter>', self._bind_to_mousewheel)
+        self.canvas.bind('<Leave>', self._unbind_from_mousewheel)
 
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor=NW)
 
@@ -56,10 +57,6 @@ class Speicher(tk.Frame):
 
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
         scrollbar.pack(side="right", fill="y")
-
-        # Beschreibung Szenario
-        Wind.Wind.szenario_beschreibung(self)
-
 
         AkkuFrame = ProduktFrameAkku(self.scrollable_frame)
         AkkuFrame.config(background=style.BACKGROUND)
