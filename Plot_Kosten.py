@@ -11,8 +11,10 @@ def fmt(x, pos):
 conn = sqlite3.connect('Data.db')
 c = conn.cursor()
 
-data = pd.read_sql_query('SELECT * FROM Simulationen_2030', conn)
-        
+data = pd.read_sql_query('SELECT * FROM Simulationen_2_2021', conn)
+data = data[data['Brennstoffzellen_Anzahl'] != 4500000]
+data = data[data['Deckung'] > 70]      
+  
 c.close()
 conn.close()
 

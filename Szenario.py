@@ -65,7 +65,7 @@ class Szenario:
             self.wea_locations = self.wea_locations + self.wind_repower["Standorte"]
         
         for model, area in zip(self.pv_models, self.pv_area):
-            self.pv_count.append(int(area/model.area))
+            self.pv_count.append(int(area * 40 / (model.max_pwr / 1000000)))
         
         # Create Speicher instances from user input
         self.akku = Akku(self.num_akku, self.start_charge, 'Quickborn')
@@ -193,16 +193,16 @@ class Szenario:
         bilanz = mix.calc_bilanz_ee('Both')
         
         def speicher(val):
-            if val >= 0: # Charge
+            if val >= 0: # Einspeicherung
                 val = val - self.gasnetz.charge(val)
-                if val > 0 and self.pump.capacity_left() == 0 and self.druckluft.capacity_left() == 0: # Pumpspeicher and Druckluftspeicher are fully charged
+                if val > 0 and self.pump.capacity_left() == 0 and self.druckluft.capacity_left() == 0: 
                     val = val - self.akku.charge(val)
                 elif val > 0:
                     val = val - self.pump.charge(val/2)
                     val = val - self.druckluft.charge(val)
                     if val > 0:
                         val = val - self.akku.charge(val)
-            else: # Discharge
+            else: # Ausspeicherung
                 val = val + self.gasnetz.discharge(abs(val))
                 if val < 0:
                     while True:
